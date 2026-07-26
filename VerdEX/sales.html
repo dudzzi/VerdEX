@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGRI-Smart - Sales</title>
+    <link rel="stylesheet" href="welcome.css"/>
+    <style>
+        
+        .sales-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .sales-table th, .sales-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .sales-table th {
+            background-color: #2e7d32;
+            color: white;
+        }
+        .sales-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    
+    <div class="sidebar">
+        <h2>LOGO DITO GUYS</h2>
+
+        <a href="index.html">Home</a>
+        <a href="inventory.html">Inventory</a>
+        <a href="sales.html" class="active">Sales</a> 
+        <a href="status.html">Status</a>
+        <a href="trends.html">Trends</a>
+        <a href="reports.html">Weekly Reports</a>
+        
+        <h4>About Profile</h4>
+        <a href="profile.html">My Profile</a>
+        <a href="settings.html">Settings</a>
+        <a href="logout.html">Logout</a>
+    </div>
+
+   
+    <div class="content">
+        <h1>Sales Monitor</h1>
+        <p>Pagmonitor ng benta at kita ng mga pananim.</p>
+
+        <div class="box">
+            <h3>Recent Transactions</h3>
+            <p>Listahan ng mga nabenta sa ano:</p>
+            
+            <table class="sales-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Crop Type</th>
+                        <th>Quantity (kg)</th>
+                        <th>Total Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2026-03-01</td>
+                        <td>mais</td>
+                        <td>120 kg</td>
+                        <td>₱6,000.00</td>
+                    </tr>
+                    <tr>
+                        <td>2026-03-03</td>
+                        <td>Bigas</td>
+                        <td>500 kg</td>
+                        <td>₱25,000.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div> 
+
+</body>
+</html>
