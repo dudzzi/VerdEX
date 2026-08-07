@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGRI-Smart - Status</title>
+    <title>VerdEX</title>
     <link rel="stylesheet" href="welcome.css"/>
     <style>
         /* Grid design para sa mga Status Cards */
@@ -42,6 +42,7 @@
 
         <a href="index.html">Home</a>
         <a href="inventory.html">Inventory</a>
+        <a href="notification.html">Notifications</a>
         <a href="sales.html">Sales</a>
         <a href="status.html" class="active">Status</a> 
         <a href="trends.html">Trends</a>
@@ -54,29 +55,64 @@
     </div>
 
     <div class="content">
-        <h1>Farm Status</h1>
+        <h1>LALA</h1>
         <p>di ko alam ilalagay basta</p>
 
         <div class="status-container">
-            <!-- Card 1 para sa seed stock -->
+            <!-- Card 1 para sa temperature -->
             <div class="status-card">
-                <h4>Seed Stockk</h4>
-                <div class="status-value">Optimal (0%)</div>
+                <h4>Temperature</h4>
+                <div class="status-value" id="temperature">Loading...</div>
             </div>
-            
-            <!-- Card 1 para sa fertilizer stock -->
+
+            <!-- Card 2 para sa humidity -->
             <div class="status-card">
-                <h4>Fertillizer Stock</h4>
-                <div class="status-value">67 Bags</div>
+                <h4>Humidity</h4>
+                <div class="status-value" id="humidity">Loading...</div>
             </div>
 
             <!-- Card 3 sa water warning -->
             <div class="status-card warning">
-                <h4>Water Moisturet</h4>
-                <div class="status-value">Low (0%)</div>
+                <h4>Water Moisture</h4>
+                <div class="status-value" id="water-moisture">Loading...</div>
             </div>
         </div>
     </div> 
+    <script>
+async function loadSensor() {
+    try {
+        const response = await fetch("sensor.json?" + Date.now());
+
+        if (!response.ok) {
+            throw new Error("Unable to load sensor.json");
+        }
+
+        const data = await response.json();
+
+        document.getElementById("temperature").textContent =
+            data.temperature + " °C";
+
+        document.getElementById("humidity").textContent =
+            data.humidity + " %";
+
+        document.getElementById("water-moisture").textContent =
+            data.water_moisture + " %";
+
+    } catch (error) {
+        console.error(error);
+
+        document.getElementById("temperature").textContent = "Offline";
+        document.getElementById("humidity").textContent = "Offline";
+        document.getElementById("water-moisture").textContent = "Offline";
+    }
+}
+
+// Load immediately
+loadSensor();
+
+// Refresh every 3 seconds
+setInterval(loadSensor, 3000);
+</script>
 
 </body>
 </html>

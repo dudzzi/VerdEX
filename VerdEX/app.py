@@ -1,31 +1,67 @@
 import serial
 import json
 import time
+import os
 
-# Change COM4 to your Arduino port
-arduino = serial.Serial("COM3", 9600, timeout=1)
+# ----------------------------
+# Arduino Settings
+# ----------------------------
+COM_PORT = "COM4"      # Change if your Arduino uses another COM port
+BAUD_RATE = 9600
 
-# Wait for the serial connection to stabilize
-time.sleep(2)
+# ----------------------------
+# JSON File Location
+# ----------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+JSON_FILE = os.path.join(BASE_DIR, "sensor.json")
 
-print("Reading data from Arduino...")
+print("Writing sensor data to:")
+print(JSON_FILE)
 
+# ----------------------------
+# Connect to Arduino
+# ----------------------------
+try:
+    arduino = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
+    time.sleep(2)
+    print(f"Connected to {COM_PORT}")
+except Exception as e:
+    print("Failed to connect:", e)
+    exit()
+
+# ----------------------------
+# Read Arduino Data
+# ----------------------------
 while True:
-    if arduino.in_waiting:
+    try:
         line = arduino.readline().decode("utf-8").strip()
 
-        try:
-            temperature, humidity = line.split(",")
+        if not line:
+            continue
 
-            data = {
-                "temperature": temperature,
-                "humidity": humidity
+        print("Received:", line)
+
+        values = line.split(",")
+
+        # Expected format:
+        # temperature,humidity,water_moisture
+        if len(values) == 3:
+
+            sensor_data = {
+                "temperature": values[0],
+                "humidity": values[1],
+                "water_moisture": values[2]
             }
 
-            with open(r"C:/Users/User/OneDrive/Desktop/VerdEX\sensor.json","w") as file:
-                json.dump(data, file, indent=4)
+            with open(JSON_FILE, "w") as file:
+                json.dump(sensor_data, file, indent=4)
 
-            print(data)
+            print("sensor.json updated!")
 
-        except ValueError:
+        else:
             print("Invalid data:", line)
+
+    except Exception as e:
+        print("Error:", e)
+
+    time.sleep(1)
