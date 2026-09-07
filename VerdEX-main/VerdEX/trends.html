@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VerdEX - Trends</title>
+    <link rel="stylesheet" href="welcome.css">
+
+    <style>
+        /* Trends Page Only */
+        .trends-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .trends-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .trends-header h1 {
+            margin: 0;
+        }
+
+        .trends-header p {
+            margin-top: 5px;
+            color: #777;
+        }
+
+        .post-button {
+            background: #4b8f45;
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .post-button:hover {
+            background: #3d7839;
+        }
+
+        /* Announcement */
+
+        .announcement-box {
+            background: white;
+            border-left: 5px solid #4b8f45;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 7px rgba(0,0,0,0.08);
+        }
+
+        .announcement-title {
+            font-weight: bold;
+            color: #4b8f45;
+            font-size: 13px;
+            margin-bottom: 7px;
+        }
+
+        .announcement-box h3 {
+            margin: 0 0 7px 0;
+        }
+
+        .announcement-box p {
+            margin: 0;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Create Post */
+
+        .create-post {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 7px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .create-post input,
+        .create-post textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .create-post textarea {
+            height: 80px;
+            resize: none;
+        }
+
+        .create-post-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* Filter */
+
+        .trend-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .trend-options h2 {
+            margin: 0;
+        }
+
+        .trend-options select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+        }
+
+        /* Post */
+
+        .trend-post {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 7px rgba(0,0,0,0.08);
+        }
+
+        .post-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .user-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #e5f0e3;
+            color: #4b8f45;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .post-user strong {
+            display: block;
+        }
+
+        .post-user small {
+            color: #888;
+        }
+
+        .post-category {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: bold;
+            color: #4b8f45;
+            background: #edf5ec;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .trend-post h3 {
+            margin: 5px 0 8px;
+        }
+
+        .trend-post p {
+            color: #555;
+            line-height: 1.5;
+        }
+
+        /* Post Buttons */
+
+        .post-actions {
+            display: flex;
+            gap: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 12px;
+            margin-top: 15px;
+        }
+
+        .post-actions button {
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .post-actions button:hover {
+            color: #4b8f45;
+        }
+
+        /* Comments */
+
+        .comments {
+            display: none;
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+        }
+
+        .comments.show {
+            display: block;
+        }
+
+        .comment-box {
+            display: flex;
+            gap: 8px;
+        }
+
+        .comment-box input {
+            flex: 1;
+            padding: 9px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .comment-box button {
+            background: #4b8f45;
+            color: white;
+            border: none;
+            padding: 9px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- YOUR ORIGINAL SIDEBAR -->
+    <div class="sidebar">
+
+        <button class="sidebar-toggle" onclick="toggleSidebar()">❮</button>
+
+        <div class="logo">
+            <img src="verdexlogo.png" alt="VerdEX Logo">
+        </div>
+
+        <a href="home.html">Home</a>
+        <a href="inventory.html">Inventory</a>
+        <a href="notification.html">Notifications</a>
+        <a href="sales.html">Sales</a>
+        <a href="status.html">Status</a>
+        <a href="trends.html" class="active">Trends</a>
+        <a href="reports.html">Weekly Reports</a>
+
+        <h4>About Profile</h4>
+
+        <a href="profile.html">My Profile</a>
+        <a href="settings.html">Settings</a>
+        <a href="logout.html">Logout</a>
+
+    </div>
+
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <div class="trends-content">
+
+            <!-- HEADER -->
+            <div class="trends-header">
+
+                <div>
+                    <h1>Trends</h1>
+                    <p>Stay updated with the latest hydroponic news and discussions.</p>
+                </div>
+
+                <button class="post-button" onclick="showPostForm()">
+                    + Create Post
+                </button>
+
+            </div>
+
+
+            <!-- ANNOUNCEMENT -->
+            <div class="announcement-box">
+
+                <div class="announcement-title">
+                    VERDEX ANNOUNCEMENT
+                </div>
+
+                <h3>New Plant Calendar Feature</h3>
+
+                <p>
+                    A new Plant Calendar feature is now available.
+                    Users can now schedule planting, maintenance,
+                    nutrient replacement, and harvesting activities.
+                </p>
+
+            </div>
+
+
+            <!-- CREATE POST -->
+            <div class="create-post" id="createPost" style="display: none;">
+
+                <input
+                    type="text"
+                    id="postTitle"
+                    placeholder="Post title"
+                >
+
+                <textarea
+                    id="postContent"
+                    placeholder="Share something about hydroponics..."
+                ></textarea>
+
+                <div class="create-post-actions">
+
+                    <button class="post-button" onclick="createPost()">
+                        Publish
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- TREND OPTIONS -->
+            <div class="trend-options">
+
+                <h2>Latest Trends</h2>
+
+                <select>
+                    <option>All Posts</option>
+                    <option>Hydroponic Tips</option>
+                    <option>News</option>
+                    <option>Discussion</option>
+                    <option>Announcements</option>
+                </select>
+
+            </div>
+
+
+            <!-- POST 1 -->
+            <div class="trend-post">
+
+                <div class="post-user">
+
+                    <div class="user-icon">
+                        ZA
+                    </div>
+
+                    <div>
+                        <strong>Zandro Animos</strong>
+                        <small>Hydroponic Farmer • 2 hours ago</small>
+                    </div>
+
+                </div>
+
+                <span class="post-category">
+                    HYDROPONIC TIP
+                </span>
+
+                <h3>Maintaining Proper Water Levels</h3>
+
+                <p>
+                    Regularly checking the water level of your
+                    hydroponic system can help maintain healthy
+                    plant growth. Make sure the water level is
+                    within the recommended range.
+                </p>
+
+                <div class="post-actions">
+
+                    <button onclick="likePost(this)">
+                        ♡ Like <span>12</span>
+                    </button>
+
+                    <button onclick="toggleComments(this)">
+                        💬 Comment
+                    </button>
+
+                </div>
+
+                <div class="comments">
+
+                    <div class="comment-box">
+
+                        <input
+                            type="text"
+                            placeholder="Write a comment..."
+                        >
+
+                        <button onclick="addComment(this)">
+                            Post
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- POST 2 -->
+            <div class="trend-post">
+
+                <div class="post-user">
+
+                    <div class="user-icon">
+                        SA
+                    </div>
+
+                    <div>
+                        <strong>Sam Aisele Austria</strong>
+                        <small>Farm Owner • 5 hours ago</small>
+                    </div>
+
+                </div>
+
+                <span class="post-category">
+                    NEWS
+                </span>
+
+                <h3>Hydroponic Farming Update</h3>
+
+                <p>
+                    More farmers are starting to use automated
+                    monitoring systems to monitor important
+                    conditions such as temperature, humidity,
+                    moisture, and water levels.
+                </p>
+
+                <div class="post-actions">
+
+                    <button onclick="likePost(this)">
+                        ♡ Like <span>25</span>
+                    </button>
+
+                    <button onclick="toggleComments(this)">
+                        💬 Comment
+                    </button>
+
+                </div>
+
+                <div class="comments">
+
+                    <div class="comment-box">
+
+                        <input
+                            type="text"
+                            placeholder="Write a comment..."
+                        >
+
+                        <button onclick="addComment(this)">
+                            Post
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- POST 3 -->
+            <div class="trend-post">
+
+                <div class="post-user">
+
+                    <div class="user-icon">
+                        LC
+                    </div>
+
+                    <div>
+                        <strong>Lorenzo Chavez</strong>
+                        <small>Farm Helper • Yesterday</small>
+                    </div>
+
+                </div>
+
+                <span class="post-category">
+                    DISCUSSION
+                </span>
+
+                <h3>What growing media do you use?</h3>
+
+                <p>
+                    I'm currently using coco peat for my
+                    hydroponic plants. What growing media
+                    are you currently using?
+                </p>
+
+                <div class="post-actions">
+
+                    <button onclick="likePost(this)">
+                        ♡ Like <span>8</span>
+                    </button>
+
+                    <button onclick="toggleComments(this)">
+                        💬 Comment
+                    </button>
+
+                </div>
+
+                <div class="comments">
+
+                    <div class="comment-box">
+
+                        <input
+                            type="text"
+                            placeholder="Write a comment..."
+                        >
+
+                        <button onclick="addComment(this)">
+                            Post
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        function showPostForm() {
+
+            const form = document.getElementById("createPost");
+
+            if (form.style.display === "none") {
+                form.style.display = "block";
+            } else {
+                form.style.display = "none";
+            }
+
+        }
+
+
+        function likePost(button) {
+
+            const number = button.querySelector("span");
+
+            let likes = parseInt(number.innerText);
+
+            if (button.classList.contains("liked")) {
+
+                likes--;
+
+                button.classList.remove("liked");
+
+            } else {
+
+                likes++;
+
+                button.classList.add("liked");
+
+            }
+
+            number.innerText = likes;
+
+        }
+
+
+        function toggleComments(button) {
+
+            const post = button.closest(".trend-post");
+
+            const comments = post.querySelector(".comments");
+
+            comments.classList.toggle("show");
+
+        }
+
+
+        function addComment(button) {
+
+            const commentBox = button.parentElement;
+
+            const input = commentBox.querySelector("input");
+
+            if (input.value.trim() === "") {
+                return;
+            }
+
+            const newComment = document.createElement("p");
+
+            newComment.innerHTML =
+                "<strong>You:</strong> " + input.value;
+
+            commentBox.parentElement.insertBefore(
+                newComment,
+                commentBox
+            );
+
+            input.value = "";
+
+        }
+
+
+        function createPost() {
+
+            const title =
+                document.getElementById("postTitle").value;
+
+            const content =
+                document.getElementById("postContent").value;
+
+            if (title.trim() === "" || content.trim() === "") {
+
+                alert("Please complete your post.");
+
+                return;
+
+            }
+
+            alert("Post created successfully!");
+
+            document.getElementById("postTitle").value = "";
+
+            document.getElementById("postContent").value = "";
+
+            document.getElementById("createPost").style.display = "none";
+
+        }
+
+    function toggleSidebar() {
+        const sidebar = document.querySelector(".sidebar");
+        const content = document.querySelector(".content");
+
+        sidebar.classList.toggle("collapsed");
+        content.classList.toggle("expanded");   
+    }
+
+    </script>
+
+</body>
+</html>
