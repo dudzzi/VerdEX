@@ -1,0 +1,542 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f5f7f5;
+    color: #333;
+}
+
+
+/* SIDEBAR */
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+
+    width: 230px;
+    height: 100vh;
+
+    background: white;
+
+    padding: 25px 15px;
+
+    box-shadow: 2px 0 10px rgba(0,0,0,0.08);
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo img {
+    width: 130px;
+}
+
+.sidebar a {
+    display: block;
+
+    text-decoration: none;
+
+    color: #555;
+
+    padding: 13px 18px;
+
+    margin-bottom: 5px;
+
+    border-radius: 8px;
+
+    transition: 0.2s;
+}
+
+.sidebar a:hover {
+    background: #eef7ee;
+}
+
+.sidebar a.active {
+    background: #dff0df;
+    color: #287a35;
+    font-weight: bold;
+}
+
+.sidebar h4 {
+    margin: 25px 18px 10px;
+
+    color: #999;
+
+    font-size: 12px;
+
+    text-transform: uppercase;
+}
+
+
+/* CONTENT */
+
+.content {
+    margin-left: 230px;
+
+    padding: 35px 50px;
+
+    max-width: 1100px;
+}
+
+
+/* HEADER */
+
+.page-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 25px;
+}
+
+.page-header h1 {
+    font-size: 30px;
+
+    color: #256b30;
+}
+
+.page-header p {
+    margin-top: 5px;
+
+    color: #777;
+}
+
+.create-btn {
+    border: none;
+
+    background: #32863c;
+
+    color: white;
+
+    padding: 12px 20px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+}
+
+.create-btn:hover {
+    background: #276c30;
+}
+
+
+/* ANNOUNCEMENT */
+
+.announcement {
+    display: flex;
+
+    gap: 18px;
+
+    background: #edf7ed;
+
+    border-left: 5px solid #32863c;
+
+    padding: 20px;
+
+    border-radius: 10px;
+
+    margin-bottom: 20px;
+}
+
+.announcement-icon {
+    font-size: 30px;
+}
+
+.announcement-label {
+    font-size: 11px;
+
+    font-weight: bold;
+
+    color: #32863c;
+}
+
+.announcement h3 {
+    margin: 5px 0;
+
+    color: #285f2e;
+}
+
+.announcement p {
+    color: #555;
+
+    line-height: 1.5;
+}
+
+.announcement small {
+    display: block;
+
+    margin-top: 8px;
+
+    color: #888;
+}
+
+
+/* CREATE POST */
+
+.create-post-box {
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    background: white;
+
+    padding: 18px;
+
+    border-radius: 10px;
+
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+
+    margin-bottom: 25px;
+}
+
+.create-post-box button {
+    flex: 1;
+
+    text-align: left;
+
+    border: none;
+
+    background: #f1f3f1;
+
+    color: #888;
+
+    padding: 14px 18px;
+
+    border-radius: 25px;
+
+    cursor: pointer;
+}
+
+
+/* PROFILE */
+
+.profile-circle {
+    width: 45px;
+
+    height: 45px;
+
+    border-radius: 50%;
+
+    background: #d9efd9;
+
+    color: #287a35;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-weight: bold;
+
+    flex-shrink: 0;
+}
+
+
+/* TREND HEADER */
+
+.trend-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 15px;
+}
+
+.trend-header h2 {
+    color: #333;
+}
+
+.trend-header select {
+    padding: 8px 12px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 6px;
+}
+
+
+/* POSTS */
+
+.post {
+    background: white;
+
+    border-radius: 10px;
+
+    padding: 22px;
+
+    margin-bottom: 20px;
+
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.post-header {
+    display: flex;
+
+    gap: 12px;
+
+    align-items: center;
+}
+
+.post-header strong {
+    display: block;
+}
+
+.post-header span {
+    display: block;
+
+    color: #777;
+
+    font-size: 13px;
+
+    margin-top: 2px;
+}
+
+.post-header small {
+    color: #999;
+
+    font-size: 11px;
+}
+
+.post-content {
+    padding: 20px 0;
+}
+
+.post-content h3 {
+    margin: 8px 0;
+
+    color: #333;
+}
+
+.post-content p {
+    color: #555;
+
+    line-height: 1.6;
+}
+
+.post-category {
+    font-size: 10px;
+
+    background: #e2f2e3;
+
+    color: #287a35;
+
+    padding: 5px 8px;
+
+    border-radius: 5px;
+
+    font-weight: bold;
+}
+
+.post-category.news {
+    background: #e8eef9;
+
+    color: #315f9e;
+}
+
+.post-category.discussion {
+    background: #f7eee0;
+
+    color: #9a6b28;
+}
+
+
+/* ACTIONS */
+
+.post-actions {
+    display: flex;
+
+    gap: 20px;
+
+    border-top: 1px solid #eee;
+
+    padding-top: 12px;
+}
+
+.post-actions button {
+    border: none;
+
+    background: none;
+
+    cursor: pointer;
+
+    color: #666;
+
+    font-size: 14px;
+}
+
+.post-actions button:hover {
+    color: #287a35;
+}
+
+.like-btn.liked {
+    color: #e54848;
+}
+
+
+/* COMMENTS */
+
+.comments {
+    display: none;
+
+    margin-top: 15px;
+
+    border-top: 1px solid #eee;
+
+    padding-top: 15px;
+}
+
+.comments.show {
+    display: block;
+}
+
+.comment {
+    background: #f5f6f5;
+
+    padding: 10px;
+
+    border-radius: 8px;
+
+    margin-bottom: 10px;
+}
+
+.comment p {
+    margin-top: 4px;
+
+    color: #555;
+}
+
+.comment-input {
+    display: flex;
+
+    gap: 8px;
+
+    margin-top: 10px;
+}
+
+.comment-input input {
+    flex: 1;
+
+    padding: 10px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 6px;
+}
+
+.comment-input button {
+    border: none;
+
+    background: #32863c;
+
+    color: white;
+
+    padding: 10px 15px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+}
+
+
+/* MODAL */
+
+.modal {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,0.45);
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+
+    width: 500px;
+
+    padding: 25px;
+
+    border-radius: 12px;
+}
+
+.modal-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+.modal-header button {
+    border: none;
+
+    background: none;
+
+    font-size: 25px;
+
+    cursor: pointer;
+}
+
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+    width: 100%;
+
+    padding: 12px;
+
+    margin-bottom: 12px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 7px;
+}
+
+.modal-content textarea {
+    height: 150px;
+
+    resize: none;
+}
+
+.publish-btn {
+    width: 100%;
+
+    border: none;
+
+    background: #32863c;
+
+    color: white;
+
+    padding: 12px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+}
