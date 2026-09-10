@@ -1,874 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VerdEX</title>
-    <link rel="stylesheet" href="welcome.css"/>
-
-    <style>
-
-        /* Layout */
-
-        .inventory-container {
-            max-width: 1200px;
-        }
-
-        .inventory-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .inventory-header p {
-            color: #777;
-        }
-
-        .add-btn {
-            background: #4b8f45;
-            color: white;
-            border: none;
-            padding: 11px 18px;
-            border-radius: 7px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .add-btn:hover {
-            opacity: 0.9;
-        }
-
-        /* Controls */
-
-        .inventory-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 15px;
-        }
-
-        .category-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .category-btn {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 10px 18px;
-            border-radius: 7px;
-            cursor: pointer;
-        }
-
-        .category-btn.active {
-            background: #4b8f45;
-            color: white;
-            border-color: #4b8f45;
-        }
-
-        .sort-select {
-            padding: 10px 14px;
-            border: 1px solid #ddd;
-            border-radius: 7px;
-            background: white;
-            cursor: pointer;
-        }
-
-        /* Cards */
-
-        .inventory-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        .inventory-card {
-            background: white;
-            border-radius: 12px;
-            padding: 18px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            position: relative;
-        }
-
-        .item-image {
-            width: 100%;
-            height: 170px;
-            border-radius: 9px;
-            object-fit: cover;
-            background: #f2f4f2;
-        }
-
-        .item-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-        }
-
-        .item-top h3 {
-            margin: 0;
-        }
-
-        .category-label {
-            color: #777;
-            font-size: 13px;
-            margin-top: 5px;
-        }
-
-        /* Status */
-
-        .status {
-            padding: 5px 9px;
-            border-radius: 5px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .good {
-            background: #e8f4e6;
-            color: #4b8f45;
-        }
-
-        .low {
-            background: #fff3d6;
-            color: #a66a00;
-        }
-
-        .critical {
-            background: #fde8e8;
-            color: #c0392b;
-        }
-
-        /* Stock */
-
-        .stock-section {
-            margin-top: 18px;
-        }
-
-        .stock-title {
-            font-size: 13px;
-            color: #777;
-            margin-bottom: 8px;
-        }
-
-        .stock-control {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .stock-btn {
-            width: 32px;
-            height: 32px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 6px;
-            font-size: 19px;
-            cursor: pointer;
-        }
-
-        .stock-btn:hover {
-            background: #f2f5f2;
-        }
-
-        .stock-number {
-            min-width: 35px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        /* Details */
-
-        .item-details {
-            margin-top: 15px;
-            font-size: 12px;
-            color: #777;
-            line-height: 1.7;
-        }
-
-        /* Notes */
-
-        .note-area {
-            border-top: 1px solid #eee;
-            margin-top: 15px;
-            padding-top: 12px;
-        }
-
-        .note-btn {
-            border: none;
-            background: none;
-            color: #4b8f45;
-            cursor: pointer;
-            padding: 0;
-            font-size: 13px;
-        }
-
-        .note-text {
-            margin-top: 7px;
-            color: #666;
-            font-size: 12px;
-        }
-
-        /* Modal */
-
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.45);
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .modal-box {
-            background: white;
-            width: 420px;
-            max-width: 90%;
-            padding: 25px;
-            border-radius: 12px;
-        }
-
-        .modal-box h2 {
-            margin-top: 0;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 13px;
-            color: #555;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .modal-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .cancel-btn {
-            border: 1px solid #ddd;
-            background: white;
-            padding: 10px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .save-btn {
-            border: none;
-            background: #4b8f45;
-            color: white;
-            padding: 10px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        /* Responsive */
-
-        @media (max-width: 900px) {
-
-            .inventory-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-        }
-
-        @media (max-width: 600px) {
-
-            .inventory-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .inventory-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-
-            .inventory-controls {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .category-buttons {
-                flex-wrap: wrap;
-            }
-
-        }
-
-    </style>
+    <title>VerdEX - Inventory</title>
+    <link rel="stylesheet" href="welcome.css">
+    <link rel="stylesheet" href="inventory.css">
 </head>
 
 <body>
 
-    // Sidebar
+<div class="sidebar">
 
-    <div class="sidebar">
+    <div class="logo">
+        <img src="verdexlogo.png" alt="VerdEX Logo">
+    </div>
 
-        <button class="sidebar-toggle" onclick="toggleSidebar()">❮</button>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">‹</button>
 
-        <div class="logo">
-            <img src="verdexlogo.png" alt="VerdEX Logo">
+    <a href="home.html">Home</a>
+    <a href="inventory.html" class="active">Inventory</a>
+    <a href="notification.html">Notifications</a>
+    <a href="sales.html">Sales</a>
+    <a href="status.html">Status</a>
+    <a href="trends.html">Trends</a>
+    <a href="reports.html">Weekly Reports</a>
+
+    <h4>About Profile</h4>
+
+    <a href="profile.html">My Profile</a>
+    <a href="settings.html">Settings</a>
+    <a href="logout.html">Logout</a>
+
+</div>
+
+<main class="content">
+
+    <div class="inventory-header">
+
+        <div>
+            <h1>Farm Inventory</h1>
+            <p>Manage your hydroponic plants, fertilizers, and tools.</p>
         </div>
 
-        <a href="home.html">Home</a>
-        <a href="inventory.html" class="active">Inventory</a>
-        <a href="notification.html">Notifications</a>
-        <a href="sales.html">Sales</a>
-        <a href="status.html">Status</a>
-        <a href="trends.html">Trends</a>
-        <a href="reports.html">Weekly Reports</a>
-
-        <h4>About Profile</h4>
-
-        <a href="profile.html">My Profile</a>
-        <a href="settings.html">Settings</a>
-        <a href="logout.html">Logout</a>
+        <button class="add-button" onclick="openAddModal()">
+            + Add Item
+        </button>
 
     </div>
 
+    <div class="inventory-controls">
 
-    // Content
+        <div class="category-buttons">
 
-    <div class="content">
+            <button
+                class="category-button active"
+                onclick="showCategory('plant', this)">
+                Plants
+            </button>
 
-        <div class="inventory-container">
+            <button
+                class="category-button"
+                onclick="showCategory('fertilizer', this)">
+                Fertilizers
+            </button>
 
-            <div class="inventory-header">
+            <button
+                class="category-button"
+                onclick="showCategory('tool', this)">
+                Tools
+            </button>
 
-                <div>
-                    <h1>Farm Inventory</h1>
-                    <p>Manage your hydroponic plants, fertilizers, and tools.</p>
+        </div>
+
+        <select id="sortSelect" onchange="sortItems()">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="nameAsc">Name A-Z</option>
+            <option value="nameDesc">Name Z-A</option>
+            <option value="stockAsc">Stock Low-High</option>
+            <option value="stockDesc">Stock High-Low</option>
+        </select>
+
+    </div>
+
+    <div id="inventoryContainer" class="inventory-grid"></div>
+
+    <div id="emptyMessage" class="empty-message">
+        No inventory items yet.
+    </div>
+
+</main>
+
+<div id="addModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>Add Item</h2>
+            <button onclick="closeAddModal()">×</button>
+        </div>
+
+        <form id="addForm">
+
+            <label>Type</label>
+
+            <select
+                id="itemType"
+                name="item_type"
+                onchange="loadCatalogOptions()"
+                required>
+
+                <option value="plant">Hydroponic Plant</option>
+                <option value="fertilizer">Fertilizer</option>
+                <option value="tool">Tool</option>
+
+            </select>
+
+            <label id="itemLabel">Plant</label>
+
+            <select
+                id="catalogId"
+                name="catalog_id"
+                onchange="showSelectedInformation()"
+                required>
+
+                <option value="">Select an item</option>
+
+            </select>
+
+            <div id="autoInfo" class="auto-info">
+
+                <div class="auto-info-title">
+                    Recommendation
                 </div>
 
-                <button class="add-btn" onclick="openModal()">
-                    + Add Item
+                <div id="autoInfoContent">
+                    Select an item to view its recommendation.
+                </div>
+
+            </div>
+
+            <label>Picture</label>
+
+            <input
+                type="file"
+                name="image"
+                accept="image/png,image/jpeg,image/webp">
+
+            <label>Initial Stock</label>
+
+            <input
+                type="number"
+                name="stock"
+                min="0"
+                value="0"
+                required>
+
+            <label>Unit</label>
+
+            <input
+                type="text"
+                name="unit"
+                value="pcs"
+                maxlength="30"
+                placeholder="pcs">
+
+            <label>Notes</label>
+
+            <textarea
+                name="notes"
+                placeholder="Add notes..."></textarea>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="cancel-button"
+                    onclick="closeAddModal()">
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="save-button"
+                    id="addSubmitButton">
+                    Add Item
                 </button>
 
             </div>
 
-
-            // Controls
-
-            <div class="inventory-controls">
-
-                <div class="category-buttons">
-
-                    <button class="category-btn active"
-                            onclick="showCategory('all', this)">
-                        All
-                    </button>
-
-                    <button class="category-btn"
-                            onclick="showCategory('Crops', this)">
-                        Crops
-                    </button>
-
-                    <button class="category-btn"
-                            onclick="showCategory('Fertilizers', this)">
-                        Fertilizers
-                    </button>
-
-                    <button class="category-btn"
-                            onclick="showCategory('Tools', this)">
-                        Tools
-                    </button>
-
-                </div>
-
-                <select class="sort-select"
-                        id="sortSelect"
-                        onchange="sortItems()">
-
-                    <option value="default">Sort By</option>
-                    <option value="asc">Ascending</option>
-                    <option value="desc">Descending</option>
-
-                </select>
-
-            </div>
-
-
-            // Inventory
-
-            <div class="inventory-grid" id="inventoryGrid"></div>
-
-        </div>
+        </form>
 
     </div>
 
+</div>
 
-    // Modal
+<div id="infoModal" class="modal">
 
-    <div class="modal" id="itemModal">
+    <div class="modal-content">
 
-        <div class="modal-box">
+        <div class="modal-header">
 
-            <h2>Add New Item</h2>
+            <h2 id="infoTitle"></h2>
 
-            <form id="itemForm">
-
-                <div class="form-group">
-
-                    <label>Picture</label>
-
-                    <input type="file"
-                           id="itemImage"
-                           accept="image/*">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label>Name</label>
-
-                    <input type="text"
-                           id="itemName"
-                           required>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label>Category</label>
-
-                    <select id="itemCategory" required>
-
-                        <option value="Crops">Crops</option>
-                        <option value="Fertilizers">Fertilizers</option>
-                        <option value="Tools">Tools</option>
-
-                    </select>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label>Date Added</label>
-
-                    <input type="date"
-                           id="itemDate"
-                           required>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label>Initial Stock</label>
-
-                    <input type="number"
-                           id="itemStock"
-                           min="0"
-                           required>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label>Notes</label>
-
-                    <textarea id="itemNotes"></textarea>
-
-                </div>
-
-                <div class="modal-buttons">
-
-                    <button type="button"
-                            class="cancel-btn"
-                            onclick="closeModal()">
-                        Cancel
-                    </button>
-
-                    <button type="submit"
-                            class="save-btn">
-                        Add Item
-                    </button>
-
-                </div>
-
-            </form>
+            <button onclick="closeInfo()">×</button>
 
         </div>
 
+        <div id="infoContent"></div>
+
     </div>
 
+</div>
 
-    // Script
+<div id="notesModal" class="modal">
 
-    <script>
+    <div class="modal-content">
 
-        let currentCategory = "all";
+        <div class="modal-header">
 
-        let inventory = [];
+            <h2>Notes</h2>
 
+            <button onclick="closeNotes()">×</button>
 
-        // Display
+        </div>
 
-        function displayInventory() {
+        <textarea
+            id="notesInput"
+            class="notes-input"
+            placeholder="Write notes..."></textarea>
 
-            const grid =
-                document.getElementById("inventoryGrid");
+        <button
+            class="save-button"
+            onclick="saveNotes()">
+            Save
+        </button>
 
-            grid.innerHTML = "";
+    </div>
 
-            let items = [...inventory];
+</div>
 
-            if (currentCategory !== "all") {
-
-                items = items.filter(
-                    item => item.category === currentCategory
-                );
-
-            }
-
-            const sort =
-                document.getElementById("sortSelect").value;
-
-            if (sort === "asc") {
-
-                items.sort((a, b) =>
-                    a.name.localeCompare(b.name)
-                );
-
-            }
-
-            if (sort === "desc") {
-
-                items.sort((a, b) =>
-                    b.name.localeCompare(a.name)
-                );
-
-            }
-
-            items.forEach((item) => {
-
-                const index =
-                    inventory.indexOf(item);
-
-                let status = "Good";
-                let statusClass = "good";
-
-                if (item.stock <= 2) {
-
-                    status = "Critical";
-                    statusClass = "critical";
-
-                } else if (item.stock <= 5) {
-
-                    status = "Low";
-                    statusClass = "low";
-
-                }
-
-                const card =
-                    document.createElement("div");
-
-                card.className = "inventory-card";
-
-                card.innerHTML = `
-
-                    <img
-                        class="item-image"
-                        src="${item.image || 'verdexlogo.png'}"
-                        alt="${item.name}"
-                    >
-
-                    <div class="item-top">
-
-                        <div>
-
-                            <h3>${item.name}</h3>
-
-                            <div class="category-label">
-                                ${item.category}
-                            </div>
-
-                        </div>
-
-                        <span class="status ${statusClass}">
-                            ${status}
-                        </span>
-
-                    </div>
-
-
-                    <div class="stock-section">
-
-                        <div class="stock-title">
-                            Current Stock
-                        </div>
-
-                        <div class="stock-control">
-
-                            <button
-                                class="stock-btn"
-                                onclick="changeStock(${index}, -1)">
-                                −
-                            </button>
-
-                            <span class="stock-number">
-                                ${item.stock}
-                            </span>
-
-                            <button
-                                class="stock-btn"
-                                onclick="changeStock(${index}, 1)">
-                                +
-                            </button>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="item-details">
-
-                        <div>
-                            Date Added:
-                            ${item.dateAdded}
-                        </div>
-
-                        <div>
-                            Last Updated:
-                            ${item.lastUpdated}
-                        </div>
-
-                    </div>
-
-
-                    <div class="note-area">
-
-                        <button
-                            class="note-btn"
-                            onclick="editNote(${index})">
-                            ✎ ${item.note ? "Edit Note" : "Add Note"}
-                        </button>
-
-                        ${
-                            item.note
-                            ? `<div class="note-text">${item.note}</div>`
-                            : ""
-                        }
-
-                    </div>
-
-                `;
-
-                grid.appendChild(card);
-
-            });
-
-        }
-
-
-        // Stock
-
-        function changeStock(index, amount) {
-
-            if (
-                amount === -1 &&
-                inventory[index].stock <= 0
-            ) {
-                return;
-            }
-
-            inventory[index].stock += amount;
-
-            inventory[index].lastUpdated =
-                getDateTime();
-
-            displayInventory();
-
-        }
-
-
-        // Category
-
-        function showCategory(category, button) {
-
-            currentCategory = category;
-
-            document
-                .querySelectorAll(".category-btn")
-                .forEach(btn =>
-                    btn.classList.remove("active")
-                );
-
-            button.classList.add("active");
-
-            displayInventory();
-
-        }
-
-
-        // Sort
-
-        function sortItems() {
-
-            displayInventory();
-
-        }
-
-
-        // Modal
-
-        function openModal() {
-
-            document.getElementById("itemModal")
-                .style.display = "flex";
-
-            document.getElementById("itemDate").value =
-                new Date().toISOString().split("T")[0];
-
-        }
-
-
-        function closeModal() {
-
-            document.getElementById("itemModal")
-                .style.display = "none";
-
-            document.getElementById("itemForm").reset();
-
-        }
-
-
-        // Add
-
-        document
-            .getElementById("itemForm")
-            .addEventListener("submit", function(event) {
-
-                event.preventDefault();
-
-                const imageFile =
-                    document.getElementById("itemImage").files[0];
-
-                let image = "";
-
-                if (imageFile) {
-
-                    image =
-                        URL.createObjectURL(imageFile);
-
-                }
-
-                const item = {
-
-                    name:
-                        document.getElementById("itemName").value,
-
-                    category:
-                        document.getElementById("itemCategory").value,
-
-                    stock:
-                        Number(
-                            document.getElementById("itemStock").value
-                        ),
-
-                    dateAdded:
-                        document.getElementById("itemDate").value,
-
-                    lastUpdated:
-                        getDateTime(),
-
-                    image:
-                        image,
-
-                    note:
-                        document.getElementById("itemNotes").value
-
-                };
-
-                inventory.push(item);
-
-                displayInventory();
-
-                closeModal();
-
-            });
-
-
-        // Note
-
-        function editNote(index) {
-
-            const note =
-                prompt(
-                    "Enter note:",
-                    inventory[index].note || ""
-                );
-
-            if (note !== null) {
-
-                inventory[index].note = note;
-
-                inventory[index].lastUpdated =
-                    getDateTime();
-
-                displayInventory();
-
-            }
-
-        }
-
-
-        // Date
-
-        function getDateTime() {
-
-            const now = new Date();
-
-            return now.toLocaleDateString() +
-                " " +
-                now.toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit"
-                });
-
-        }
-
-
-        // Sidebar
-
-    function toggleSidebar() {
-    const sidebar = document.querySelector(".sidebar");
-    const content = document.querySelector(".content");
-
-    sidebar.classList.toggle("collapsed");
-    content.classList.toggle("expanded");
-}
-
-
-        // Start
-
-        displayInventory();
-        
-
-    </script>
+<script src="inventory.js"></script>
 
 </body>
 </html>
