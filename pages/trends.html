@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VerdEX - Trends</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="sidebar">
+
+        <div class="logo">
+            <img src="../images/verdexlogo.png" alt="VerdEX Logo">
+        </div>
+
+        <button class="sidebar-toggle" onclick="toggleSidebar()">‹</button>
+
+        <a href="home.php">Home</a>
+        <a href="inventory.html">Inventory</a>
+        <a href="calendar.html">Calendar</a>
+        <a href="sales.html">Sales</a>
+        <a href="status.html">Status</a>
+        <a href="trends.html" class="active">Forum</a>
+        <a href="reports.html">Weekly Reports</a>
+
+        <h4>About Profile</h4>
+
+        <a href="profile.html">My Profile</a>
+        <a href="settings.html">Settings</a>
+        <a href="logout.html">Logout</a>
+
+    </div>
+
+
+    <div class="content">
+
+        <div class="trends-content">
+
+            <div class="trends-header">
+
+                <div>
+                    <span class="eyebrow">Community</span>
+                    <h1>Trends</h1>
+                    <p>Stay updated with the latest hydroponic news and discussions.</p>
+                </div>
+
+                <button class="post-button btn-primary" onclick="showPostForm()">
+                    + Create Post
+                </button>
+
+            </div>
+
+
+            <div class="glass-panel announcement-box">
+
+                <div class="announcement-title">
+                    VerdEX Announcement
+                </div>
+
+                <h3>New Plant Calendar Feature</h3>
+
+                <p>
+                    A new Plant Calendar feature is now available.
+                    Users can now schedule planting, maintenance,
+                    nutrient replacement, and harvesting activities.
+                </p>
+
+            </div>
+
+
+            <div class="glass-panel create-post" id="createPost" style="display: none;">
+
+                <input
+                    type="text"
+                    id="postTitle"
+                    placeholder="Post title"
+                >
+
+                <textarea
+                    id="postContent"
+                    placeholder="Share something about hydroponics..."
+                ></textarea>
+
+                <div class="create-post-actions">
+
+                    <button class="post-button btn-primary" onclick="createPost()">
+                        Publish
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="trend-options">
+
+                <h2>Latest Trends</h2>
+
+                <select>
+                    <option>All Posts</option>
+                    <option>Hydroponic Tips</option>
+                    <option>News</option>
+                    <option>Discussion</option>
+                    <option>Announcements</option>
+                </select>
+
+            </div>
+
+
+            <div class="glass-panel trend-post">
+
+                <div class="post-user">
+
+                    <div class="user-icon">
+                        ZA
+                    </div>
+
+                    <div>
+                        <strong>Zandro Animos</strong>
+                        <small>Hydroponic Farmer • 2 hours ago</small>
+                    </div>
+
+                </div>
+
+                <span class="post-category">
+                    Hydroponic Tip
+                </span>
+
+                <h3>Maintaining Proper Water Levels</h3>
+
+                <p>
+                    Regularly checking the water level of your
+                    hydroponic system can help maintain healthy
+                    plant growth. Make sure the water level is
+                    within the recommended range.
+                </p>
+
+                <div class="post-actions">
+
+                    <button onclick="likePost(this)">
+                        ♡ Like <span>12</span>
+                    </button>
+
+                    <button onclick="toggleComments(this)">
+                        💬 Comment
+                    </button>
+
+                </div>
+
+                <div class="comments">
+
+                    <div class="comment-box">
+
+                        <input
+                            type="text"
+                            placeholder="Write a comment..."
+                        >
+
+                        <button onclick="addComment(this)">
+                            Post
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="glass-panel trend-post">
+
+                <div class="post-user">
+
+                    <div class="user-icon">
+                        SA
+                    </div>
+
+                    <div>
+                        <strong>Sam Aisele Austria</strong>
+                        <small>Farm Owner • 5 hours ago</small>
+                    </div>
+
+                </div>
+
+                <span class="post-category">
+                    News
+                </span>
+
+                <h3>Hydroponic Farming Update</h3>
+
+                <p>
+                    More farmers are starting to use automated
+                    monitoring systems to monitor important
+                    conditions such as temperature, humidity,
+                    moisture, and water levels.
+                </p>
+
+                <div class="post-actions">
+
+                    <button onclick="likePost(this)">
+                        ♡ Like <span>25</span>
+                    </button>
+
+                    <button onclick="toggleComments(this)">
+                        💬 Comment
+                    </button>
+
+                </div>
+
+                <div class="comments">
+
+                    <div class="comment-box">
+
+                        <input
+                            type="text"
+                            placeholder="Write a comment..."
+                        >
+
+                        <button onclick="addComment(this)">
+                            Post
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="glass-panel trend-post">
+
+                <div class="post-user">
+
+                    <div class="user-icon">
+                        LC
+                    </div>
+
+                    <div>
+                        <strong>Lorenzo Chavez</strong>
+                        <small>Farm Helper • Yesterday</small>
+                    </div>
+
+                </div>
+
+                <span class="post-category">
+                    Discussion
+                </span>
+
+                <h3>What growing media do you use?</h3>
+
+                <p>
+                    I'm currently using coco peat for my
+                    hydroponic plants. What growing media
+                    are you currently using?
+                </p>
+
+                <div class="post-actions">
+
+                    <button onclick="likePost(this)">
+                        ♡ Like <span>8</span>
+                    </button>
+
+                    <button onclick="toggleComments(this)">
+                        💬 Comment
+                    </button>
+
+                </div>
+
+                <div class="comments">
+
+                    <div class="comment-box">
+
+                        <input
+                            type="text"
+                            placeholder="Write a comment..."
+                        >
+
+                        <button onclick="addComment(this)">
+                            Post
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="../js/sidebar.js"></script>
+    <script>
+
+        function showPostForm() {
+
+            const form = document.getElementById("createPost");
+
+            if (form.style.display === "none") {
+                form.style.display = "block";
+            } else {
+                form.style.display = "none";
+            }
+
+        }
+
+
+        function likePost(button) {
+
+            const number = button.querySelector("span");
+
+            let likes = parseInt(number.innerText);
+
+            if (button.classList.contains("liked")) {
+
+                likes--;
+
+                button.classList.remove("liked");
+
+            } else {
+
+                likes++;
+
+                button.classList.add("liked");
+
+            }
+
+            number.innerText = likes;
+
+        }
+
+
+        function toggleComments(button) {
+
+            const post = button.closest(".trend-post");
+
+            const comments = post.querySelector(".comments");
+
+            comments.classList.toggle("show");
+
+        }
+
+
+        function addComment(button) {
+
+            const commentBox = button.parentElement;
+
+            const input = commentBox.querySelector("input");
+
+            if (input.value.trim() === "") {
+                return;
+            }
+
+            const newComment = document.createElement("p");
+
+            newComment.innerHTML =
+                "<strong>You:</strong> " + input.value;
+
+            commentBox.parentElement.insertBefore(
+                newComment,
+                commentBox
+            );
+
+            input.value = "";
+
+        }
+
+
+        function createPost() {
+
+            const title =
+                document.getElementById("postTitle").value;
+
+            const content =
+                document.getElementById("postContent").value;
+
+            if (title.trim() === "" || content.trim() === "") {
+
+                alert("Please complete your post.");
+
+                return;
+
+            }
+
+            alert("Post created successfully!");
+
+            document.getElementById("postTitle").value = "";
+
+            document.getElementById("postContent").value = "";
+
+            document.getElementById("createPost").style.display = "none";
+
+        }
+
+    </script>
+
+</body>
+</html>
