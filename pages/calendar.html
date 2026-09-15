@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VerdEX - Calendar</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/calendar.css">
+</head>
+
+<body>
+
+    <div class="sidebar">
+
+        <div class="logo">
+            <img src="../images/verdexlogo.png" alt="VerdEX Logo">
+        </div>
+
+        <button class="sidebar-toggle" onclick="toggleSidebar()">‹</button>
+
+        <a href="home.php">Home</a>
+        <a href="inventory.html">Inventory</a>
+        <a href="calendar.html" class="active">Calendar</a>
+        <a href="sales.html">Sales</a>
+        <a href="status.html">Status</a>
+        <a href="trends.html">Forum</a>
+        <a href="reports.html">Weekly Reports</a>
+
+        <h4>About Profile</h4>
+
+        <a href="profile.html">My Profile</a>
+        <a href="settings.html">Settings</a>
+        <a href="logout.html">Logout</a>
+
+    </div>
+
+
+    <div class="content">
+
+        <div class="page-header">
+            <div>
+                <h1>Farm Calendar</h1>
+                <p>Plan, record, and manage your farm activities.</p>
+            </div>
+
+            <button class="today-button" onclick="goToday()">Today</button>
+        </div>
+
+
+        <div class="calendar-wrapper">
+
+            <div class="calendar-header">
+
+                <button class="month-button" onclick="previousMonth()">‹</button>
+
+                <div class="month-title">
+                    <h2 id="monthYear"></h2>
+                </div>
+
+                <button class="month-button" onclick="nextMonth()">›</button>
+
+            </div>
+
+
+            <div class="calendar-weekdays">
+                <div>Sun</div>
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+            </div>
+
+
+            <div id="calendar" class="calendar-grid"></div>
+
+
+            <div class="calendar-legend">
+
+                <div>
+                    <span class="legend-dot activity-dot"></span>
+                    Farm Activity
+                </div>
+
+                <div>
+                    <span class="legend-dot reminder-dot"></span>
+                    Reminder
+                </div>
+
+                <div>
+                    <span class="legend-dot sales-dot"></span>
+                    Sales
+                </div>
+
+                <div>
+                    <span class="legend-dot stock-dot"></span>
+                    Stock
+                </div>
+
+                <div>
+                    <span class="legend-dot note-dot"></span>
+                    Note
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="upcoming-section">
+
+            <div class="section-title">
+                <div>
+                    <h2>Upcoming Reminders</h2>
+                    <p>Keep track of important farm tasks.</p>
+                </div>
+
+                <button class="add-main-button" onclick="openAddModal()">
+                    + Add Reminder
+                </button>
+            </div>
+
+            <div id="upcomingReminders" class="reminder-list"></div>
+
+        </div>
+
+    </div>
+
+
+    <div id="dateModal" class="modal">
+
+        <div class="modal-card date-card">
+
+            <button class="close-button" onclick="closeDateModal()">×</button>
+
+            <div class="date-modal-header">
+                <span id="selectedDateNumber"></span>
+
+                <div>
+                    <h2 id="selectedDateTitle"></h2>
+                    <p id="selectedDateSubtitle"></p>
+                </div>
+            </div>
+
+
+            <div id="dateEvents" class="date-events"></div>
+
+
+            <div class="date-actions">
+
+                <button onclick="openAddModal('activity')">
+                    + Activity
+                </button>
+
+                <button onclick="openAddModal('reminder')">
+                    🔔 Reminder
+                </button>
+
+                <button onclick="openAddModal('note')">
+                    📝 Note
+                </button>
+
+                <button onclick="openAddModal('sales')">
+                    ₱ Sales
+                </button>
+
+                <button onclick="openAddModal('stock')">
+                    📦 Stock
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div id="addModal" class="modal">
+
+        <div class="modal-card">
+
+            <button class="close-button" onclick="closeAddModal()">×</button>
+
+            <h2 id="modalTitle">Add Calendar Record</h2>
+
+            <p class="modal-description">
+                Add an activity, reminder, note, sales record, or stock update.
+            </p>
+
+
+            <form id="calendarForm">
+
+                <div class="form-group">
+
+                    <label for="eventType">Record Type</label>
+
+                    <select id="eventType" required>
+
+                        <option value="activity">Farm Activity</option>
+                        <option value="reminder">Reminder</option>
+                        <option value="note">Note</option>
+                        <option value="sales">Sales</option>
+                        <option value="stock">Stock</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="eventTitle">Title</label>
+
+                    <input
+                        type="text"
+                        id="eventTitle"
+                        placeholder="Example: Harvest Lettuce"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="eventDate">Date</label>
+
+                        <input
+                            type="date"
+                            id="eventDate"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group" id="timeGroup">
+
+                        <label for="eventTime">Time</label>
+
+                        <input
+                            type="time"
+                            id="eventTime"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group" id="amountGroup">
+
+                    <label for="eventAmount">Amount / Quantity</label>
+
+                    <input
+                        type="number"
+                        id="eventAmount"
+                        placeholder="Optional"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="eventDescription">Notes / Description</label>
+
+                    <textarea
+                        id="eventDescription"
+                        rows="4"
+                        placeholder="Add details about this record..."
+                    ></textarea>
+
+                </div>
+
+
+                <div class="reminder-option" id="notificationOption">
+
+                    <label class="checkbox-label">
+
+                        <input
+                            type="checkbox"
+                            id="enableNotification"
+                        >
+
+                        <span>
+                            Create notification reminder
+                        </span>
+
+                    </label>
+
+                    <small>
+                        This will appear in the Upcoming Reminders section.
+                    </small>
+
+                </div>
+
+
+                <div class="form-buttons">
+
+                    <button
+                        type="button"
+                        class="cancel-button"
+                        onclick="closeAddModal()"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="save-button"
+                    >
+                        Save Record
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <div id="notificationToast" class="notification-toast">
+
+        <div class="toast-icon">🔔</div>
+
+        <div>
+            <strong id="toastTitle">Reminder</strong>
+            <p id="toastMessage"></p>
+        </div>
+
+        <button onclick="hideToast()">×</button>
+
+    </div>
+
+
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/calendar.js"></script>
+
+</body>
+</html>
