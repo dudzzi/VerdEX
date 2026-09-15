@@ -81,7 +81,7 @@ async function loadCatalog() {
     try {
 
         const data = await requestJSON(
-            "api/inventory.php?action=catalog"
+            "/VerdEX/api/inventory.php?action=catalog"
         );
 
         catalog = data.catalog || {
@@ -110,7 +110,7 @@ async function loadInventory() {
     try {
 
         const data = await requestJSON(
-            "api/inventory.php?action=get"
+            "/VerdEX/api/inventory.php?action=get"
         );
 
         inventory = Array.isArray(data.items)
@@ -522,7 +522,7 @@ document
 
             const data =
                 await requestJSON(
-                    "api/inventory.php",
+                    "/VerdEX/api/inventory.php",
                     {
                         method: "POST",
                         body: formData
@@ -587,7 +587,7 @@ async function changeStock(id, change) {
     try {
 
         await requestJSON(
-            "api/inventory.php",
+            "/VerdEX/api/inventory.php",
             {
                 method: "POST",
                 body: formData
@@ -945,7 +945,7 @@ async function saveNotes() {
     try {
 
         await requestJSON(
-            "api/inventory.php",
+            "/VerdEX/api/inventory.php",
             {
                 method: "POST",
                 body: formData
