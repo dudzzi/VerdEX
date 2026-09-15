@@ -6,176 +6,19 @@
 
     <title>VerdEX - Weekly Reports</title>
 
-    <link rel="stylesheet" href="../css/welcome.css"/>
+    <link rel="stylesheet" href="../css/style.css">
 
-    <style>
-
-        /* WEEKLY REPORTS PAGE ONLY */
-
-        .reports-dashboard {
-            max-width: 1200px;
-        }
-
-        .reports-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .reports-header h1 {
-            margin-bottom: 5px;
-        }
-
-        .reports-header p {
-            color: #777;
-        }
-
-        .week-selector {
-            padding: 10px 14px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            background: white;
-            cursor: pointer;
-        }
-
-        /* SUMMARY CARDS */
-
-        .report-cards {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-            margin-bottom: 25px;
-        }
-
-        .report-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .report-card p {
-            margin: 0 0 8px;
-            color: #777;
-            font-size: 14px;
-        }
-
-        .report-card h2 {
-            margin: 0;
-            color: #333;
-        }
-
-        /* REPORT GRID */
-
-        .report-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .report-box {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .report-box h3 {
-            margin-top: 0;
-            margin-bottom: 20px;
-        }
-
-        /* EMPTY CHART AREA */
-
-        .chart-placeholder {
-            height: 240px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        /* TABLE */
-
-        .table-box {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            margin-bottom: 25px;
-            overflow-x: auto;
-        }
-
-        .table-box h3 {
-            margin-top: 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th {
-            text-align: left;
-            padding: 12px;
-            background: #f5f7f5;
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-        }
-
-        /* BOTTOM GRID */
-
-        .bottom-report-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        /* RESPONSIVE */
-
-        @media (max-width: 900px) {
-
-            .report-cards {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .report-grid,
-            .bottom-report-grid {
-                grid-template-columns: 1fr;
-            }
-
-        }
-
-        @media (max-width: 600px) {
-
-            .report-cards {
-                grid-template-columns: 1fr;
-            }
-
-            .reports-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-
-        }
-
-    </style>
 </head>
 
 <body>
 
-    <!-- SIDEBAR -->
     <div class="sidebar">
-
-        <button class="sidebar-toggle" onclick="toggleSidebar()">❮</button>
 
         <div class="logo">
             <img src="../images/verdexlogo.png" alt="VerdEX Logo">
         </div>
+
+        <button class="sidebar-toggle" onclick="toggleSidebar()">‹</button>
 
         <a href="home.html">Home</a>
         <a href="inventory.html">Inventory</a>
@@ -194,15 +37,14 @@
     </div>
 
 
-    <!-- MAIN CONTENT -->
     <div class="content">
 
         <div class="reports-dashboard">
 
-            <!-- HEADER -->
             <div class="reports-header">
 
                 <div>
+                    <span class="eyebrow">Analytics</span>
                     <h1>Weekly Reports</h1>
                     <p>View and review your weekly farm reports.</p>
                 </div>
@@ -214,25 +56,24 @@
             </div>
 
 
-            <!-- SUMMARY CARDS -->
             <div class="report-cards">
 
-                <div class="report-card">
+                <div class="glass-panel report-card">
                     <p>Total Sales</p>
                     <h2></h2>
                 </div>
 
-                <div class="report-card">
+                <div class="glass-panel report-card">
                     <p>Plants in Inventory</p>
                     <h2></h2>
                 </div>
 
-                <div class="report-card">
+                <div class="glass-panel report-card">
                     <p>Seeds in Stock</p>
                     <h2></h2>
                 </div>
 
-                <div class="report-card">
+                <div class="glass-panel report-card">
                     <p>Low Stock Items</p>
                     <h2></h2>
                 </div>
@@ -240,11 +81,9 @@
             </div>
 
 
-            <!-- SALES AND INVENTORY -->
             <div class="report-grid">
 
-                <!-- SALES CHART -->
-                <div class="report-box">
+                <div class="glass-panel report-box">
 
                     <h3>Weekly Sales Overview</h3>
 
@@ -255,8 +94,7 @@
                 </div>
 
 
-                <!-- INVENTORY SUMMARY -->
-                <div class="report-box">
+                <div class="glass-panel report-box">
 
                     <h3>Inventory Summary</h3>
 
@@ -267,73 +105,3 @@
                 </div>
 
             </div>
-
-
-            <!-- PLANT AND STOCK REPORT -->
-            <div class="table-box">
-
-                <h3>Plant and Stock Report</h3>
-
-                <table>
-
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>Category</th>
-                            <th>Current Stock</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <!-- Report data will appear here -->
-                    </tbody>
-
-                </table>
-
-            </div>
-
-
-            <!-- BOTTOM REPORTS -->
-            <div class="bottom-report-grid">
-
-                <!-- FARM STATUS -->
-                <div class="report-box">
-
-                    <h3>Hydroponic Farm Status</h3>
-
-                    <div class="status-placeholder">
-                        <!-- Farm status data will appear here -->
-                    </div>
-
-                </div>
-
-
-                <!-- WEEKLY ACTIVITIES -->
-                <div class="report-box">
-
-                    <h3>Weekly Activities</h3>
-
-                    <div class="activities-placeholder">
-                        <!-- Weekly activities will appear here -->
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-    <script>
-function toggleSidebar() {
-    const sidebar = document.querySelector(".sidebar");
-    const content = document.querySelector(".content");
-
-    sidebar.classList.toggle("collapsed");
-    content.classList.toggle("expanded");
-}
-</script>
-
-</body>
-</html>

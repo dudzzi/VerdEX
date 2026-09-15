@@ -3,60 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VerdEX</title>
-    <link rel="stylesheet" href="../css/welcome.css"/>
-    <style>
-
-        
-        .sales-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        .sales-table th, .sales-table td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        .sales-table th {
-            background-color: #2e7d32;
-            color: white;
-        }
-        .sales-table tr:nth-child(odd) {
-            background-color: #f2f2f2;
-        }
-    </style>
+    <title>VerdEX - Sales</title>
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-        <div class="sidebar"> 
 
-       <div class="logo">
+    <div class="sidebar">
+
+        <div class="logo">
             <img src="../images/verdexlogo.png" alt="VerdEX Logo">
-       </div>
+        </div>
+
+        <button class="sidebar-toggle" onclick="toggleSidebar()">‹</button>
 
         <a href="home.html">Home</a>
         <a href="inventory.html">Inventory</a>
         <a href="notification.html">Notifications</a>
-        <a href="sales.html" class="active">Sales</a> 
+        <a href="sales.html" class="active">Sales</a>
         <a href="status.html">Status</a>
         <a href="trends.html">Trends</a>
         <a href="reports.html">Weekly Reports</a>
-        
+
         <h4>About Profile</h4>
         <a href="profile.html">My Profile</a>
         <a href="settings.html">Settings</a>
         <a href="logout.html">Logout</a>
     </div>
 
-   
     <div class="content">
-        <h1>Sales Monitor</h1>
-        <p>pgmonitor ng benta sa hydroponics</p>
 
-        <div class="box">
-            <h3>Recent Transactions</h3>
-            <p>listng mga nabenta sa ano:</p>
-            
+        <div class="page-heading">
+            <span class="eyebrow">Revenue</span>
+            <h1>Sales Monitor</h1>
+            <p class="page-heading-sub">Track revenue and recent transactions from your hydroponic farm.</p>
+        </div>
+
+        <div class="glass-panel info-panel">
+            <span class="panel-label">Recent Transactions</span>
+
             <table class="sales-table">
                 <thead>
                     <tr>
@@ -69,7 +53,7 @@
                 <tbody>
                     <tr>
                         <td>2026-03-01</td>
-                        <td>mais</td>
+                        <td>Mais</td>
                         <td>120 kg</td>
                         <td>₱6,000.00</td>
                     </tr>
@@ -77,12 +61,3 @@
                         <td>2026-03-03</td>
                         <td>Bigas</td>
                         <td>500 kg</td>
-                        <td>₱25,000.00</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div> 
-
-</body>
-</html>

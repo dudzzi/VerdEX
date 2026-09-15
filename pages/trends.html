@@ -4,249 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VerdEX - Trends</title>
-    <link rel="stylesheet" href="../css/welcome.css">
-
-    <style>
-        /* Trends Page Only */
-        .trends-content {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .trends-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .trends-header h1 {
-            margin: 0;
-        }
-
-        .trends-header p {
-            margin-top: 5px;
-            color: #777;
-        }
-
-        .post-button {
-            background: #4b8f45;
-            color: white;
-            border: none;
-            padding: 11px 18px;
-            border-radius: 7px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .post-button:hover {
-            background: #3d7839;
-        }
-
-        /* Announcement */
-
-        .announcement-box {
-            background: white;
-            border-left: 5px solid #4b8f45;
-            padding: 18px 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 7px rgba(0,0,0,0.08);
-        }
-
-        .announcement-title {
-            font-weight: bold;
-            color: #4b8f45;
-            font-size: 13px;
-            margin-bottom: 7px;
-        }
-
-        .announcement-box h3 {
-            margin: 0 0 7px 0;
-        }
-
-        .announcement-box p {
-            margin: 0;
-            color: #666;
-            line-height: 1.5;
-        }
-
-        /* Create Post */
-
-        .create-post {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 7px rgba(0,0,0,0.08);
-            margin-bottom: 25px;
-        }
-
-        .create-post input,
-        .create-post textarea {
-            width: 100%;
-            padding: 11px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-
-        .create-post textarea {
-            height: 80px;
-            resize: none;
-        }
-
-        .create-post-actions {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        /* Filter */
-
-        .trend-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .trend-options h2 {
-            margin: 0;
-        }
-
-        .trend-options select {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            background: white;
-        }
-
-        /* Post */
-
-        .trend-post {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 18px;
-            box-shadow: 0 2px 7px rgba(0,0,0,0.08);
-        }
-
-        .post-user {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-
-        .user-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: #e5f0e3;
-            color: #4b8f45;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .post-user strong {
-            display: block;
-        }
-
-        .post-user small {
-            color: #888;
-        }
-
-        .post-category {
-            display: inline-block;
-            font-size: 11px;
-            font-weight: bold;
-            color: #4b8f45;
-            background: #edf5ec;
-            padding: 4px 8px;
-            border-radius: 4px;
-            margin-bottom: 8px;
-        }
-
-        .trend-post h3 {
-            margin: 5px 0 8px;
-        }
-
-        .trend-post p {
-            color: #555;
-            line-height: 1.5;
-        }
-
-        /* Post Buttons */
-
-        .post-actions {
-            display: flex;
-            gap: 20px;
-            border-top: 1px solid #eee;
-            padding-top: 12px;
-            margin-top: 15px;
-        }
-
-        .post-actions button {
-            border: none;
-            background: none;
-            cursor: pointer;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .post-actions button:hover {
-            color: #4b8f45;
-        }
-
-        /* Comments */
-
-        .comments {
-            display: none;
-            margin-top: 15px;
-            padding-top: 12px;
-            border-top: 1px solid #eee;
-        }
-
-        .comments.show {
-            display: block;
-        }
-
-        .comment-box {
-            display: flex;
-            gap: 8px;
-        }
-
-        .comment-box input {
-            flex: 1;
-            padding: 9px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        .comment-box button {
-            background: #4b8f45;
-            color: white;
-            border: none;
-            padding: 9px 14px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 
 <body>
 
-    <!-- YOUR ORIGINAL SIDEBAR -->
     <div class="sidebar">
-
-        <button class="sidebar-toggle" onclick="toggleSidebar()">❮</button>
 
         <div class="logo">
             <img src="../images/verdexlogo.png" alt="VerdEX Logo">
         </div>
+
+        <button class="sidebar-toggle" onclick="toggleSidebar()">‹</button>
 
         <a href="home.html">Home</a>
         <a href="inventory.html">Inventory</a>
@@ -265,31 +34,29 @@
     </div>
 
 
-    <!-- CONTENT -->
     <div class="content">
 
         <div class="trends-content">
 
-            <!-- HEADER -->
             <div class="trends-header">
 
                 <div>
+                    <span class="eyebrow">Community</span>
                     <h1>Trends</h1>
                     <p>Stay updated with the latest hydroponic news and discussions.</p>
                 </div>
 
-                <button class="post-button" onclick="showPostForm()">
+                <button class="post-button btn-primary" onclick="showPostForm()">
                     + Create Post
                 </button>
 
             </div>
 
 
-            <!-- ANNOUNCEMENT -->
-            <div class="announcement-box">
+            <div class="glass-panel announcement-box">
 
                 <div class="announcement-title">
-                    VERDEX ANNOUNCEMENT
+                    VerdEX Announcement
                 </div>
 
                 <h3>New Plant Calendar Feature</h3>
@@ -303,8 +70,7 @@
             </div>
 
 
-            <!-- CREATE POST -->
-            <div class="create-post" id="createPost" style="display: none;">
+            <div class="glass-panel create-post" id="createPost" style="display: none;">
 
                 <input
                     type="text"
@@ -319,7 +85,7 @@
 
                 <div class="create-post-actions">
 
-                    <button class="post-button" onclick="createPost()">
+                    <button class="post-button btn-primary" onclick="createPost()">
                         Publish
                     </button>
 
@@ -328,7 +94,6 @@
             </div>
 
 
-            <!-- TREND OPTIONS -->
             <div class="trend-options">
 
                 <h2>Latest Trends</h2>
@@ -344,8 +109,7 @@
             </div>
 
 
-            <!-- POST 1 -->
-            <div class="trend-post">
+            <div class="glass-panel trend-post">
 
                 <div class="post-user">
 
@@ -361,7 +125,7 @@
                 </div>
 
                 <span class="post-category">
-                    HYDROPONIC TIP
+                    Hydroponic Tip
                 </span>
 
                 <h3>Maintaining Proper Water Levels</h3>
@@ -405,8 +169,7 @@
             </div>
 
 
-            <!-- POST 2 -->
-            <div class="trend-post">
+            <div class="glass-panel trend-post">
 
                 <div class="post-user">
 
@@ -422,7 +185,7 @@
                 </div>
 
                 <span class="post-category">
-                    NEWS
+                    News
                 </span>
 
                 <h3>Hydroponic Farming Update</h3>
@@ -466,8 +229,7 @@
             </div>
 
 
-            <!-- POST 3 -->
-            <div class="trend-post">
+            <div class="glass-panel trend-post">
 
                 <div class="post-user">
 
@@ -483,7 +245,7 @@
                 </div>
 
                 <span class="post-category">
-                    DISCUSSION
+                    Discussion
                 </span>
 
                 <h3>What growing media do you use?</h3>
@@ -530,6 +292,7 @@
     </div>
 
 
+    <script src="../js/sidebar.js"></script>
     <script>
 
         function showPostForm() {
@@ -631,14 +394,6 @@
             document.getElementById("createPost").style.display = "none";
 
         }
-
-    function toggleSidebar() {
-        const sidebar = document.querySelector(".sidebar");
-        const content = document.querySelector(".content");
-
-        sidebar.classList.toggle("collapsed");
-        content.classList.toggle("expanded");   
-    }
 
     </script>
 

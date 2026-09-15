@@ -1180,13 +1180,6 @@ function formatDate(date) {
     );
 }
 
-function toggleSidebar() {
-
-    document
-        .querySelector(".sidebar")
-        .classList.toggle("collapsed");
-}
-
 function escapeHTML(value) {
 
     return String(value ?? "")
