@@ -26,7 +26,7 @@ $role = $_SESSION['role'] ?? 'Team Member';
         <button class="sidebar-toggle" onclick="toggleSidebar()">‹</button>
 
         <a href="home.php" class="active">Home</a>
-        <a href="inventory.html">Inventory</a>
+        <a href="inventory.php">Inventory</a>
         <a href="calendar.html">Calendar</a>
         <a href="sales.html">Sales</a>
         <a href="status.html">Status</a>
