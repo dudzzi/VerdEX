@@ -1,16 +1,11 @@
 <?php
 
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "VerdEX";
+$host = "sql105.infinityfree.com";
+$username = "if0_42959299";
+$password = "VerdEX14JDSL";
+$database = "if0_42959299_verdex";
 
-$conn = new mysqli(
-    $host,
-    $username,
-    $password,
-    $database
-);
+$conn = new mysqli($host, $username, $password, $database);
 
 if ($conn->connect_error) {
     die("Database connection failed: " . $conn->connect_error);
