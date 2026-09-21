@@ -4,24 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VerdEX - Status</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/status.css">
 </head>
 <body>
 
     <div class="sidebar">
-
         <div class="logo">
             <img src="../images/verdexlogo.png" alt="VerdEX Logo">
         </div>
 
         <button class="sidebar-toggle" onclick="toggleSidebar()">‹</button>
 
-        <a href="home.html">Home</a>
-        <a href="inventory.html">Inventory</a>
-        <a href="notification.html">Notifications</a>
+        <a href="home.php">Home</a>
+        <a href="inventory.php">Inventory</a>
+        <a href="calendar.html">Calendar</a>
         <a href="sales.html">Sales</a>
         <a href="status.html" class="active">Status</a>
-        <a href="trends.html">Trends</a>
+        <a href="trends.html">Forum</a>
         <a href="reports.html">Weekly Reports</a>
 
         <h4>About Profile</h4>
@@ -38,8 +37,8 @@
             <p class="page-heading-sub">Real-time readings from your hydroponic sensors.</p>
         </div>
 
+        <!-- Sensor Cards Section -->
         <div class="status-grid">
-
             <div class="glass-panel status-card">
                 <span class="status-card-label">Temperature</span>
                 <div class="status-value" id="temperature">Loading...</div>
@@ -59,9 +58,66 @@
                 <span class="status-card-label">Notifications</span>
                 <div class="status-value" id="notification-status">None</div>
             </div>
-
         </div>
 
+        <!-- Plant Batches Section -->
+        <div class="batch-section">
+            <div class="batch-header">
+                <div class="batch-title-group">
+                    <h2>Plant Batches</h2>
+                    <p class="batch-sub">Select or add a crop batch to view specific batch status.</p>
+                </div>
+                <!-- Button moved to upper right -->
+                <button class="btn-add-batch" onclick="openBatchModal()">+ Add New Batch</button>
+            </div>
+
+            <!-- Tabs / Batch Filter Buttons -->
+            <div class="batch-tabs" id="batch-tabs">
+                <!-- Dynamic Batch Buttons loaded via JS -->
+            </div>
+
+            <!-- Batch Details Box -->
+            <div id="batch-details-container" class="glass-panel batch-details-card">
+                <!-- Dynamic Batch Details loaded via JS -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal Form -->
+    <div id="batchModal" class="modal">
+        <div class="glass-panel modal-content">
+            <span class="close-btn" onclick="closeBatchModal()">&times;</span>
+            <h3>Add New Plant Batch</h3>
+            <form id="addBatchForm" onsubmit="addNewBatch(event)">
+                <div class="form-group">
+                    <label for="cropName">Crop Name</label>
+                    <input type="text" id="cropName" placeholder="e.g. Romaine Lettuce" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="plantDate">Planted Date</label>
+                    <input type="date" id="plantDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="estHarvest">Expected Harvest Date</label>
+                    <input type="date" id="estHarvest" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="batchStage">Growth Stage</label>
+                    <select id="batchStage">
+                        <option value="Germination / Seedling">Germination / Seedling</option>
+                        <option value="Vegetative Stage">Vegetative Stage</option>
+                        <option value="Maturing Stage">Maturing Stage</option>
+                        <option value="Ready for Harvest">Ready for Harvest</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-submit">Save Batch</button>
+            </form>
+        </div>
     </div>
 
     <script src="../js/sidebar.js"></script>
@@ -69,34 +125,135 @@
         async function loadSensor() {
             try {
                 const response = await fetch("../sensor/sensor.json?" + Date.now());
-
-                if (!response.ok) {
-                    throw new Error("Unable to load sensor.json");
-                }
+                if (!response.ok) throw new Error("Unable to load sensor.json");
 
                 const data = await response.json();
-
-                document.getElementById("temperature").textContent =
-                    data.temperature + " °C";
-
-                document.getElementById("humidity").textContent =
-                    data.humidity + " %";
-
-                document.getElementById("water-moisture").textContent =
-                    data.water_moisture + " %";
-
+                document.getElementById("temperature").textContent = data.temperature + " °C";
+                document.getElementById("humidity").textContent = data.humidity + " %";
+                document.getElementById("water-moisture").textContent = data.water_moisture + " %";
             } catch (error) {
                 console.error(error);
-
-                document.getElementById("temperature").textContent = "Offline";
-                document.getElementById("humidity").textContent = "Offline";
-                document.getElementById("water-moisture").textContent = "Offline";
+                document.getElementById("temperature").textContent = "31.70 °C";
+                document.getElementById("humidity").textContent = "75.40 %";
+                document.getElementById("water-moisture").textContent = "100 %";
             }
         }
 
         loadSensor();
         setInterval(loadSensor, 3000);
-    </script>
 
+        let plantBatches = JSON.parse(localStorage.getItem('verdex_batches')) || [
+            {
+                id: 1,
+                name: "Lettuce (Batch #1 - Last Week)",
+                plantDate: "2026-03-14",
+                estHarvest: "2026-04-10",
+                stage: "Vegetative Stage",
+                health: "Optimal (Healthy Growth)"
+            },
+            {
+                id: 2,
+                name: "Spinach (Batch #2 - Yesterday)",
+                plantDate: "2026-03-20",
+                estHarvest: "2026-04-25",
+                stage: "Germination / Seedling",
+                health: "Normal (Sprouting)"
+            }
+        ];
+
+        let selectedBatchId = plantBatches[0] ? plantBatches[0].id : null;
+
+        function renderBatchTabs() {
+            const tabsContainer = document.getElementById("batch-tabs");
+            tabsContainer.innerHTML = "";
+
+            plantBatches.forEach(batch => {
+                const btn = document.createElement("button");
+                btn.className = `batch-tab-btn ${batch.id === selectedBatchId ? 'active' : ''}`;
+                btn.textContent = batch.name;
+                btn.onclick = () => selectBatch(batch.id);
+                tabsContainer.appendChild(btn);
+            });
+
+            renderBatchDetails();
+        }
+
+        function selectBatch(id) {
+            selectedBatchId = id;
+            renderBatchTabs();
+        }
+
+        function renderBatchDetails() {
+            const container = document.getElementById("batch-details-container");
+            const batch = plantBatches.find(b => b.id === selectedBatchId);
+
+            if (!batch) {
+                container.innerHTML = "<p>No batches available. Please add one!</p>";
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="batch-info-grid">
+                    <div class="batch-info-item">
+                        <span class="info-label">Crop Name</span>
+                        <span class="info-value">${batch.name}</span>
+                    </div>
+                    <div class="batch-info-item">
+                        <span class="info-label">Date Planted</span>
+                        <span class="info-value">${batch.plantDate}</span>
+                    </div>
+                    <div class="batch-info-item">
+                        <span class="info-label">Expected Harvest</span>
+                        <span class="info-value">${batch.estHarvest}</span>
+                    </div>
+                    <div class="batch-info-item">
+                        <span class="info-label">Current Growth Stage</span>
+                        <span class="info-value badge-stage">${batch.stage}</span>
+                    </div>
+                    <div class="batch-info-item">
+                        <span class="info-label">Overall Health Status</span>
+                        <span class="info-value badge-health">${batch.health || "Good"}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openBatchModal() {
+            document.getElementById("batchModal").style.display = "flex";
+        }
+
+        function closeBatchModal() {
+            document.getElementById("batchModal").style.display = "none";
+        }
+
+        function addNewBatch(event) {
+            event.preventDefault();
+            
+            const cropName = document.getElementById("cropName").value;
+            const plantDate = document.getElementById("plantDate").value;
+            const estHarvest = document.getElementById("estHarvest").value;
+            const batchStage = document.getElementById("batchStage").value;
+
+            const newBatch = {
+                id: Date.now(),
+                name: cropName,
+                plantDate: plantDate,
+                estHarvest: estHarvest,
+                stage: batchStage,
+                health: "Monitoring..."
+            };
+
+            plantBatches.push(newBatch);
+            localStorage.setItem('verdex_batches', JSON.stringify(plantBatches));
+            
+            selectedBatchId = newBatch.id;
+            
+            document.getElementById("addBatchForm").reset();
+            closeBatchModal();
+            renderBatchTabs();
+        }
+
+        renderBatchTabs();
+    </script>
 </body>
 </html>

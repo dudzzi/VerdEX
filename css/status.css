@@ -1,0 +1,357 @@
+/* ==========================================================================
+   VERDEX STATUS PAGE STYLES (GLASSMORPHISM & FIXED LAYOUT)
+   ========================================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    display: flex;
+    background: #0d140e url('../images/site-bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+/* Sidebar Navigation */
+.sidebar {
+    width: 240px;
+    background: rgba(15, 23, 16, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    position: fixed;
+    height: 100vh;
+    z-index: 100;
+}
+
+.sidebar .logo img {
+    max-width: 120px;
+    margin-bottom: 10px;
+}
+
+.sidebar a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.sidebar a:hover, 
+.sidebar a.active {
+    background: rgba(46, 125, 50, 0.4);
+    color: #ffffff;
+    border-left: 4px solid #4caf50;
+}
+
+.sidebar h4 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+    margin-top: 20px;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+}
+
+.sidebar-toggle {
+    position: absolute;
+    right: -12px;
+    top: 25px;
+    background: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+/* Main Content Container */
+.content {
+    margin-left: 240px;
+    padding: 40px;
+    width: calc(100% - 240px);
+}
+
+.page-heading {
+    margin-bottom: 25px;
+}
+
+.eyebrow {
+    background: rgba(46, 125, 50, 0.3);
+    color: #81c784;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.page-heading h1 {
+    font-size: 2rem;
+    margin: 10px 0 5px 0;
+}
+
+.page-heading-sub {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+}
+
+/* Glassmorphism Reusable Panel */
+.glass-panel {
+    background: rgba(20, 35, 22, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Sensor Status Cards Grid */
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 35px;
+}
+
+.status-card {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.status-card-label {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.status-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.status-card-warning {
+    border-left: 4px solid #ffb74d;
+}
+
+/* ==========================================================================
+   PLANT BATCHES SECTION & UPPER-RIGHT BUTTON FIX
+   ========================================================================== */
+
+.batch-section {
+    margin-top: 30px;
+    width: 100%;
+}
+
+/* Flexbox Header para mapunta ang Button sa Upper Right */
+.batch-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.batch-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.batch-header h2 {
+    font-size: 1.4rem;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.batch-sub {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* + Add New Batch Button (Upper Right Position) */
+.btn-add-batch {
+    background: rgba(46, 125, 50, 0.4) !important;
+    color: #81c784 !important;
+    border: 1px solid rgba(76, 175, 80, 0.5) !important;
+    padding: 8px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+}
+
+.btn-add-batch:hover {
+    background: rgba(46, 125, 50, 0.8) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 12px rgba(76, 175, 80, 0.4);
+}
+
+/* Batch Filter Tabs */
+.batch-tabs {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    margin-bottom: 20px;
+    padding-bottom: 4px;
+}
+
+.batch-tab-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.batch-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+.batch-tab-btn.active {
+    background: rgba(46, 125, 50, 0.5);
+    color: #ffffff;
+    border-color: #4caf50;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+/* Batch Details Container */
+.batch-details-card {
+    padding: 24px;
+    width: 100%;
+}
+
+.batch-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 24px;
+}
+
+.batch-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.8px;
+    font-weight: 600;
+}
+
+.info-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.badge-stage { color: #81c784; }
+.badge-health { color: #64b5f6; }
+
+/* Modal Popup Dialog */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 440px;
+    padding: 28px;
+    position: relative;
+    background: rgba(18, 30, 20, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.close-btn {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+}
+
+.close-btn:hover { color: #ffffff; }
+
+.modal-content h3 { 
+    margin-bottom: 20px; 
+    font-size: 1.2rem; 
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.form-group input, 
+.form-group select {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    outline: none;
+    font-size: 0.9rem;
+}
+
+.form-group select option {
+    background: #18241a;
+    color: #ffffff;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    background: #2e7d32;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.3s ease;
+}
+
+.btn-submit:hover { 
+    background: #388e3c; 
+}
