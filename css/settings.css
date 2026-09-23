@@ -102,8 +102,50 @@ body.app-body {
 /* Main Content Area */
 .main-content {
     flex: 1;
-    padding: 30px 40px;
+    padding: 20px 40px 30px 40px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- TOP NAVBAR & SETTINGS ICON (UPPER RIGHT) --- */
+.top-navbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.top-navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.top-settings-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background: rgba(18, 40, 22, 0.6);
+    border: 1px solid var(--card-border);
+    border-radius: 50%;
+    color: #4ade80;
+    font-size: 1.2rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.top-settings-icon:hover {
+    background: rgba(34, 197, 94, 0.25);
+    border-color: var(--primary-green);
+    color: #ffffff;
+    transform: rotate(45deg);
+    box-shadow: 0 0 15px var(--accent-glow);
 }
 
 /* Header & Badges */
