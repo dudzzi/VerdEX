@@ -1,0 +1,597 @@
+/* ================================
+   VERDEX - FARM STATUS
+================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7f4;
+    color: #26352b;
+}
+
+/* ================================
+   SIDEBAR
+================================ */
+
+.status-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 82px;
+    height: 100vh;
+    background: #ffffff;
+    border-right: 1px solid #e5e9e5;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 22px 0;
+    z-index: 100;
+}
+
+.status-logo img {
+    width: 43px;
+    height: 43px;
+    object-fit: contain;
+}
+
+.status-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 38px;
+}
+
+.status-nav a,
+.status-nav-bottom a {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+    text-decoration: none;
+    font-size: 20px;
+
+    color: #69746c;
+    transition: 0.2s ease;
+}
+
+.status-nav a:hover,
+.status-nav-bottom a:hover {
+    background: #edf5ee;
+    color: #3c8b4c;
+}
+
+.status-nav a.active {
+    background: #3f8f4e;
+    color: white;
+}
+
+.status-nav-bottom {
+    margin-top: auto;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* ================================
+   MAIN CONTENT
+================================ */
+
+.status-main {
+    margin-left: 82px;
+    padding: 35px 45px 50px;
+    min-height: 100vh;
+}
+
+.status-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.status-header h1 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 700;
+    color: #26352b;
+}
+
+.status-header p {
+    margin: 6px 0 0;
+    color: #7a847c;
+    font-size: 14px;
+}
+
+/* ================================
+   SECTION
+================================ */
+
+.status-section {
+    margin-bottom: 32px;
+}
+
+.status-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.status-section-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.status-section-subtitle {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #7a847c;
+}
+
+/* ================================
+   CURRENT STATUS CARDS
+================================ */
+
+.status-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.status-card {
+    background: white;
+    border: 1px solid #e7ebe7;
+    border-radius: 17px;
+    padding: 20px;
+
+    min-height: 145px;
+
+    box-shadow: 0 4px 15px rgba(30, 50, 35, 0.04);
+}
+
+.status-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.status-card-label {
+    font-size: 13px;
+    color: #788279;
+}
+
+.status-card-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #edf6ee;
+    font-size: 18px;
+}
+
+.status-card-value {
+    margin-top: 18px;
+
+    font-size: 28px;
+    font-weight: 700;
+    color: #29372d;
+}
+
+.status-card-status {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #4b9658;
+}
+
+/* ================================
+   FARM HEALTH
+================================ */
+
+.farm-health-card {
+    background: linear-gradient(135deg, #3f8f4e, #66a96d);
+    color: white;
+    border-radius: 17px;
+    padding: 22px;
+
+    min-height: 145px;
+
+    box-shadow: 0 7px 20px rgba(63, 143, 78, 0.18);
+}
+
+.farm-health-card .status-card-label {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.farm-health-card .status-card-value {
+    color: white;
+}
+
+.health-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    margin-top: 10px;
+
+    font-size: 13px;
+}
+
+.health-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #d9f6dd;
+}
+
+/* ================================
+   TWO COLUMN LAYOUT
+================================ */
+
+.status-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 18px;
+}
+
+/* ================================
+   CHART CARD
+================================ */
+
+.status-chart-card {
+    background: white;
+    border: 1px solid #e7ebe7;
+    border-radius: 17px;
+    padding: 22px;
+
+    box-shadow: 0 4px 15px rgba(30, 50, 35, 0.04);
+}
+
+.chart-container {
+    width: 100%;
+    height: 290px;
+
+    margin-top: 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #9aa39c;
+    font-size: 13px;
+
+    background: #fbfcfb;
+    border-radius: 12px;
+}
+
+/* ================================
+   MONTH SELECTOR
+================================ */
+
+.status-month-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-month-selector label {
+    font-size: 13px;
+    color: #707a72;
+}
+
+.status-month-selector select {
+    border: 1px solid #dce3dc;
+    background: white;
+
+    padding: 9px 13px;
+    border-radius: 9px;
+
+    color: #354139;
+    font-size: 13px;
+
+    outline: none;
+}
+
+.status-month-selector select:focus {
+    border-color: #4c9958;
+}
+
+/* ================================
+   HISTORY SUMMARY
+================================ */
+
+.history-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+
+    margin-bottom: 18px;
+}
+
+.history-summary-card {
+    background: white;
+    border: 1px solid #e7ebe7;
+    border-radius: 14px;
+
+    padding: 17px;
+
+    box-shadow: 0 4px 15px rgba(30, 50, 35, 0.03);
+}
+
+.history-summary-label {
+    font-size: 12px;
+    color: #7d867f;
+}
+
+.history-summary-value {
+    margin-top: 8px;
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* ================================
+   TABLE
+================================ */
+
+.status-table-card {
+    background: white;
+    border: 1px solid #e7ebe7;
+    border-radius: 17px;
+
+    overflow: hidden;
+
+    box-shadow: 0 4px 15px rgba(30, 50, 35, 0.04);
+}
+
+.status-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.status-table th {
+    text-align: left;
+
+    padding: 15px 18px;
+
+    background: #f8faf8;
+
+    font-size: 12px;
+    color: #788279;
+
+    font-weight: 600;
+}
+
+.status-table td {
+    padding: 16px 18px;
+
+    border-top: 1px solid #edf0ed;
+
+    font-size: 13px;
+}
+
+.status-table tr:hover td {
+    background: #fbfcfb;
+}
+
+/* ================================
+   STATUS BADGES
+================================ */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.status-badge.good {
+    background: #e9f6eb;
+    color: #3d8b4c;
+}
+
+.status-badge.warning {
+    background: #fff4df;
+    color: #a87920;
+}
+
+.status-badge.danger {
+    background: #fdeaea;
+    color: #bd4c4c;
+}
+
+/* ================================
+   SENSOR CARDS
+================================ */
+
+.sensor-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.sensor-card {
+    background: white;
+
+    border: 1px solid #e7ebe7;
+    border-radius: 15px;
+
+    padding: 18px;
+
+    box-shadow: 0 4px 15px rgba(30, 50, 35, 0.03);
+}
+
+.sensor-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sensor-name {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.sensor-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    font-size: 11px;
+    color: #4c9256;
+}
+
+.sensor-status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+    background: #54a861;
+}
+
+.sensor-info {
+    margin-top: 14px;
+
+    font-size: 12px;
+    color: #7a847c;
+}
+
+/* ================================
+   ALERTS
+================================ */
+
+.alert-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.alert-item {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    background: white;
+    border: 1px solid #e7ebe7;
+
+    padding: 14px 16px;
+
+    border-radius: 13px;
+}
+
+.alert-icon {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: #fff4df;
+}
+
+.alert-content strong {
+    display: block;
+    font-size: 13px;
+}
+
+.alert-content span {
+    display: block;
+    margin-top: 3px;
+
+    font-size: 11px;
+    color: #7d867f;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 1100px) {
+
+    .status-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .history-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .sensor-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .status-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+
+    .status-sidebar {
+        width: 65px;
+    }
+
+    .status-main {
+        margin-left: 65px;
+        padding: 25px 18px;
+    }
+
+    .status-cards,
+    .history-summary,
+    .sensor-list {
+        grid-template-columns: 1fr;
+    }
+
+    .status-header h1 {
+        font-size: 24px;
+    }
+
+    .status-table-card {
+        overflow-x: auto;
+    }
+
+    .status-table {
+        min-width: 650px;
+    }
+}
+
+/* ================================
+   CHART FIX
+================================ */
+
+.chart-container {
+    width: 100%;
+    height: 300px;
+
+    margin-top: 15px;
+
+    position: relative;
+
+    background: #fbfcfb;
+    border-radius: 12px;
+
+    padding: 15px 20px;
+}

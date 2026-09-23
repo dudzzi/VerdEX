@@ -1,109 +1,382 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    header('Location: login.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>VerdEX - Inventory</title>
-    <link rel="stylesheet" href="../css/style.css">
+
+    <link rel="stylesheet"
+          href="../css/inventory.css">
+
 </head>
 
 <body>
 
-<div class="sidebar">
 
-    <div class="logo">
-        <img src="../images/verdexlogo.png" alt="VerdEX Logo">
+<!-- =====================================================
+     SIDEBAR
+     ===================================================== -->
+
+<aside class="inventory-sidebar">
+
+    <a href="home.php"
+       class="inventory-logo">
+
+        <img src="../images/verdexlogo.png"
+             alt="VerdEX">
+
+    </a>
+
+
+    <nav class="inventory-nav">
+
+        <a href="home.php"
+           title="Dashboard">
+            🏠
+        </a>
+
+        <a href="inventory.php"
+           class="active"
+           title="Inventory">
+            📦
+        </a>
+
+        <a href="calendar.php"
+           title="Calendar">
+            📅
+        </a>
+
+        <a href="sales.php"
+           title="Sales">
+            💰
+        </a>
+
+        <a href="status.php"
+           title="Farm Status">
+            💧
+        </a>
+
+        <a href="forum.php"
+           title="Forum">
+            💬
+        </a>
+
+        <a href="reports.php"
+           title="Weekly Reports">
+            📊
+        </a>
+
+    </nav>
+
+
+    <div class="inventory-nav-bottom">
+
+        <a href="profile.html"
+           title="Profile">
+            👤
+        </a>
+
+        <a href="settings.html"
+           title="Settings">
+            ⚙️
+        </a>
+
+        <a href="../backend/logout.php"
+           title="Logout">
+            ↪
+        </a>
+
     </div>
 
-    <button class="sidebar-toggle" onclick="toggleSidebar()">‹</button>
+</aside>
 
-    <a href="home.php">Home</a>
-    <a href="inventory.html" class="active">Inventory</a>
-    <a href="calendar.html">Calendar</a>
-    <a href="sales.html">Sales</a>
-    <a href="status.html">Status</a>
-    <a href="trends.html">Forum</a>
-    <a href="reports.html">Weekly Reports</a>
 
-    <h4>About Profile</h4>
 
-    <a href="profile.html">My Profile</a>
-    <a href="settings.html">Settings</a>
-    <a href="logout.html">Logout</a>
+<!-- =====================================================
+     MAIN CONTENT
+     ===================================================== -->
 
-</div>
+<main class="inventory-main">
 
-<main class="content">
 
-    <div class="inventory-header">
+    <!-- TOPBAR -->
 
-        <div>
-            <span class="eyebrow">Farm Management</span>
-            <h1>Farm Inventory</h1>
-            <p>Manage your hydroponic plants, fertilizers, and tools.</p>
+    <header class="inventory-topbar">
+
+        <div class="inventory-brand">
+
+            <div class="inventory-brand-icon">
+                🌿
+            </div>
+
+            <span>
+                VerdEX
+            </span>
+
         </div>
 
-        <button class="add-button" onclick="openAddModal()">
-            + Add Item
+
+        <div class="inventory-top-actions">
+
+            <div class="inventory-search">
+                🔍
+                <span>Search</span>
+            </div>
+
+            <div class="inventory-time">
+                🕐
+                <?php echo date('h:i A'); ?>
+            </div>
+
+            <div class="inventory-notification">
+                🔔
+                <span></span>
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- PAGE HEADER -->
+
+    <section class="inventory-page-header">
+
+        <div>
+
+            <span class="inventory-eyebrow">
+                FARM MANAGEMENT
+            </span>
+
+            <h1>
+                Inventory
+            </h1>
+
+            <p>
+                Manage your crops, fertilizers, and farming tools.
+            </p>
+
+        </div>
+
+
+        <button class="add-button"
+                onclick="openAddModal()">
+
+            <span>+</span>
+            Add Item
+
         </button>
 
-    </div>
+    </section>
 
-    <div class="inventory-controls">
+
+
+    <!-- =================================================
+         INVENTORY CONTROLS
+         ================================================= -->
+
+    <section class="inventory-controls">
+
 
         <div class="category-buttons">
 
             <button
                 class="category-button active"
                 onclick="showCategory('plant', this)">
+
                 Plants
+
             </button>
+
 
             <button
                 class="category-button"
                 onclick="showCategory('fertilizer', this)">
+
                 Fertilizers
+
             </button>
+
 
             <button
                 class="category-button"
                 onclick="showCategory('tool', this)">
+
                 Tools
+
             </button>
 
         </div>
 
-        <select id="sortSelect" onchange="sortItems()">
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="nameAsc">Name A-Z</option>
-            <option value="nameDesc">Name Z-A</option>
-            <option value="stockAsc">Stock Low-High</option>
-            <option value="stockDesc">Stock High-Low</option>
+
+        <select id="sortSelect"
+                onchange="sortItems()">
+
+            <option value="newest">
+                Newest
+            </option>
+
+            <option value="oldest">
+                Oldest
+            </option>
+
+            <option value="nameAsc">
+                Name A-Z
+            </option>
+
+            <option value="nameDesc">
+                Name Z-A
+            </option>
+
+            <option value="stockAsc">
+                Stock Low-High
+            </option>
+
+            <option value="stockDesc">
+                Stock High-Low
+            </option>
+
         </select>
 
-    </div>
+    </section>
 
-    <div id="inventoryContainer" class="inventory-grid"></div>
 
-    <div id="emptyMessage" class="empty-message">
-        No inventory items yet.
-    </div>
+
+    <!-- =================================================
+         INVENTORY TABLE
+         ================================================= -->
+
+    <section class="inventory-table-card">
+
+        <div class="table-header">
+
+            <div>
+
+                <h2>
+                    Inventory Items
+                </h2>
+
+                <p>
+                    View and manage your available items.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table class="inventory-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Item
+                        </th>
+
+                        <th>
+                            Type
+                        </th>
+
+                        <th>
+                            Stock
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Date Added
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="inventoryTableBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div id="emptyMessage"
+             class="empty-message">
+
+            No inventory items yet.
+
+        </div>
+
+    </section>
+
 
 </main>
 
-<div id="addModal" class="modal">
+
+
+<!-- =====================================================
+     ADD ITEM MODAL
+     ===================================================== -->
+
+<div id="addModal"
+     class="modal">
 
     <div class="modal-content">
 
+
         <div class="modal-header">
-            <h2>Add Item</h2>
-            <button onclick="closeAddModal()">×</button>
+
+            <div>
+
+                <span class="modal-eyebrow">
+                    INVENTORY
+                </span>
+
+                <h2>
+                    Add Item
+                </h2>
+
+            </div>
+
+            <button onclick="closeAddModal()">
+                ×
+            </button>
+
         </div>
+
 
         <form id="addForm">
 
-            <label>Type</label>
+
+            <label>
+                Type
+            </label>
 
             <select
                 id="itemType"
@@ -111,13 +384,25 @@
                 onchange="loadCatalogOptions()"
                 required>
 
-                <option value="plant">Hydroponic Plant</option>
-                <option value="fertilizer">Fertilizer</option>
-                <option value="tool">Tool</option>
+                <option value="plant">
+                    Hydroponic Plant
+                </option>
+
+                <option value="fertilizer">
+                    Fertilizer
+                </option>
+
+                <option value="tool">
+                    Tool
+                </option>
 
             </select>
 
-            <label id="itemLabel">Plant</label>
+
+
+            <label id="itemLabel">
+                Plant
+            </label>
 
             <select
                 id="catalogId"
@@ -125,30 +410,45 @@
                 onchange="showSelectedInformation()"
                 required>
 
-                <option value="">Select an item</option>
+                <option value="">
+                    Select an item
+                </option>
 
             </select>
 
-            <div id="autoInfo" class="auto-info">
+
+
+            <div id="autoInfo"
+                 class="auto-info">
 
                 <div class="auto-info-title">
                     Recommendation
                 </div>
 
                 <div id="autoInfoContent">
+
                     Select an item to view its recommendation.
+
                 </div>
 
             </div>
 
-            <label>Picture</label>
+
+
+            <label>
+                Picture
+            </label>
 
             <input
                 type="file"
                 name="image"
                 accept="image/png,image/jpeg,image/webp">
 
-            <label>Initial Stock</label>
+
+
+            <label>
+                Initial Stock
+            </label>
 
             <input
                 type="number"
@@ -157,7 +457,11 @@
                 value="0"
                 required>
 
-            <label>Unit</label>
+
+
+            <label>
+                Unit
+            </label>
 
             <input
                 type="text"
@@ -166,11 +470,17 @@
                 maxlength="30"
                 placeholder="pcs">
 
-            <label>Notes</label>
+
+
+            <label>
+                Notes
+            </label>
 
             <textarea
                 name="notes"
                 placeholder="Add notes..."></textarea>
+
+
 
             <div class="modal-actions">
 
@@ -178,17 +488,23 @@
                     type="button"
                     class="cancel-button"
                     onclick="closeAddModal()">
+
                     Cancel
+
                 </button>
+
 
                 <button
                     type="submit"
                     class="save-button"
                     id="addSubmitButton">
+
                     Add Item
+
                 </button>
 
             </div>
+
 
         </form>
 
@@ -196,53 +512,103 @@
 
 </div>
 
-<div id="infoModal" class="modal">
 
-    <div class="modal-content">
+
+<!-- =====================================================
+     ITEM DETAILS MODAL
+     ===================================================== -->
+
+<div id="infoModal"
+     class="modal">
+
+    <div class="modal-content details-modal">
+
 
         <div class="modal-header">
 
-            <h2 id="infoTitle"></h2>
+            <div>
 
-            <button onclick="closeInfo()">×</button>
+                <span class="modal-eyebrow">
+                    INVENTORY DETAILS
+                </span>
+
+                <h2 id="infoTitle">
+                    Item Details
+                </h2>
+
+            </div>
+
+            <button onclick="closeInfo()">
+                ×
+            </button>
 
         </div>
 
-        <div id="infoContent"></div>
+
+        <div id="infoContent">
+        </div>
+
 
     </div>
 
 </div>
 
-<div id="notesModal" class="modal">
+
+
+<!-- =====================================================
+     NOTES MODAL
+     ===================================================== -->
+
+<div id="notesModal"
+     class="modal">
 
     <div class="modal-content">
 
+
         <div class="modal-header">
 
-            <h2>Notes</h2>
+            <div>
 
-            <button onclick="closeNotes()">×</button>
+                <span class="modal-eyebrow">
+                    INVENTORY
+                </span>
+
+                <h2>
+                    Notes
+                </h2>
+
+            </div>
+
+            <button onclick="closeNotes()">
+                ×
+            </button>
 
         </div>
+
 
         <textarea
             id="notesInput"
             class="notes-input"
             placeholder="Write notes..."></textarea>
 
+
         <button
             class="save-button"
             onclick="saveNotes()">
-            Save
+
+            Save Notes
+
         </button>
+
 
     </div>
 
 </div>
 
-<script src="../js/sidebar.js"></script>
+
+
 <script src="../js/inventory.js"></script>
 
 </body>
+
 </html>
