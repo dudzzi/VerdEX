@@ -15,48 +15,135 @@ if ($error === 'empty') {
     $message = 'Invalid username or password.';
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>VerdEX - Login</title>
-    <link rel="stylesheet" href="../css/style.css">
+
+    <link rel="stylesheet" href="../css/login.css">
 </head>
-<body class="auth-body">
-    <div class="login-panel glass-panel">
-        <div class="logo-wrapper">
-            <img src="../images/verdexlogo.png" alt="VerdEX Logo" class="logo-img">
-        </div>
 
-        <h2>Welcome Back</h2>
-        <p class="subtitle">Sign in to access your VerdEX dashboard.</p>
+<body class="login-page">
 
-        <?php if ($message !== ''): ?>
-            <div class="login-error"><?php echo htmlspecialchars($message); ?></div>
-        <?php endif; ?>
+    <main class="login-container">
 
-        <form action="../backend/auth.php" method="POST" class="login-form">
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter your username" autocomplete="username" required>
+        <!-- LEFT SIDE -->
+        <section class="login-form-section">
+
+            <div class="login-content">
+
+                <!-- Logo -->
+                <div class="login-logo">
+                    <img src="../images/verdexlogo.png" alt="VerdEX">
+                </div>
+
+                <!-- Heading -->
+                <div class="login-heading">
+                    <h1>Welcome back!</h1>
+                    <p>Sign in to continue to your VerdEX dashboard.</p>
+                </div>
+
+                <!-- Error Message -->
+                <?php if ($message !== ''): ?>
+                    <div class="login-error">
+                        <?php echo htmlspecialchars($message); ?>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Login Form -->
+                <form action="../backend/auth.php" method="POST" class="login-form">
+
+                    <div class="form-group">
+                        <label for="username">Username</label>
+
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Enter your username"
+                            autocomplete="username"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox">
+                            <span>Remember me</span>
+                        </label>
+
+                        <a href="#" class="forgot-password">
+                            Forgot password?
+                        </a>
+                    </div>
+
+                    <button type="submit" class="login-button">
+                        Log In
+                    </button>
+
+                </form>
+
+                <!-- Demo Accounts -->
+                <div class="demo-account">
+
+                    <p class="demo-title">Demo Accounts</p>
+
+                    <p>
+                        <strong>Username:</strong> zandro
+                        <span>•</span>
+                        <strong>Password:</strong> zandro123
+                    </p>
+
+                </div>
+
             </div>
 
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+        </section>
+
+
+        <!-- RIGHT SIDE -->
+        <section class="login-image-section">
+
+            <div class="image-overlay"></div>
+
+            <div class="image-content">
+
+                <div class="image-badge">
+                    SMART HYDROPONIC FARMING
+                </div>
+
+                <h2>
+                    Grow smarter.<br>
+                    Manage better.
+                </h2>
+
+                <p>
+                    Monitor your hydroponic farm and manage your
+                    daily operations with VerdEX.
+                </p>
+
             </div>
 
-            <button type="submit" class="btn-primary btn-full">Log In</button>
-        </form>
+        </section>
 
-        <div class="demo-login-box">
-            <span class="panel-label">Temporary Demo Accounts</span>
-            <p>Zandro: <strong>zandro / zandro123</strong></p>
-            <p>Sam: <strong>sam / sam123</strong></p>
-            <p>Jaypee: <strong>jaypee / jaypee123</strong></p>
-            <p>Lorenzo: <strong>lorenzo / lorenzo123</strong></p>
-        </div>
-    </div>
+    </main>
+
 </body>
 </html>

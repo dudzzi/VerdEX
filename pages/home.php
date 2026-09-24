@@ -9,213 +9,574 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 $fullName = $_SESSION['full_name'] ?? $_SESSION['username'] ?? 'User';
 $role = $_SESSION['role'] ?? 'Team Member';
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VerdEX - Home</title>
-    <link rel="stylesheet" href="../css/style.css">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>VerdEX - Dashboard</title>
+
+    <link rel="stylesheet"
+          href="../css/home.css">
+
 </head>
-<body>
-    <div class="sidebar">
-        <div class="logo">
-            <img src="../images/verdexlogo.png" alt="VerdEX Logo">
+
+<body class="dashboard-page">
+
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside class="dashboard-sidebar">
+
+        <a href="home.php"
+           class="dashboard-logo">
+
+            <img src="../images/verdexlogo.png"
+                 alt="VerdEX">
+
+        </a>
+
+
+        <nav class="dashboard-nav">
+
+            <a href="home.php"
+               class="active"
+               title="Dashboard">
+                🏠
+            </a>
+
+            <a href="inventory.php"
+               title="Inventory">
+                📦
+            </a>
+
+            <a href="calendar.php"
+               title="Calendar">
+                📅
+            </a>
+
+            <a href="sales.php"
+               title="Sales">
+                💰
+            </a>
+
+            <a href="status.php"
+               title="Farm Status">
+                💧
+            </a>
+
+            <a href="forum.php"
+               title="Trends">
+                💬
+            </a>
+
+            <a href="reports.php"
+               title="Reports">
+                📊
+            </a>
+
+        </nav>
+
+
+        <div class="dashboard-nav-bottom">
+
+            <a href="profile.html"
+               title="Profile">
+                👤
+            </a>
+
+            <a href="settings.html"
+               title="Settings">
+                ⚙️
+            </a>
+
+            <a href="../backend/logout.php"
+               title="Logout">
+                ↪
+            </a>
+
         </div>
 
-        <button class="sidebar-toggle" onclick="toggleSidebar()">‹</button>
+    </aside>
 
-        <a href="home.php" class="active">Home</a>
-        <a href="inventory.html">Inventory</a>
-        <a href="calendar.html">Calendar</a>
-        <a href="sales.html">Sales</a>
-        <a href="status.html">Status</a>
-        <a href="trends.html">Trends</a>
-        <a href="reports.html">Weekly Reports</a>
 
-        <h4>About Profile</h4>
-        <a href="profile.html">My Profile</a>
-        <a href="settings.html">Settings</a>
-        <a href="../backend/logout.php">Logout</a>
-    </div>
 
-    <div class="content">
-        <div class="home-top-nav">
-            <a href="#dashboard" class="home-nav-bubble active">Dashboard</a>
-            <a href="#description" class="home-nav-bubble">Project Description</a>
-            <a href="#features" class="home-nav-bubble">Project Features</a>
-            <a href="#members" class="home-nav-bubble">Group Members</a>
-        </div>
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
 
-        <section id="dashboard" class="home-section">
-            <div class="page-heading">
-                <span class="eyebrow">Overview</span>
-                <h1>Welcome, <?php echo htmlspecialchars($fullName); ?></h1>
-                <p class="page-heading-sub">VerdEX — Smart Hydroponic Farm Management System</p>
-                <span class="role-chip">Your role: <?php echo htmlspecialchars($role); ?></span>
-            </div>
+    <main class="dashboard-main">
 
-            <div class="panel-grid panel-grid-2">
-                <div class="glass-panel info-panel">
-                    <span class="panel-label">Problem</span>
-                    <p>Hydroponic farming requires constant, precise monitoring of water level, humidity, and temperature. Manual tracking is time-consuming, error-prone, and difficult to scale.</p>
+
+        <!-- TOPBAR -->
+
+        <header class="dashboard-topbar">
+
+            <div class="dashboard-brand">
+
+                <div class="dashboard-brand-icon">
+                    🌿
                 </div>
 
-                <div class="glass-panel info-panel">
-                    <span class="panel-label">Solution</span>
-                    <p>VerdEX automates monitoring with connected sensors, giving growers real-time data, critical-condition alerts, and AI-based recommendations to reduce manual work and crop loss.</p>
-                </div>
+                <span>
+                    VerdEX
+                </span>
+
             </div>
 
-            <div class="quick-links-grid">
-                <a href="inventory.html" class="glass-panel quick-link-card">
-                    <span class="panel-label">Inventory</span>
-                    <p>Track hydroponic plants, fertilizers, and tools in stock.</p>
-                </a>
-                <a href="status.html" class="glass-panel quick-link-card">
-                    <span class="panel-label">Status</span>
-                    <p>View live temperature, humidity, and water level readings.</p>
-                </a>
-                <a href="sales.html" class="glass-panel quick-link-card">
-                    <span class="panel-label">Sales</span>
-                    <p>Review recent transactions and revenue.</p>
-                </a>
-                <a href="trends.html" class="glass-panel quick-link-card">
-                    <span class="panel-label">Trends</span>
-                    <p>See announcements and farm activity trends.</p>
-                </a>
+
+            <div class="dashboard-top-actions">
+
+                <div class="dashboard-search">
+                    🔍
+                    <span>Search</span>
+                </div>
+
+                <div class="dashboard-time">
+                    🕐
+                    <?php echo date('h:i A'); ?>
+                </div>
+
+                <div class="dashboard-notification">
+
+                    🔔
+
+                    <span class="notification-dot"></span>
+
+                </div>
+
             </div>
+
+        </header>
+
+
+
+        <!-- PAGE HEADING -->
+
+        <section class="dashboard-heading">
+
+            <h1>
+                Overview
+            </h1>
+
+            <p>
+                Monitor your hydroponic farm and manage your daily activities.
+            </p>
+
         </section>
 
-        <section id="description" class="home-section">
-            <div class="page-heading compact-heading">
-                <span class="eyebrow">Documentation</span>
-                <h2>Project Description</h2>
-            </div>
 
-            <div class="glass-panel info-panel">
-                <span class="panel-label">About VerdEX</span>
-                <p>VerdEX is a web-based smart hydroponic farm management system that integrates water level monitoring, humidity and temperature sensors, and AI-powered assistance to help hydroponic growers manage their farms more efficiently.</p>
-            </div>
 
-            <div class="panel-grid panel-grid-2">
-                <div class="glass-panel info-panel">
-                    <span class="panel-label">Proposed Users</span>
-                    <ul class="showcase-list">
-                        <li>Hydroponic farm owners</li>
-                        <li>Farm helpers</li>
-                        <li>Farm managers</li>
-                    </ul>
+        <!-- =================================================
+             STAT CARDS
+             ================================================= -->
+
+        <section class="dashboard-stats">
+
+
+            <div class="stat-card">
+
+                <div class="stat-card-header">
+
+                    <span class="stat-card-label">
+                        Active Crops
+                    </span>
+
+                    <div class="stat-icon">
+                        🌱
+                    </div>
+
                 </div>
 
-                <div class="glass-panel info-panel">
-                    <span class="panel-label">General Capabilities</span>
-                    <ul class="showcase-list">
-                        <li>Monitor farm conditions</li>
-                        <li>Manage inventory</li>
-                        <li>Schedule farm activities</li>
-                        <li>Review sales and reports</li>
-                        <li>Receive critical-condition notifications</li>
-                        <li>Get AI-based farm guidance</li>
-                    </ul>
+                <div class="stat-card-value">
+                    6
                 </div>
+
+                <div class="stat-card-description">
+                    Crops currently being monitored
+                </div>
+
             </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-card-header">
+
+                    <span class="stat-card-label">
+                        Inventory Items
+                    </span>
+
+                    <div class="stat-icon">
+                        📦
+                    </div>
+
+                </div>
+
+                <div class="stat-card-value">
+                    12
+                </div>
+
+                <div class="stat-card-description">
+                    Plants, fertilizers and tools
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-card-header">
+
+                    <span class="stat-card-label">
+                        Pending Tasks
+                    </span>
+
+                    <div class="stat-icon">
+                        ✓
+                    </div>
+
+                </div>
+
+                <div class="stat-card-value">
+                    3
+                </div>
+
+                <div class="stat-card-description">
+                    Activities that need attention
+                </div>
+
+            </div>
+
+
         </section>
 
-        <section id="features" class="home-section">
-            <div class="page-heading compact-heading">
-                <span class="eyebrow">Capabilities</span>
-                <h2>Project Features</h2>
-                <p class="page-heading-sub">Major capabilities of the VerdEX system.</p>
-            </div>
 
-            <div class="feature-grid showcase-feature-grid">
-                <a href="inventory.html" class="glass-panel feature-item showcase-feature-link">
-                    <div class="feature-item-top"><span class="panel-label"><span class="feature-emoji">📦</span> Inventory Management</span><span class="demo-badge">Live</span></div>
-                    <p>Organize and track hydroponic plant stock, fertilizers, and tools in one centralized module.</p>
-                </a>
 
-                <a href="status.html" class="glass-panel feature-item showcase-feature-link">
-                    <div class="feature-item-top"><span class="panel-label"><span class="feature-emoji">💧</span> Water Level & Environmental Monitoring</span><span class="demo-badge">Live</span></div>
-                    <p>Monitor water level, temperature, and humidity using connected sensors.</p>
-                </a>
+        <!-- =================================================
+             FARM CONDITION + CROP PROGRESS
+             ================================================= -->
 
-                <div class="glass-panel feature-item">
-                    <div class="feature-item-top"><span class="panel-label"><span class="feature-emoji">🚨</span> Critical-Condition Notifications</span></div>
-                    <p>Alert the farm owner and helpers when temperature, humidity, or water level reaches an unsafe range.</p>
+        <section class="dashboard-grid">
+
+
+            <!-- FARM CONDITION -->
+
+            <div class="dashboard-card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <div class="card-title">
+                            Farm Condition
+                        </div>
+
+                        <div class="card-subtitle">
+                            Current greenhouse readings
+                        </div>
+
+                    </div>
+
+                    <button class="card-menu">
+                        •••
+                    </button>
+
                 </div>
 
-                <a href="calendar.html" class="glass-panel feature-item showcase-feature-link">
-                    <div class="feature-item-top"><span class="panel-label"><span class="feature-emoji">📅</span> Plant Calendar</span><span class="demo-badge">Live</span></div>
-                    <p>Schedule and track planting, nutrient replacement, maintenance, and harvesting activities.</p>
-                </a>
 
-                <a href="reports.html" class="glass-panel feature-item showcase-feature-link">
-                    <div class="feature-item-top"><span class="panel-label"><span class="feature-emoji">📊</span> Monthly Reports</span><span class="demo-badge">Live</span></div>
-                    <p>Review reports covering sales, inventory levels, and overall farm condition.</p>
-                </a>
+                <div class="condition-grid">
 
-                <div class="glass-panel feature-item">
-                    <div class="feature-item-top"><span class="panel-label"><span class="feature-emoji">🤖</span> AI-Based Recommendations</span></div>
-                    <p>Provide suggestions on suitable fertilizers, growing media, and hydroponic plant care practices.</p>
+
+                    <div class="condition-item">
+
+                        <div class="condition-label">
+                            Temperature
+                        </div>
+
+                        <div class="condition-value">
+                            28°C
+                        </div>
+
+                        <div class="condition-status">
+                            ● Normal
+                        </div>
+
+                    </div>
+
+
+                    <div class="condition-item">
+
+                        <div class="condition-label">
+                            Humidity
+                        </div>
+
+                        <div class="condition-value">
+                            67%
+                        </div>
+
+                        <div class="condition-status">
+                            ● Normal
+                        </div>
+
+                    </div>
+
+
+                    <div class="condition-item">
+
+                        <div class="condition-label">
+                            Water Level
+                        </div>
+
+                        <div class="condition-value">
+                            81%
+                        </div>
+
+                        <div class="condition-status">
+                            ● Good
+                        </div>
+
+                    </div>
+
+
                 </div>
+
             </div>
+
+
+
+            <!-- CROP PROGRESS -->
+
+            <div class="dashboard-card crop-progress-card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <div class="card-title">
+                            Crop Progress
+                        </div>
+
+                        <div class="card-subtitle">
+                            Overall harvest completion
+                        </div>
+
+                    </div>
+
+                    <button class="card-menu">
+                        •••
+                    </button>
+
+                </div>
+
+
+                <div class="progress-circle">
+
+                    <div class="progress-circle-content">
+
+                        <span class="progress-value">
+                            81%
+                        </span>
+
+                        <span class="progress-label">
+                            Harvest Completion
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="progress-legend">
+
+                    <span>
+                        <span class="legend-dot"></span>
+                        Completed
+                    </span>
+
+                    <span>
+                        <span class="legend-dot"></span>
+                        In Progress
+                    </span>
+
+                </div>
+
+            </div>
+
+
         </section>
 
-        <section id="members" class="home-section">
-            <div class="page-heading compact-heading">
-                <span class="eyebrow">Our Team</span>
-                <h2>Meet the Team Behind VerdEX</h2>
+
+
+        <!-- =================================================
+             ACTIVITIES + SMART TASK
+             ================================================= -->
+
+        <section class="dashboard-lower-grid">
+
+
+            <!-- RECENT ACTIVITIES -->
+
+            <div class="dashboard-card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <div class="card-title">
+                            Recent Farm Activities
+                        </div>
+
+                        <div class="card-subtitle">
+                            Latest updates from your farm
+                        </div>
+
+                    </div>
+
+                    <button class="card-menu">
+                        •••
+                    </button>
+
+                </div>
+
+
+                <div class="activity-list">
+
+
+                    <div class="activity-item">
+
+                        <div class="activity-icon">
+                            💧
+                        </div>
+
+                        <div class="activity-info">
+
+                            <div class="activity-title">
+                                Water level checked
+                            </div>
+
+                            <div class="activity-time">
+                                Today • 09:00 AM
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="activity-item">
+
+                        <div class="activity-icon">
+                            🌱
+                        </div>
+
+                        <div class="activity-info">
+
+                            <div class="activity-title">
+                                Crop inventory updated
+                            </div>
+
+                            <div class="activity-time">
+                                Today • 08:30 AM
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="activity-item">
+
+                        <div class="activity-icon">
+                            📅
+                        </div>
+
+                        <div class="activity-info">
+
+                            <div class="activity-title">
+                                Farm activity scheduled
+                            </div>
+
+                            <div class="activity-time">
+                                Yesterday • 04:15 PM
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="activity-item">
+
+                        <div class="activity-icon">
+                            📊
+                        </div>
+
+                        <div class="activity-info">
+
+                            <div class="activity-title">
+                                Weekly report generated
+                            </div>
+
+                            <div class="activity-time">
+                                Yesterday • 02:00 PM
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
             </div>
 
-            <div class="team-showcase-grid">
-                <div class="glass-panel team-showcase-card">
-                    <div class="team-avatar">ZS</div>
-                    <span class="panel-label">Project Manager / Data Analyst</span>
-                    <h3>Animos, Zandro Sean D.</h3>
-                    <p>Leads the project and handles data analysis and coordination.</p>
-                </div>
 
-                <div class="glass-panel team-showcase-card">
-                    <div class="team-avatar">SA</div>
-                    <span class="panel-label">Frontend Developer / Lead Documenter</span>
-                    <h3>Austria, Sam Aisele A.</h3>
-                    <p>Builds the user interface and leads project documentation.</p>
-                </div>
 
-                <div class="glass-panel team-showcase-card">
-                    <div class="team-avatar">JC</div>
-                    <span class="panel-label">UI/UX Designer / Database Manager</span>
-                    <h3>Cervantes, Jaypee D.</h3>
-                    <p>Designs the user experience and manages the project database.</p>
-                </div>
+            <!-- SMART TASK -->
 
-                <div class="glass-panel team-showcase-card">
-                    <div class="team-avatar">LM</div>
-                    <span class="panel-label">Backend Developer / IoT Developer</span>
-                    <h3>Chavez, Lorenzo M.</h3>
-                    <p>Develops backend services and handles IoT and sensor integration.</p>
-                </div>
+            <div class="dashboard-card smart-task">
+
+                <span class="smart-task-label">
+                    SMART FARM UPDATE
+                </span>
+
+                <h3>
+                    Keep your farm activities organized.
+                </h3>
+
+                <p>
+                    Check your tasks, monitor farm conditions,
+                    and keep your crop records updated.
+                </p>
+
+                <a href="calendar.html"
+                   class="smart-task-button">
+
+                    View Tasks
+
+                </a>
+
             </div>
+
+
         </section>
 
-        <div class="glass-panel info-panel home-account-panel">
-            <span class="panel-label">Current Account</span>
-            <p>Signed in as <strong><?php echo htmlspecialchars($fullName); ?></strong> — <?php echo htmlspecialchars($role); ?>.</p>
-            <a href="../backend/logout.php" class="btn-secondary">Log Out</a>
-        </div>
-    </div>
 
-    <script src="../js/sidebar.js"></script>
-    <script>
-        document.querySelectorAll('.home-nav-bubble').forEach(function (link) {
-            link.addEventListener('click', function () {
-                document.querySelectorAll('.home-nav-bubble').forEach(function (item) {
-                    item.classList.remove('active');
-                });
-                this.classList.add('active');
-            });
-        });
-    </script>
+
+    </main>
+
+
 </body>
+
 </html>

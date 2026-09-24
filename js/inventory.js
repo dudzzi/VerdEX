@@ -9,6 +9,9 @@ let catalog = {
 let currentCategory = "plant";
 let currentNoteId = null;
 
+const API_URL =
+    window.location.origin + "/api/inventory.php";
+
 const pendingStockUpdates = new Set();
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -40,6 +43,8 @@ async function requestJSON(url, options = {}) {
         try {
             data = JSON.parse(text);
         } catch (error) {
+            console.error("Invalid API response:", text);
+
             throw new Error(
                 "The server returned an invalid response."
             );
@@ -81,7 +86,7 @@ async function loadCatalog() {
     try {
 
         const data = await requestJSON(
-            "api/inventory.php?action=catalog"
+            API_URL + "?action=catalog"
         );
 
         catalog = data.catalog || {
@@ -110,7 +115,7 @@ async function loadInventory() {
     try {
 
         const data = await requestJSON(
-            "api/inventory.php?action=get"
+            API_URL + "?action=get"
         );
 
         inventory = Array.isArray(data.items)
@@ -137,7 +142,7 @@ async function loadInventory() {
 function renderInventory() {
 
     const container =
-        document.getElementById("inventoryContainer");
+        document.getElementById("inventoryTableBody");
 
     const empty =
         document.getElementById("emptyMessage");
@@ -149,6 +154,7 @@ function renderInventory() {
     if (items.length === 0) {
 
         container.innerHTML = "";
+
         empty.style.display = "block";
 
         return;
@@ -158,112 +164,156 @@ function renderInventory() {
 
     container.innerHTML = items.map(item => {
 
-        const image = item.image_path
-            ? item.image_path
-            : "verdexlogo.png";
+        const image =
+            getInventoryImage(item.image_path);
 
-        const status =
-            Number(item.stock) <= 5
+        const stock =
+            Number(item.stock);
+
+        const isLow =
+            stock <= 5;
+
+        const statusClass =
+            isLow
                 ? "low"
                 : "good";
 
         const statusText =
-            status === "low"
+            isLow
                 ? "Low Stock"
                 : "In Stock";
 
+        const typeText =
+            item.item_type === "plant"
+                ? "Plant"
+                : item.item_type === "fertilizer"
+                    ? "Fertilizer"
+                    : "Tool";
+
         return `
-            <div class="inventory-card">
 
-                <img
-                    class="item-image"
-                    src="${escapeHTML(image)}"
-                    alt="${escapeHTML(item.name)}"
-                    onerror="this.src='verdexlogo.png'"
-                >
+            <tr>
 
-                <div class="item-body">
+                <td>
 
-                    <div class="item-type">
-                        ${escapeHTML(item.item_type)}
-                    </div>
+                    <div class="inventory-item">
 
-                    <h2 class="item-name">
-                        ${escapeHTML(item.name)}
-                    </h2>
+                        <img
+                            src="${escapeHTML(image)}"
+                            class="inventory-item-image"
+                            alt="${escapeHTML(item.name)}"
+                            onerror="this.src='../images/verdexlogo.png'"
+                        >
 
-                    <span class="status ${status}">
-                        ${statusText}
-                    </span>
+                        <div>
 
-                    <div class="stock-row">
+                            <div class="inventory-item-name">
+                                ${escapeHTML(item.name)}
+                            </div>
 
-                        <span class="stock">
-                            ${Number(item.stock)}
-                            ${escapeHTML(item.unit)}
-                        </span>
-
-                        <div class="stock-buttons">
-
-                            <button
-                                onclick="changeStock(${item.id}, -1)"
-                                ${pendingStockUpdates.has(Number(item.id)) ? "disabled" : ""}>
-                                −
-                            </button>
-
-                            <button
-                                onclick="changeStock(${item.id}, 1)"
-                                ${pendingStockUpdates.has(Number(item.id)) ? "disabled" : ""}>
-                                +
-                            </button>
+                            <div class="inventory-item-subtitle">
+                                Hydroponic inventory
+                            </div>
 
                         </div>
 
                     </div>
 
-                    <div class="item-date">
+                </td>
 
-                        Added:
-                        ${formatDate(item.date_added)}
+                <td>
 
-                        <br>
+                    <span class="type-badge">
+                        ${typeText}
+                    </span>
 
-                        Last Added:
-                        ${item.last_added
-                            ? formatDate(item.last_added)
-                            : "—"}
+                </td>
 
-                        <br>
+                <td>
 
-                        Last Edited:
-                        ${item.updated_at
-                            ? formatDate(item.updated_at)
-                            : "—"}
+                    <div class="stock-value">
+
+                        ${stock}
+                        ${escapeHTML(item.unit)}
 
                     </div>
 
-                </div>
+                    <div class="stock-controls">
 
-                <div class="card-actions">
+                        <button
+                            class="stock-control"
+                            onclick="changeStock(${item.id}, -1)"
+                            ${pendingStockUpdates.has(Number(item.id)) ? "disabled" : ""}>
+
+                            −
+
+                        </button>
+
+                        <button
+                            class="stock-control"
+                            onclick="changeStock(${item.id}, 1)"
+                            ${pendingStockUpdates.has(Number(item.id)) ? "disabled" : ""}>
+
+                            +
+
+                        </button>
+
+                    </div>
+
+                </td>
+
+                <td>
+
+                    <span class="status-badge ${statusClass}">
+
+                        <span class="status-dot"></span>
+
+                        ${statusText}
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    ${formatDate(item.date_added)}
+
+                </td>
+
+                <td>
 
                     <button
-                        title="Information"
+                        class="view-details-button"
                         onclick="showInfo(${item.id})">
-                        ⓘ
+
+                        View Details
+
                     </button>
 
-                    <button
-                        title="Notes"
-                        onclick="openNotes(${item.id})">
-                        ✎
-                    </button>
+                </td>
 
-                </div>
+            </tr>
 
-            </div>
         `;
 
     }).join("");
+}
+
+function getInventoryImage(imagePath) {
+
+    if (!imagePath) {
+        return "../images/verdexlogo.png";
+    }
+
+    if (
+        imagePath.startsWith("http://") ||
+        imagePath.startsWith("https://") ||
+        imagePath.startsWith("../")
+    ) {
+        return imagePath;
+    }
+
+    return "../" + imagePath;
 }
 
 function showCategory(category, button) {
@@ -520,14 +570,13 @@ document
 
         try {
 
-            const data =
-                await requestJSON(
-                    "api/inventory.php",
-                    {
-                        method: "POST",
-                        body: formData
-                    }
-                );
+            await requestJSON(
+                API_URL,
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
 
             this.reset();
 
@@ -587,7 +636,7 @@ async function changeStock(id, change) {
     try {
 
         await requestJSON(
-            "api/inventory.php",
+            API_URL,
             {
                 method: "POST",
                 body: formData
@@ -626,14 +675,16 @@ function showInfo(id) {
 
     const item =
         inventory.find(
-            entry => Number(entry.id) === Number(id)
+            entry =>
+                Number(entry.id) === Number(id)
         );
 
     if (!item) {
         return;
     }
 
-    const type = item.item_type;
+    const type =
+        item.item_type;
 
     const items =
         Array.isArray(catalog[type])
@@ -643,22 +694,73 @@ function showInfo(id) {
     const catalogItem =
         items.find(
             entry =>
-                Number(entry.id) === Number(item.catalog_id)
+                String(entry.name).toLowerCase() ===
+                String(item.name).toLowerCase()
         );
 
     document.getElementById("infoTitle").textContent =
         item.name;
 
-    let content = "";
+    const image =
+        getInventoryImage(item.image_path);
 
-    content += infoRow(
-        "Type",
-        item.item_type
-    );
+    let content = `
+
+        <div class="details-top">
+
+            <img
+                class="details-image"
+                src="${escapeHTML(image)}"
+                alt="${escapeHTML(item.name)}"
+                onerror="this.src='../images/verdexlogo.png'"
+            >
+
+            <div class="details-summary">
+
+                <span class="type-badge">
+                    ${
+                        type === "plant"
+                            ? "Plant"
+                            : type === "fertilizer"
+                                ? "Fertilizer"
+                                : "Tool"
+                    }
+                </span>
+
+                <h3>
+                    ${escapeHTML(item.name)}
+                </h3>
+
+                <p>
+                    Current stock:
+                    <strong>
+                        ${Number(item.stock)}
+                        ${escapeHTML(item.unit)}
+                    </strong>
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="details-section">
+
+            <div class="details-section-title">
+                Inventory Information
+            </div>
+
+    `;
 
     content += infoRow(
         "Current Stock",
         `${Number(item.stock)} ${item.unit}`
+    );
+
+    content += infoRow(
+        "Status",
+        Number(item.stock) <= 5
+            ? "Low Stock"
+            : "In Stock"
     );
 
     content += infoRow(
@@ -685,7 +787,21 @@ function showInfo(id) {
         item.notes || "No notes."
     );
 
+    content += `
+        </div>
+    `;
+
     if (catalogItem) {
+
+        content += `
+
+            <div class="details-section">
+
+                <div class="details-section-title">
+                    Item Information
+                </div>
+
+        `;
 
         if (type === "plant") {
 
@@ -728,11 +844,6 @@ function showInfo(id) {
                 "Care",
                 catalogItem.care
             );
-
-            content += recommendation(
-                item,
-                catalogItem
-            );
         }
 
         if (type === "fertilizer") {
@@ -760,11 +871,6 @@ function showInfo(id) {
             content += infoRow(
                 "Notes",
                 catalogItem.notes
-            );
-
-            content += recommendation(
-                item,
-                catalogItem
             );
         }
 
@@ -794,12 +900,16 @@ function showInfo(id) {
                 "Notes",
                 catalogItem.notes
             );
-
-            content += recommendation(
-                item,
-                catalogItem
-            );
         }
+
+        content += `
+            </div>
+        `;
+
+        content += recommendation(
+            item,
+            catalogItem
+        );
     }
 
     document.getElementById("infoContent").innerHTML =
@@ -945,7 +1055,7 @@ async function saveNotes() {
     try {
 
         await requestJSON(
-            "api/inventory.php",
+            API_URL,
             {
                 method: "POST",
                 body: formData
@@ -1049,7 +1159,7 @@ function renderSortedItems(items) {
 
         const image = item.image_path
             ? item.image_path
-            : "verdexlogo.png";
+            : "../images/verdexlogo.png";
 
         const status =
             Number(item.stock) <= 5
@@ -1068,7 +1178,7 @@ function renderSortedItems(items) {
                     class="item-image"
                     src="${escapeHTML(image)}"
                     alt="${escapeHTML(item.name)}"
-                    onerror="this.src='verdexlogo.png'"
+                    onerror="this.src='../images/verdexlogo.png'"
                 >
 
                 <div class="item-body">

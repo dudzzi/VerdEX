@@ -1,849 +1,943 @@
-const calendar = document.getElementById("calendar");
-const monthYear = document.getElementById("monthYear");
-
-const dateModal = document.getElementById("dateModal");
-const addModal = document.getElementById("addModal");
-
-const calendarForm = document.getElementById("calendarForm");
-
-const eventType = document.getElementById("eventType");
-const eventTitle = document.getElementById("eventTitle");
-const eventDate = document.getElementById("eventDate");
-const eventTime = document.getElementById("eventTime");
-const eventAmount = document.getElementById("eventAmount");
-const eventDescription = document.getElementById("eventDescription");
-
-const amountGroup = document.getElementById("amountGroup");
-const notificationOption = document.getElementById("notificationOption");
-
-const upcomingReminders = document.getElementById("upcomingReminders");
+/* =========================================================
+   VERDEX CALENDAR
+   ========================================================= */
 
 let currentDate = new Date();
-let selectedDate = null;
-let records = JSON.parse(localStorage.getItem("verdexCalendarRecords")) || [];
+
+let events = [];
 
 
-document.addEventListener("DOMContentLoaded", function(){
-    renderCalendar();
-    renderReminders();
-    setupForm();
-    checkReminders();
-});
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+        await loadEvents();
+
+        renderCalendar();
+
+        renderUpcomingTasks();
+
+        setupEventForm();
+
+    }
+);
 
 
-function renderCalendar(animation = ""){
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
+/* =========================================================
+   LOAD EVENTS
+   ========================================================= */
 
-    monthYear.textContent = currentDate.toLocaleDateString("en-US", {
-        month: "long",
-        year: "numeric"
-    });
+async function loadEvents() {
 
-    calendar.innerHTML = "";
+    try {
 
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const daysInPreviousMonth = new Date(year, month, 0).getDate();
+        const response =
+            await fetch("../api/calendar.php");
 
-    const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+        const data =
+            await response.json();
 
-    for(let i = 0; i < totalCells; i++){
 
-        const dayCell = document.createElement("div");
-        dayCell.className = "calendar-day";
+        if (!data.success) {
+
+            console.error(
+                data.message ||
+                "Failed to load calendar tasks."
+            );
+
+            return;
+
+        }
+
+
+        events =
+            Array.isArray(data.tasks)
+                ? data.tasks
+                : [];
+
+
+    } catch (error) {
+
+        console.error(
+            "Calendar loading error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER CALENDAR
+   ========================================================= */
+
+function renderCalendar() {
+
+    const year =
+        currentDate.getFullYear();
+
+    const month =
+        currentDate.getMonth();
+
+
+    const monthTitle =
+        document.getElementById("monthTitle");
+
+
+    const calendarDays =
+        document.getElementById("calendarDays");
+
+
+    const monthName =
+        currentDate.toLocaleString(
+            "en-US",
+            {
+                month: "long"
+            }
+        );
+
+
+    monthTitle.textContent =
+        `${monthName} ${year}`;
+
+
+    calendarDays.innerHTML = "";
+
+
+    const firstDay =
+        new Date(
+            year,
+            month,
+            1
+        ).getDay();
+
+
+    const daysInMonth =
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
+
+
+    const previousMonthDays =
+        new Date(
+            year,
+            month,
+            0
+        ).getDate();
+
+
+    const totalCells =
+        Math.ceil(
+            (firstDay + daysInMonth) / 7
+        ) * 7;
+
+
+    const today =
+        new Date();
+
+
+    for (
+        let i = 0;
+        i < totalCells;
+        i++
+    ) {
+
+        const dayElement =
+            document.createElement("div");
+
+
+        dayElement.className =
+            "calendar-day";
+
 
         let dayNumber;
-        let cellDate;
 
-        if(i < firstDay){
+        let dateObject;
 
-            dayNumber = daysInPreviousMonth - firstDay + i + 1;
 
-            cellDate = new Date(
-                year,
-                month - 1,
-                dayNumber
+        if (i < firstDay) {
+
+            dayNumber =
+                previousMonthDays -
+                firstDay +
+                i +
+                1;
+
+
+            dateObject =
+                new Date(
+                    year,
+                    month - 1,
+                    dayNumber
+                );
+
+
+            dayElement.classList.add(
+                "other-month"
             );
 
-            dayCell.classList.add("other-month");
+        }
 
-        }else{
+        else if (
+            i <
+            firstDay +
+            daysInMonth
+        ) {
 
-            dayNumber = i - firstDay + 1;
+            dayNumber =
+                i -
+                firstDay +
+                1;
 
-            cellDate = new Date(
-                year,
-                month,
-                dayNumber
+
+            dateObject =
+                new Date(
+                    year,
+                    month,
+                    dayNumber
+                );
+
+        }
+
+        else {
+
+            dayNumber =
+                i -
+                firstDay -
+                daysInMonth +
+                1;
+
+
+            dateObject =
+                new Date(
+                    year,
+                    month + 1,
+                    dayNumber
+                );
+
+
+            dayElement.classList.add(
+                "other-month"
             );
 
-            if(dayNumber > daysInMonth){
-
-                dayCell.classList.add("other-month");
-
-            }
-
         }
 
-        const dateKey = formatDateKey(cellDate);
 
-        const numberWrapper = document.createElement("div");
-        numberWrapper.className = "day-number";
-
-        const number = document.createElement("span");
-        number.textContent = dayNumber;
-
-        numberWrapper.appendChild(number);
-        dayCell.appendChild(numberWrapper);
-
-        if(isToday(cellDate)){
-            dayCell.classList.add("today");
-        }
-
-        const eventList = document.createElement("div");
-        eventList.className = "event-list";
-
-        const dayRecords = records.filter(
-            record => record.date === dateKey
-        );
-
-        dayRecords.slice(0, 3).forEach(record => {
-
-            const event = document.createElement("div");
-
-            event.className = "event " + record.type;
-
-            let text = record.title;
-
-            if(record.type === "sales" && record.amount){
-                text = "₱ " + Number(record.amount).toLocaleString();
-            }
-
-            if(record.type === "stock" && record.amount){
-                const prefix = record.stockDirection === "loss" ? "-" : "+";
-                text = prefix + record.amount + " Stock";
-            }
-
-            event.textContent = text;
-
-            eventList.appendChild(event);
-
-        });
+        const dateString =
+            formatDateKey(dateObject);
 
 
-        if(dayRecords.length > 3){
+        if (
+            dateObject.getFullYear() ===
+                today.getFullYear() &&
 
-            const more = document.createElement("div");
+            dateObject.getMonth() ===
+                today.getMonth() &&
 
-            more.className = "more-events";
+            dateObject.getDate() ===
+                today.getDate()
+        ) {
 
-            more.textContent = "+" + (dayRecords.length - 3) + " more";
-
-            eventList.appendChild(more);
+            dayElement.classList.add(
+                "today"
+            );
 
         }
 
 
-        dayCell.appendChild(eventList);
+        dayElement.innerHTML = `
 
-        dayCell.addEventListener("click", function(){
-            openDateModal(dateKey);
-        });
+            <div class="day-number">
 
-        calendar.appendChild(dayCell);
-    }
+                ${dayNumber}
 
-    if(animation){
-
-        calendar.classList.remove("page-next", "page-prev");
-
-        void calendar.offsetWidth;
-
-        calendar.classList.add(animation);
-    }
-}
-
-
-function previousMonth(){
-
-    currentDate.setMonth(currentDate.getMonth() - 1);
-
-    renderCalendar("page-prev");
-}
-
-
-function nextMonth(){
-
-    currentDate.setMonth(currentDate.getMonth() + 1);
-
-    renderCalendar("page-next");
-}
-
-
-function goToday(){
-
-    currentDate = new Date();
-
-    renderCalendar("page-prev");
-}
-
-
-function isToday(date){
-
-    const today = new Date();
-
-    return (
-        date.getDate() === today.getDate() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear()
-    );
-}
-
-
-function formatDateKey(date){
-
-    const year = date.getFullYear();
-
-    const month = String(
-        date.getMonth() + 1
-    ).padStart(2, "0");
-
-    const day = String(
-        date.getDate()
-    ).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-}
-
-
-function openDateModal(dateKey){
-
-    selectedDate = dateKey;
-
-    const date = parseDate(dateKey);
-
-    document.getElementById("selectedDateNumber").textContent =
-        date.getDate();
-
-    document.getElementById("selectedDateTitle").textContent =
-        date.toLocaleDateString("en-US", {
-            month: "long",
-            day: "numeric",
-            year: "numeric"
-        });
-
-    document.getElementById("selectedDateSubtitle").textContent =
-        date.toLocaleDateString("en-US", {
-            weekday: "long"
-        });
-
-
-    renderDateEvents();
-
-    dateModal.classList.add("show");
-}
-
-
-function renderDateEvents(){
-
-    const container = document.getElementById("dateEvents");
-
-    container.innerHTML = "";
-
-    const dayRecords = records.filter(
-        record => record.date === selectedDate
-    );
-
-
-    if(dayRecords.length === 0){
-
-        container.innerHTML = `
-            <div class="no-events">
-                No records for this date yet.
             </div>
+
         `;
 
-        return;
-    }
+
+        const dayEvents =
+            events.filter(
+                event =>
+                    event.date === dateString
+            );
 
 
-    dayRecords.forEach(record => {
+        dayEvents.forEach(
+            event => {
 
-        const card = document.createElement("div");
-
-        card.className = "date-event";
-
-        const top = document.createElement("div");
-
-        top.className = "date-event-top";
+                const eventElement =
+                    document.createElement("div");
 
 
-        const left = document.createElement("div");
+                eventElement.className =
+                    `calendar-event ${event.type}`;
 
 
-        const title = document.createElement("div");
-
-        title.className = "date-event-title";
-
-        title.textContent = record.title;
+                eventElement.textContent =
+                    event.title;
 
 
-        const type = document.createElement("div");
+                eventElement.onclick =
+                    function (clickEvent) {
 
-        type.className = "date-event-type";
+                        clickEvent.stopPropagation();
 
-        type.textContent = getTypeName(record.type);
+                        showTaskDetails(
+                            event.id
+                        );
 
-
-        left.appendChild(title);
-        left.appendChild(type);
-
-
-        const deleteButton = document.createElement("button");
-
-        deleteButton.className = "delete-event";
-
-        deleteButton.textContent = "×";
-
-        deleteButton.onclick = function(){
-            deleteRecord(record.id);
-        };
+                    };
 
 
-        top.appendChild(left);
-        top.appendChild(deleteButton);
+                dayElement.appendChild(
+                    eventElement
+                );
 
-        card.appendChild(top);
-
-
-        if(record.time){
-
-            const time = document.createElement("div");
-
-            time.className = "date-event-time";
-
-            time.textContent = formatTime(record.time);
-
-            card.appendChild(time);
-        }
-
-
-        if(record.amount){
-
-            const amount = document.createElement("div");
-
-            amount.className = "date-event-amount";
-
-            if(record.type === "sales"){
-
-                amount.textContent =
-                    "Sales: ₱" +
-                    Number(record.amount).toLocaleString();
-
-            }else if(record.type === "stock"){
-
-                const prefix =
-                    record.stockDirection === "loss"
-                        ? "-"
-                        : "+";
-
-                amount.textContent =
-                    "Stock: " +
-                    prefix +
-                    record.amount;
-
-            }else{
-
-                amount.textContent =
-                    "Amount: " + record.amount;
             }
-
-            card.appendChild(amount);
-        }
-
-
-        if(record.description){
-
-            const description = document.createElement("div");
-
-            description.className = "date-event-description";
-
-            description.textContent = record.description;
-
-            card.appendChild(description);
-        }
-
-
-        container.appendChild(card);
-    });
-}
-
-
-function getTypeName(type){
-
-    const names = {
-        activity: "Farm Activity",
-        reminder: "Reminder",
-        note: "Note",
-        sales: "Sales",
-        stock: "Stock Update"
-    };
-
-    return names[type] || "Calendar Record";
-}
-
-
-function openAddModal(type = "activity"){
-
-    closeDateModal();
-
-    addModal.classList.add("show");
-
-    eventType.value = type;
-
-    if(selectedDate){
-
-        eventDate.value = selectedDate;
-
-    }else{
-
-        eventDate.value = formatDateKey(new Date());
-    }
-
-    updateFormFields();
-
-    setTimeout(function(){
-        eventTitle.focus();
-    }, 100);
-}
-
-
-function closeAddModal(){
-
-    addModal.classList.remove("show");
-
-    calendarForm.reset();
-
-    updateFormFields();
-}
-
-
-function closeDateModal(){
-
-    dateModal.classList.remove("show");
-}
-
-
-function setupForm(){
-
-    calendarForm.addEventListener("submit", function(event){
-
-        event.preventDefault();
-
-        saveRecord();
-    });
-
-
-    eventType.addEventListener("change", updateFormFields);
-}
-
-
-function updateFormFields(){
-
-    const type = eventType.value;
-
-    if(type === "sales" || type === "stock"){
-
-        amountGroup.style.display = "block";
-
-    }else{
-
-        amountGroup.style.display = "none";
-
-        eventAmount.value = "";
-    }
-
-
-    if(type === "reminder"){
-
-        notificationOption.style.display = "block";
-
-    }else{
-
-        notificationOption.style.display = "block";
-    }
-}
-
-
-function saveRecord(){
-
-    const type = eventType.value;
-
-    const title = eventTitle.value.trim();
-
-    const date = eventDate.value;
-
-    const time = eventTime.value;
-
-    const amount = eventAmount.value;
-
-    const description = eventDescription.value.trim();
-
-    const enableNotification =
-        document.getElementById("enableNotification").checked;
-
-
-    if(!title || !date){
-
-        alert("Please enter a title and date.");
-
-        return;
-    }
-
-
-    let stockDirection = null;
-
-
-    if(type === "stock"){
-
-        const direction = prompt(
-            "Type GAIN for stock gained or LOSS for stock lost:"
         );
 
-        if(!direction){
 
-            return;
-        }
+        dayElement.onclick =
+            function () {
 
-        if(direction.toLowerCase() === "loss"){
+                if (
+                    dayElement.classList.contains(
+                        "other-month"
+                    )
+                ) {
 
-            stockDirection = "loss";
+                    return;
 
-        }else{
+                }
 
-            stockDirection = "gain";
-        }
+
+                document.getElementById(
+                    "eventDate"
+                ).value =
+                    dateString;
+
+
+                openEventModal();
+
+            };
+
+
+        calendarDays.appendChild(
+            dayElement
+        );
+
     }
 
-
-    const record = {
-
-        id: Date.now(),
-
-        type: type,
-
-        title: title,
-
-        date: date,
-
-        time: time,
-
-        amount: amount,
-
-        description: description,
-
-        stockDirection: stockDirection,
-
-        notification: enableNotification,
-
-        createdAt: new Date().toISOString()
-    };
-
-
-    records.push(record);
-
-    saveRecords();
-
-
-    currentDate = parseDate(date);
-
-    renderCalendar("page-next");
-
-    renderReminders();
-
-
-    closeAddModal();
-
-    openDateModal(date);
-
-    showToast(
-        "Record Saved",
-        title + " was added to your calendar."
-    );
 }
 
 
-function saveRecords(){
+/* =========================================================
+   MONTH NAVIGATION
+   ========================================================= */
 
-    localStorage.setItem(
-        "verdexCalendarRecords",
-        JSON.stringify(records)
+function previousMonth() {
+
+    currentDate.setMonth(
+        currentDate.getMonth() - 1
     );
-}
-
-
-function deleteRecord(id){
-
-    const confirmed = confirm(
-        "Delete this calendar record?"
-    );
-
-    if(!confirmed){
-
-        return;
-    }
-
-
-    records = records.filter(
-        record => record.id !== id
-    );
-
-    saveRecords();
 
     renderCalendar();
 
-    renderReminders();
-
-    renderDateEvents();
 }
 
 
-function renderReminders(){
+function nextMonth() {
 
-    upcomingReminders.innerHTML = "";
-
-    const todayKey = formatDateKey(new Date());
-
-
-    const reminders = records
-        .filter(record =>
-            record.type === "reminder" &&
-            record.notification === true &&
-            record.date >= todayKey
-        )
-        .sort(function(a, b){
-
-            const dateA =
-                new Date(
-                    a.date + "T" + (a.time || "00:00")
-                );
-
-            const dateB =
-                new Date(
-                    b.date + "T" + (b.time || "00:00")
-                );
-
-            return dateA - dateB;
-        });
-
-
-    if(reminders.length === 0){
-
-        upcomingReminders.innerHTML = `
-            <div class="empty-reminders">
-                No upcoming reminders.
-                Add a reminder to keep track of your farm tasks.
-            </div>
-        `;
-
-        return;
-    }
-
-
-    reminders.slice(0, 6).forEach(reminder => {
-
-        const card = document.createElement("div");
-
-        card.className = "reminder-card";
-
-
-        const info = document.createElement("div");
-
-        info.className = "reminder-info";
-
-
-        const title = document.createElement("h3");
-
-        title.textContent = reminder.title;
-
-
-        const date = document.createElement("p");
-
-        date.className = "reminder-date";
-
-        date.textContent =
-            formatDisplayDate(reminder.date) +
-            (reminder.time
-                ? " • " + formatTime(reminder.time)
-                : "");
-
-
-        info.appendChild(title);
-        info.appendChild(date);
-
-
-        if(reminder.description){
-
-            const description = document.createElement("p");
-
-            description.textContent =
-                reminder.description;
-
-            info.appendChild(description);
-        }
-
-
-        const deleteButton = document.createElement("button");
-
-        deleteButton.className = "delete-reminder";
-
-        deleteButton.textContent = "×";
-
-        deleteButton.onclick = function(){
-
-            deleteRecord(reminder.id);
-        };
-
-
-        card.appendChild(info);
-
-        card.appendChild(deleteButton);
-
-        upcomingReminders.appendChild(card);
-    });
-}
-
-
-function formatDisplayDate(dateString){
-
-    const date = parseDate(dateString);
-
-    return date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-    });
-}
-
-
-function formatTime(timeString){
-
-    const parts = timeString.split(":");
-
-    let hour = Number(parts[0]);
-
-    const minute = parts[1];
-
-    const period = hour >= 12
-        ? "PM"
-        : "AM";
-
-    hour = hour % 12;
-
-    if(hour === 0){
-        hour = 12;
-    }
-
-    return `${hour}:${minute} ${period}`;
-}
-
-
-function parseDate(dateString){
-
-    const parts = dateString.split("-");
-
-    return new Date(
-        Number(parts[0]),
-        Number(parts[1]) - 1,
-        Number(parts[2])
+    currentDate.setMonth(
+        currentDate.getMonth() + 1
     );
+
+    renderCalendar();
+
 }
 
 
-function checkReminders(){
+function goToToday() {
 
-    const now = new Date();
+    currentDate =
+        new Date();
 
-    records.forEach(record => {
+    renderCalendar();
 
-        if(
-            record.type !== "reminder" ||
-            !record.notification ||
-            !record.time
-        ){
-            return;
-        }
+}
 
 
-        const reminderDate = new Date(
-            record.date +
-            "T" +
-            record.time
+/* =========================================================
+   DATE FORMAT
+   ========================================================= */
+
+function formatDateKey(date) {
+
+    const year =
+        date.getFullYear();
+
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0");
+
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2, "0");
+
+
+    return `${year}-${month}-${day}`;
+
+}
+
+
+function formatReadableDate(dateString) {
+
+    const date =
+        new Date(
+            `${dateString}T00:00:00`
         );
 
 
-        const difference =
-            now.getTime() -
-            reminderDate.getTime();
-
-
-        if(
-            difference >= 0 &&
-            difference < 60000
-        ){
-
-            showToast(
-                "Farm Reminder",
-                record.title
-            );
+    return date.toLocaleDateString(
+        "en-US",
+        {
+            month: "short",
+            day: "numeric",
+            year: "numeric"
         }
+    );
 
-    });
 }
 
 
-function showToast(title, message){
+/* =========================================================
+   UPCOMING TASKS
+   ========================================================= */
 
-    document.getElementById("toastTitle").textContent =
-        title;
+function renderUpcomingTasks() {
 
-    document.getElementById("toastMessage").textContent =
-        message;
+    const container =
+        document.getElementById(
+            "upcomingTasks"
+        );
+
+
+    const today =
+        formatDateKey(
+            new Date()
+        );
+
+
+    const upcoming =
+        events
+
+            .filter(
+                event =>
+                    event.date >= today
+            )
+
+            .sort(
+                (a, b) => {
+
+                    const dateA =
+                        `${a.date} ${a.start}`;
+
+                    const dateB =
+                        `${b.date} ${b.start}`;
+
+                    return dateA.localeCompare(
+                        dateB
+                    );
+
+                }
+            )
+
+            .slice(0, 5);
+
+
+    if (upcoming.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="no-tasks">
+
+                No upcoming tasks.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        upcoming.map(
+            event => `
+
+                <div
+                    class="upcoming-task"
+                    onclick="showTaskDetails(${event.id})">
+
+                    <div class="upcoming-date">
+
+                        ${formatReadableDate(
+                            event.date
+                        )}
+
+                    </div>
+
+
+                    <div class="upcoming-task-title">
+
+                        ${escapeHTML(
+                            event.title
+                        )}
+
+                    </div>
+
+
+                    <div class="upcoming-task-time">
+
+                        ${formatTime(
+                            event.start
+                        )}
+
+                        ${
+                            event.end
+                                ? ` - ${formatTime(event.end)}`
+                                : ""
+                        }
+
+                    </div>
+
+
+                    <span class="upcoming-type">
+
+                        ${formatType(
+                            event.type
+                        )}
+
+                    </span>
+
+                </div>
+
+            `
+        )
+        .join("");
+
+}
+
+
+/* =========================================================
+   ADD EVENT
+   ========================================================= */
+
+function setupEventForm() {
+
+    const form =
+        document.getElementById(
+            "eventForm"
+        );
+
+
+    form.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            const newEvent = {
+
+                title:
+                    document.getElementById(
+                        "eventTitle"
+                    ).value.trim(),
+
+                date:
+                    document.getElementById(
+                        "eventDate"
+                    ).value,
+
+                start:
+                    document.getElementById(
+                        "eventStart"
+                    ).value,
+
+                end:
+                    document.getElementById(
+                        "eventEnd"
+                    ).value,
+
+                type:
+                    document.getElementById(
+                        "eventType"
+                    ).value,
+
+                description:
+                    document.getElementById(
+                        "eventDescription"
+                    ).value.trim()
+
+            };
+
+
+            if (
+                !newEvent.title ||
+                !newEvent.date ||
+                !newEvent.start
+            ) {
+
+                return;
+
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "../api/calendar.php",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+                            body:
+                                JSON.stringify(
+                                    newEvent
+                                )
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!data.success) {
+
+                    console.error(
+                        data.message ||
+                        "Failed to save task."
+                    );
+
+                    return;
+
+                }
+
+
+                events.push(
+                    data.task
+                );
+
+
+                renderCalendar();
+
+                renderUpcomingTasks();
+
+                closeEventModal();
+
+                form.reset();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Calendar save error:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+function openEventModal() {
 
     document
-        .getElementById("notificationToast")
+        .getElementById("eventModal")
         .classList.add("show");
 
 
-    setTimeout(function(){
+    const dateInput =
+        document.getElementById(
+            "eventDate"
+        );
 
-        hideToast();
 
-    }, 6000);
+    if (!dateInput.value) {
+
+        dateInput.value =
+            formatDateKey(
+                new Date()
+            );
+
+    }
+
 }
 
 
-function hideToast(){
+function closeEventModal() {
 
     document
-        .getElementById("notificationToast")
+        .getElementById("eventModal")
         .classList.remove("show");
+
 }
 
 
-window.addEventListener("click", function(event){
+/* =========================================================
+   TASK DETAILS
+   ========================================================= */
 
-    if(event.target === dateModal){
+function showTaskDetails(id) {
 
-        closeDateModal();
+    const event =
+        events.find(
+            item =>
+                Number(item.id) ===
+                Number(id)
+        );
+
+
+    if (!event) {
+
+        return;
+
     }
 
-    if(event.target === addModal){
 
-        closeAddModal();
+    document.getElementById(
+        "taskDetailsTitle"
+    ).textContent =
+        event.title;
+
+
+    document.getElementById(
+        "taskDetailsContent"
+    ).innerHTML = `
+
+        <span class="task-detail-type">
+
+            ${formatType(
+                event.type
+            )}
+
+        </span>
+
+
+        <div class="task-detail-row">
+
+            <strong>
+                Date
+            </strong>
+
+            <span>
+                ${formatReadableDate(
+                    event.date
+                )}
+            </span>
+
+        </div>
+
+
+        <div class="task-detail-row">
+
+            <strong>
+                Time
+            </strong>
+
+            <span>
+
+                ${formatTime(
+                    event.start
+                )}
+
+                ${
+                    event.end
+                        ? ` - ${formatTime(event.end)}`
+                        : ""
+                }
+
+            </span>
+
+        </div>
+
+
+        <div class="task-detail-row">
+
+            <strong>
+                Description
+            </strong>
+
+            <span>
+
+                ${
+                    escapeHTML(
+                        event.description ||
+                        "No description provided."
+                    )
+                }
+
+            </span>
+
+        </div>
+
+    `;
+
+
+    document
+        .getElementById(
+            "taskDetailsModal"
+        )
+        .classList.add("show");
+
+}
+
+
+function closeTaskDetails() {
+
+    document
+        .getElementById(
+            "taskDetailsModal"
+        )
+        .classList.remove("show");
+
+}
+
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+function formatTime(time) {
+
+    if (!time) {
+
+        return "";
+
     }
-});
 
 
-setInterval(checkReminders, 30000);
+    const [hours, minutes] =
+        time.split(":");
+
+
+    const date =
+        new Date();
+
+
+    date.setHours(
+        Number(hours)
+    );
+
+
+    date.setMinutes(
+        Number(minutes)
+    );
+
+
+    return date.toLocaleTimeString(
+        "en-US",
+        {
+            hour: "numeric",
+            minute: "2-digit"
+        }
+    );
+
+}
+
+
+function formatType(type) {
+
+    const types = {
+
+        plant:
+            "Plant Care",
+
+        irrigation:
+            "Irrigation",
+
+        fertilizer:
+            "Fertilizer",
+
+        inspection:
+            "Inspection",
+
+        maintenance:
+            "Maintenance",
+
+        other:
+            "Other"
+
+    };
+
+
+    return types[type] || "Other";
+
+}
+
+
+function escapeHTML(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
