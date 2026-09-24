@@ -1,569 +1,409 @@
-/* =================================
-   VERDEX - FARM STATUS
-================================= */
+// =====================================================
+// VerdEX Farm Status
+// Live sensor updates + Environmental Overview chart
+// =====================================================
 
 
-/* =================================
-   CURRENT ENVIRONMENTAL DATA
-================================= */
+// =====================================================
+// UPDATE LIVE SENSOR DATA
+// =====================================================
 
-const currentData = {
-    labels: [
-        "5 min ago",
-        "4 min ago",
-        "3 min ago",
-        "2 min ago",
-        "1 min ago",
-        "Now"
-    ],
+async function updateLiveSensorData() {
 
-    temperature: [
-        27.8,
-        28.2,
-        28.6,
-        29.1,
-        28.9,
-        28.5
-    ],
+    try {
 
-    humidity: [
-        75,
-        74,
-        73,
-        71,
-        70,
-        72
-    ],
-
-    soilMoisture: [
-        68,
-        67,
-        66,
-        64,
-        63,
-        64
-    ]
-};
-
-
-/* =================================
-   HISTORICAL DATA
-================================= */
-
-const historyData = {
-
-    "2026-08": {
-
-        labels: [
-            "Aug 1",
-            "Aug 5",
-            "Aug 10",
-            "Aug 15",
-            "Aug 20",
-            "Aug 25",
-            "Aug 31"
-        ],
-
-        temperature: [
-            27.8,
-            28.4,
-            29.1,
-            30.2,
-            28.7,
-            27.9,
-            28.3
-        ],
-
-        humidity: [
-            74,
-            71,
-            69,
-            67,
-            73,
-            76,
-            72
-        ],
-
-        soilMoisture: [
-            62,
-            65,
-            61,
-            55,
-            68,
-            70,
-            66
-        ]
-    }
-
-};
-
-
-/* =================================
-   CHART OPTIONS
-================================= */
-
-const commonOptions = {
-
-    responsive: true,
-
-    maintainAspectRatio: false,
-
-    interaction: {
-        mode: "index",
-        intersect: false
-    },
-
-    plugins: {
-
-        legend: {
-            display: true,
-
-            labels: {
-                usePointStyle: true,
-                padding: 20,
-
-                font: {
-                    size: 12
-                }
+        // Get latest data from VerdEX API
+        const response = await fetch(
+            "../api/latest-sensor-data.php",
+            {
+                cache: "no-store"
             }
-        },
+        );
 
-        tooltip: {
-            backgroundColor: "#26352b",
-            padding: 12,
-
-            titleFont: {
-                size: 12
-            },
-
-            bodyFont: {
-                size: 12
-            }
+        if (!response.ok) {
+            throw new Error(
+                "HTTP error: " + response.status
+            );
         }
-    },
 
-    scales: {
+        const data = await response.json();
 
-        x: {
-            grid: {
-                display: false
-            },
 
-            ticks: {
-                color: "#89938b",
-                font: {
-                    size: 11
-                }
-            }
-        },
+        // Stop if API did not return sensor data
+        if (!data.success) {
 
-        y: {
-            beginAtZero: false,
+            console.log(
+                "Sensor API:",
+                data.message
+            );
 
-            grid: {
-                color: "#edf0ed"
-            },
-
-            ticks: {
-                color: "#89938b",
-                font: {
-                    size: 11
-                }
-            }
+            return;
         }
+
+
+        // =================================================
+        // CURRENT SENSOR VALUES
+        // =================================================
+
+        const temperature =
+            Number(data.temperature);
+
+        const humidity =
+            Number(data.humidity);
+
+        const soilMoisture =
+            Number(data.soil_moisture);
+
+
+        // =================================================
+        // GET PAGE ELEMENTS
+        // =================================================
+
+        const temperatureElement =
+            document.getElementById(
+                "liveTemperature"
+            );
+
+        const humidityElement =
+            document.getElementById(
+                "liveHumidity"
+            );
+
+        const soilElement =
+            document.getElementById(
+                "liveSoilMoisture"
+            );
+
+
+        const temperatureStatus =
+            document.getElementById(
+                "liveTemperatureStatus"
+            );
+
+        const humidityStatus =
+            document.getElementById(
+                "liveHumidityStatus"
+            );
+
+        const soilStatus =
+            document.getElementById(
+                "liveSoilMoistureStatus"
+            );
+
+
+        const healthElement =
+            document.getElementById(
+                "liveOverallHealth"
+            );
+
+        const healthMessage =
+            document.getElementById(
+                "liveOverallHealthMessage"
+            );
+
+
+        // =================================================
+        // UPDATE CURRENT VALUES
+        // =================================================
+
+        if (temperatureElement) {
+
+            temperatureElement.textContent =
+                temperature.toFixed(1) + "°C";
+        }
+
+
+        if (humidityElement) {
+
+            humidityElement.textContent =
+                humidity.toFixed(1) + "%";
+        }
+
+
+        if (soilElement) {
+
+            soilElement.textContent =
+                soilMoisture.toFixed(1) + "%";
+        }
+
+
+        // =================================================
+        // TEMPERATURE STATUS
+        // =================================================
+
+        const temperatureGood =
+            temperature >= 18 &&
+            temperature <= 32;
+
+
+        if (temperatureStatus) {
+
+            temperatureStatus.textContent =
+                temperatureGood
+                    ? "Normal range"
+                    : "Warning level";
+        }
+
+
+        // =================================================
+        // HUMIDITY STATUS
+        // =================================================
+
+        const humidityGood =
+            humidity >= 50 &&
+            humidity <= 80;
+
+
+        if (humidityStatus) {
+
+            humidityStatus.textContent =
+                humidityGood
+                    ? "Good level"
+                    : "Warning level";
+        }
+
+
+        // =================================================
+        // SOIL MOISTURE STATUS
+        // =================================================
+
+        const soilGood =
+            soilMoisture >= 40 &&
+            soilMoisture <= 80;
+
+
+        if (soilStatus) {
+
+            soilStatus.textContent =
+                soilGood
+                    ? "Good moisture level"
+                    : "Warning level";
+        }
+
+
+        // =================================================
+        // OVERALL FARM HEALTH
+        // =================================================
+
+        const farmHealthy =
+            temperatureGood &&
+            humidityGood &&
+            soilGood;
+
+
+        if (healthElement) {
+
+            healthElement.textContent =
+                farmHealthy
+                    ? "Healthy"
+                    : "Warning";
+        }
+
+
+        if (healthMessage) {
+
+            healthMessage.innerHTML =
+                '<span class="health-dot"></span>' +
+                (
+                    farmHealthy
+                        ? "All systems are operating normally"
+                        : "One or more readings need attention"
+                );
+        }
+
+
+        // =================================================
+        // ENVIRONMENTAL OVERVIEW CHART
+        // =================================================
+
+        updateEnvironmentalChart(
+            data.readings
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Unable to retrieve live sensor data:",
+            error
+        );
     }
-};
+}
 
 
-/* =================================
-   CREATE CURRENT STATUS CHART
-================================= */
+// =====================================================
+// UPDATE ENVIRONMENTAL CHART
+// =====================================================
 
-function createRealtimeChart() {
+function updateEnvironmentalChart(readings) {
 
-    const canvas = document.createElement("canvas");
+    // Make sure chart exists
+    if (!window.realtimeChart) {
 
-    const container = document.getElementById("realtimeChart");
+        console.log(
+            "Environmental chart is not ready."
+        );
 
-    if (!container) {
         return;
     }
 
-    container.innerHTML = "";
 
-    container.appendChild(canvas);
+    // Make sure readings exist
+    if (!Array.isArray(readings)) {
+
+        console.log(
+            "No chart readings received."
+        );
+
+        return;
+    }
 
 
-    new Chart(canvas, {
+    // Nothing to display
+    if (readings.length === 0) {
 
-        type: "line",
+        console.log(
+            "Chart readings are empty."
+        );
 
-        data: {
+        return;
+    }
 
-            labels: currentData.labels,
 
-            datasets: [
+    const labels = [];
 
-                {
-                    label: "Temperature (°C)",
+    const temperatures = [];
 
-                    data: currentData.temperature,
+    const humidities = [];
 
-                    borderColor: "#4c9658",
+    const soilMoistures = [];
 
-                    backgroundColor: "rgba(76, 150, 88, 0.08)",
 
-                    borderWidth: 2,
+    // =================================================
+    // PREPARE CHART DATA
+    // =================================================
 
-                    pointRadius: 4,
+    readings.forEach(
+        function (reading) {
 
-                    pointHoverRadius: 6,
+            // MySQL:
+            // 2026-09-25 00:24:35
+            //
+            // JavaScript-friendly:
+            // 2026-09-25T00:24:35
 
-                    tension: 0.35,
+            const dateString =
+                String(
+                    reading.recorded_at
+                ).replace(
+                    " ",
+                    "T"
+                );
 
-                    yAxisID: "temperature"
-                },
 
-                {
-                    label: "Humidity (%)",
+            const readingDate =
+                new Date(
+                    dateString
+                );
 
-                    data: currentData.humidity,
 
-                    borderColor: "#5b9bd5",
+            // Time label
+            if (
+                !isNaN(
+                    readingDate.getTime()
+                )
+            ) {
 
-                    backgroundColor: "rgba(91, 155, 213, 0.08)",
+                labels.push(
+                    readingDate.toLocaleTimeString(
+                        [],
+                        {
+                            hour:
+                                "2-digit",
 
-                    borderWidth: 2,
+                            minute:
+                                "2-digit",
 
-                    pointRadius: 4,
-
-                    pointHoverRadius: 6,
-
-                    tension: 0.35,
-
-                    yAxisID: "percentage"
-                },
-
-                {
-                    label: "Soil Moisture (%)",
-
-                    data: currentData.soilMoisture,
-
-                    borderColor: "#c5964b",
-
-                    backgroundColor: "rgba(197, 150, 75, 0.08)",
-
-                    borderWidth: 2,
-
-                    pointRadius: 4,
-
-                    pointHoverRadius: 6,
-
-                    tension: 0.35,
-
-                    yAxisID: "percentage"
-                }
-
-            ]
-
-        },
-
-        options: {
-
-            ...commonOptions,
-
-            scales: {
-
-                x: {
-                    grid: {
-                        display: false
-                    },
-
-                    ticks: {
-                        color: "#89938b",
-                        font: {
-                            size: 11
+                            second:
+                                "2-digit"
                         }
-                    }
-                },
+                    )
+                );
 
-                temperature: {
+            } else {
 
-                    type: "linear",
-
-                    position: "left",
-
-                    min: 20,
-
-                    max: 35,
-
-                    title: {
-                        display: true,
-                        text: "Temperature °C"
-                    },
-
-                    grid: {
-                        color: "#edf0ed"
-                    },
-
-                    ticks: {
-                        color: "#89938b"
-                    }
-                },
-
-                percentage: {
-
-                    type: "linear",
-
-                    position: "right",
-
-                    min: 0,
-
-                    max: 100,
-
-                    title: {
-                        display: true,
-                        text: "Percentage"
-                    },
-
-                    grid: {
-                        drawOnChartArea: false
-                    },
-
-                    ticks: {
-                        color: "#89938b"
-                    }
-                }
-
+                labels.push(
+                    reading.recorded_at
+                );
             }
 
+
+            // Sensor values
+            temperatures.push(
+                Number(
+                    reading.temperature
+                )
+            );
+
+            humidities.push(
+                Number(
+                    reading.humidity
+                )
+            );
+
+            soilMoistures.push(
+                Number(
+                    reading.soil_moisture
+                )
+            );
         }
+    );
 
-    });
 
+    // =================================================
+    // SEND DATA TO CHART.JS
+    // =================================================
+
+    window.realtimeChart.data.labels =
+        labels;
+
+
+    window.realtimeChart
+        .data
+        .datasets[0]
+        .data =
+        temperatures;
+
+
+    window.realtimeChart
+        .data
+        .datasets[1]
+        .data =
+        humidities;
+
+
+    window.realtimeChart
+        .data
+        .datasets[2]
+        .data =
+        soilMoistures;
+
+
+    // Redraw chart
+    window.realtimeChart.update();
 }
 
 
-/* =================================
-   CREATE HISTORY CHART
-================================= */
-
-function createHistoryChart(month) {
-
-    const container = document.getElementById("historyChart");
-
-    if (!container) {
-        return;
-    }
-
-    const data = historyData[month];
-
-    container.innerHTML = "";
-
-
-    /*
-    | No data available
-    */
-
-    if (!data) {
-
-        container.innerHTML = `
-            <div style="
-                height: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #89938b;
-                font-size: 13px;
-            ">
-                No historical data available for this month.
-            </div>
-        `;
-
-        return;
-    }
-
-
-    const canvas = document.createElement("canvas");
-
-    container.appendChild(canvas);
-
-
-    new Chart(canvas, {
-
-        type: "line",
-
-        data: {
-
-            labels: data.labels,
-
-            datasets: [
-
-                {
-                    label: "Temperature (°C)",
-
-                    data: data.temperature,
-
-                    borderColor: "#4c9658",
-
-                    backgroundColor: "rgba(76, 150, 88, 0.08)",
-
-                    borderWidth: 2,
-
-                    pointRadius: 4,
-
-                    pointHoverRadius: 6,
-
-                    tension: 0.35,
-
-                    yAxisID: "temperature"
-                },
-
-                {
-                    label: "Humidity (%)",
-
-                    data: data.humidity,
-
-                    borderColor: "#5b9bd5",
-
-                    backgroundColor: "rgba(91, 155, 213, 0.08)",
-
-                    borderWidth: 2,
-
-                    pointRadius: 4,
-
-                    pointHoverRadius: 6,
-
-                    tension: 0.35,
-
-                    yAxisID: "percentage"
-                },
-
-                {
-                    label: "Soil Moisture (%)",
-
-                    data: data.soilMoisture,
-
-                    borderColor: "#c5964b",
-
-                    backgroundColor: "rgba(197, 150, 75, 0.08)",
-
-                    borderWidth: 2,
-
-                    pointRadius: 4,
-
-                    pointHoverRadius: 6,
-
-                    tension: 0.35,
-
-                    yAxisID: "percentage"
-                }
-
-            ]
-
-        },
-
-        options: {
-
-            ...commonOptions,
-
-            scales: {
-
-                x: {
-                    grid: {
-                        display: false
-                    },
-
-                    ticks: {
-                        color: "#89938b",
-                        font: {
-                            size: 11
-                        }
-                    }
-                },
-
-                temperature: {
-
-                    type: "linear",
-
-                    position: "left",
-
-                    min: 20,
-
-                    max: 35,
-
-                    title: {
-                        display: true,
-                        text: "Temperature °C"
-                    },
-
-                    grid: {
-                        color: "#edf0ed"
-                    },
-
-                    ticks: {
-                        color: "#89938b"
-                    }
-                },
-
-                percentage: {
-
-                    type: "linear",
-
-                    position: "right",
-
-                    min: 0,
-
-                    max: 100,
-
-                    title: {
-                        display: true,
-                        text: "Percentage"
-                    },
-
-                    grid: {
-                        drawOnChartArea: false
-                    },
-
-                    ticks: {
-                        color: "#89938b"
-                    }
-                }
-
-            }
-
-        }
-
-    });
-
-}
-
-
-/* =================================
-   MONTH SELECTOR
-================================= */
-
-const monthSelector = document.getElementById("historyMonth");
-
-if (monthSelector) {
-
-    monthSelector.addEventListener("change", function () {
-
-        createHistoryChart(this.value);
-
-    });
-
-}
-
-
-/* =================================
-   LOAD CHARTS
-================================= */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    createRealtimeChart();
-
-    createHistoryChart("2026-08");
-
-});
+// =====================================================
+// START LIVE UPDATES
+// =====================================================
+
+// Get data immediately
+updateLiveSensorData();
+
+
+// Then check every 5 seconds
+setInterval(
+    updateLiveSensorData,
+    5000
+);

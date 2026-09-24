@@ -560,7 +560,7 @@ $role = $_SESSION['role'] ?? 'Team Member';
                     and keep your crop records updated.
                 </p>
 
-                <a href="calendar.html"
+                <a href="calendar.php"
                    class="smart-task-button">
 
                     View Tasks
