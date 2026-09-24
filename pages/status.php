@@ -6,143 +6,405 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| SAMPLE FARM STATUS DATA
-|--------------------------------------------------------------------------
-| These are temporary values for the UI.
-| Later, these can be replaced with data from your database / Arduino API.
-|--------------------------------------------------------------------------
-*/
+require_once "../config.php";
 
 $currentStatus = [
-    'temperature' => 28.5,
-    'humidity' => 72,
-    'soil_moisture' => 64,
-    'light_level' => 78
+    'temperature' => null,
+    'humidity' => null,
+    'soil_moisture' => null,
+    'recorded_at' => null
 ];
 
-/*
-|--------------------------------------------------------------------------
-| SAMPLE HISTORICAL DATA
-|--------------------------------------------------------------------------
-| Example: August 2026
-*/
+$historyData = [];
+$availableMonths = [];
+$alerts = [];
 
-$historyData = [
-    [
-        'date' => 'August 1, 2026',
-        'temperature' => 27.8,
-        'humidity' => 74,
-        'soil_moisture' => 62,
-        'light_level' => 76,
-        'status' => 'Good'
-    ],
-    [
-        'date' => 'August 5, 2026',
-        'temperature' => 28.4,
-        'humidity' => 71,
-        'soil_moisture' => 65,
-        'light_level' => 79,
-        'status' => 'Good'
-    ],
-    [
-        'date' => 'August 10, 2026',
-        'temperature' => 29.1,
-        'humidity' => 69,
-        'soil_moisture' => 61,
-        'light_level' => 82,
-        'status' => 'Good'
-    ],
-    [
-        'date' => 'August 15, 2026',
-        'temperature' => 30.2,
-        'humidity' => 67,
-        'soil_moisture' => 55,
-        'light_level' => 86,
-        'status' => 'Warning'
-    ],
-    [
-        'date' => 'August 20, 2026',
-        'temperature' => 28.7,
-        'humidity' => 73,
-        'soil_moisture' => 68,
-        'light_level' => 74,
-        'status' => 'Good'
-    ],
-    [
-        'date' => 'August 25, 2026',
-        'temperature' => 27.9,
-        'humidity' => 76,
-        'soil_moisture' => 70,
-        'light_level' => 71,
-        'status' => 'Good'
-    ],
-    [
-        'date' => 'August 31, 2026',
-        'temperature' => 28.3,
-        'humidity' => 72,
-        'soil_moisture' => 66,
-        'light_level' => 77,
-        'status' => 'Good'
-    ]
-];
+$selectedMonth = $_GET['month'] ?? date('Y-m');
+
+$latestQuery = "
+    SELECT
+        temperature,
+        humidity,
+        soil_moisture,
+        recorded_at
+    FROM sensor_readings
+    ORDER BY recorded_at DESC
+    LIMIT 1
+";
+
+$latestResult = $conn->query($latestQuery);
+
+if ($latestResult && $latestResult->num_rows > 0) {
+    $currentStatus = $latestResult->fetch_assoc();
+}
+
+$monthQuery = "
+    SELECT DISTINCT DATE_FORMAT(recorded_at, '%Y-%m') AS month_value
+    FROM sensor_readings
+    ORDER BY month_value DESC
+";
+
+$monthResult = $conn->query($monthQuery);
+
+if ($monthResult) {
+    while ($month = $monthResult->fetch_assoc()) {
+        $availableMonths[] = $month['month_value'];
+    }
+}
+
+if (empty($availableMonths)) {
+    $availableMonths[] = date('Y-m');
+}
+
+if (!in_array($selectedMonth, $availableMonths, true)) {
+    $selectedMonth = $availableMonths[0];
+}
+
+$selectedMonthDate = DateTime::createFromFormat('Y-m', $selectedMonth);
+
+if ($selectedMonthDate) {
+    $monthLabel = $selectedMonthDate->format('F Y');
+} else {
+    $monthLabel = date('F Y');
+}
+
+$startDate = $selectedMonth . '-01';
+$endDate = date(
+    'Y-m-t',
+    strtotime($startDate)
+);
+
+$historyQuery = "
+    SELECT
+        DATE(recorded_at) AS reading_date,
+        AVG(temperature) AS temperature,
+        AVG(humidity) AS humidity,
+        AVG(soil_moisture) AS soil_moisture,
+        MAX(recorded_at) AS last_recorded
+    FROM sensor_readings
+    WHERE recorded_at >= ?
+      AND recorded_at < DATE_ADD(?, INTERVAL 1 DAY)
+    GROUP BY DATE(recorded_at)
+    ORDER BY reading_date ASC
+";
+
+$historyStmt = $conn->prepare($historyQuery);
+
+if ($historyStmt) {
+    $historyStmt->bind_param(
+        "ss",
+        $startDate,
+        $endDate
+    );
+
+    $historyStmt->execute();
+
+    $historyResult = $historyStmt->get_result();
+
+    while ($record = $historyResult->fetch_assoc()) {
+
+        $temperature = (float) $record['temperature'];
+        $humidity = (float) $record['humidity'];
+        $soilMoisture = (float) $record['soil_moisture'];
+
+        $recordStatus = 'Good';
+
+        if (
+            $temperature < 18 ||
+            $temperature > 32 ||
+            $humidity < 50 ||
+            $humidity > 80 ||
+            $soilMoisture < 40 ||
+            $soilMoisture > 80
+        ) {
+            $recordStatus = 'Warning';
+        }
+
+        $historyData[] = [
+            'date' => date(
+                'F j, Y',
+                strtotime($record['reading_date'])
+            ),
+            'temperature' => round($temperature, 1),
+            'humidity' => round($humidity, 1),
+            'soil_moisture' => round($soilMoisture, 1),
+            'status' => $recordStatus
+        ];
+    }
+
+    $historyStmt->close();
+}
+
+$averageTemperature = 0;
+$averageHumidity = 0;
+$averageSoilMoisture = 0;
+$overallHistoryStatus = 'No Data';
+
+$summaryQuery = "
+    SELECT
+        AVG(temperature) AS average_temperature,
+        AVG(humidity) AS average_humidity,
+        AVG(soil_moisture) AS average_soil_moisture
+    FROM sensor_readings
+    WHERE recorded_at >= ?
+      AND recorded_at < DATE_ADD(?, INTERVAL 1 DAY)
+";
+
+$summaryStmt = $conn->prepare($summaryQuery);
+
+if ($summaryStmt) {
+    $summaryStmt->bind_param(
+        "ss",
+        $startDate,
+        $endDate
+    );
+
+    $summaryStmt->execute();
+
+    $summaryResult = $summaryStmt->get_result();
+
+    if ($summaryResult && $summaryResult->num_rows > 0) {
+        $summary = $summaryResult->fetch_assoc();
+
+        if ($summary['average_temperature'] !== null) {
+            $averageTemperature = round(
+                (float) $summary['average_temperature'],
+                1
+            );
+
+            $averageHumidity = round(
+                (float) $summary['average_humidity'],
+                1
+            );
+
+            $averageSoilMoisture = round(
+                (float) $summary['average_soil_moisture'],
+                1
+            );
+
+            $overallHistoryStatus = 'Good';
+
+            if (
+                $averageTemperature < 18 ||
+                $averageTemperature > 32 ||
+                $averageHumidity < 50 ||
+                $averageHumidity > 80 ||
+                $averageSoilMoisture < 40 ||
+                $averageSoilMoisture > 80
+            ) {
+                $overallHistoryStatus = 'Warning';
+            }
+        }
+    }
+
+    $summaryStmt->close();
+}
+
+$currentTemperature = $currentStatus['temperature'];
+$currentHumidity = $currentStatus['humidity'];
+$currentSoilMoisture = $currentStatus['soil_moisture'];
+
+$overallHealth = 'No Data';
+$overallHealthMessage = 'Waiting for sensor readings.';
+
+if (
+    $currentTemperature !== null &&
+    $currentHumidity !== null &&
+    $currentSoilMoisture !== null
+) {
+    $overallHealth = 'Healthy';
+    $overallHealthMessage = 'All systems are operating normally';
+
+    if (
+        $currentTemperature < 18 ||
+        $currentTemperature > 32 ||
+        $currentHumidity < 50 ||
+        $currentHumidity > 80 ||
+        $currentSoilMoisture < 40 ||
+        $currentSoilMoisture > 80
+    ) {
+        $overallHealth = 'Warning';
+        $overallHealthMessage = 'One or more readings need attention';
+    }
+}
+
+$sensorOnline = false;
+
+if (!empty($currentStatus['recorded_at'])) {
+    $lastReadingTime = strtotime($currentStatus['recorded_at']);
+
+    if ($lastReadingTime !== false) {
+        $sensorOnline = (time() - $lastReadingTime) <= 300;
+    }
+}
+
+$alertsQuery = "
+    SELECT
+        temperature,
+        humidity,
+        soil_moisture,
+        recorded_at
+    FROM sensor_readings
+    WHERE
+        temperature < 18
+        OR temperature > 32
+        OR humidity < 50
+        OR humidity > 80
+        OR soil_moisture < 40
+        OR soil_moisture > 80
+    ORDER BY recorded_at DESC
+    LIMIT 5
+";
+
+$alertsResult = $conn->query($alertsQuery);
+
+if ($alertsResult) {
+    while ($alert = $alertsResult->fetch_assoc()) {
+
+        $alertMessages = [];
+
+        if (
+            (float) $alert['temperature'] < 18 ||
+            (float) $alert['temperature'] > 32
+        ) {
+            $alertMessages[] =
+                'Temperature reached ' .
+                $alert['temperature'] .
+                '°C.';
+        }
+
+        if (
+            (float) $alert['humidity'] < 50 ||
+            (float) $alert['humidity'] > 80
+        ) {
+            $alertMessages[] =
+                'Humidity reached ' .
+                $alert['humidity'] .
+                '%.';
+        }
+
+        if (
+            (float) $alert['soil_moisture'] < 40 ||
+            (float) $alert['soil_moisture'] > 80
+        ) {
+            $alertMessages[] =
+                'Soil moisture reached ' .
+                $alert['soil_moisture'] .
+                '%.';
+        }
+
+        if (!empty($alertMessages)) {
+            $alerts[] = [
+                'date' => date(
+                    'F j, Y g:i A',
+                    strtotime($alert['recorded_at'])
+                ),
+                'message' => implode(' ', $alertMessages)
+            ];
+        }
+    }
+}
+
+$chartLabels = [];
+$chartTemperature = [];
+$chartHumidity = [];
+$chartSoilMoisture = [];
+
+foreach ($historyData as $record) {
+    $chartLabels[] = $record['date'];
+    $chartTemperature[] = $record['temperature'];
+    $chartHumidity[] = $record['humidity'];
+    $chartSoilMoisture[] = $record['soil_moisture'];
+}
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Farm Status | VerdEX</title>
 
-    <link rel="stylesheet" href="../css/status.css">
-    <link rel="stylesheet" href="../css/status.css">
+    <link
+        rel="stylesheet"
+        href="../css/status.css"
+    >
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body>
 
-    <!-- ================================
-         SIDEBAR
-    ================================= -->
-
     <aside class="status-sidebar">
 
-        <a href="home.php" class="status-logo">
-            <img src="../images/verdexlogo.png" alt="VerdEX">
+        <a
+            href="home.php"
+            class="status-logo"
+        >
+            <img
+                src="../images/verdexlogo.png"
+                alt="VerdEX"
+            >
         </a>
 
         <nav class="status-nav">
 
-            <a href="home.php" title="Dashboard">
+            <a
+                href="home.php"
+                title="Dashboard"
+            >
                 🏠
             </a>
 
-            <a href="inventory.php" title="Inventory">
+            <a
+                href="inventory.php"
+                title="Inventory"
+            >
                 📦
             </a>
 
-            <a href="calendar.php" title="Calendar">
+            <a
+                href="calendar.php"
+                title="Calendar"
+            >
                 📅
             </a>
 
-            <a href="sales.php" title="Sales">
+            <a
+                href="sales.php"
+                title="Sales"
+            >
                 💰
             </a>
 
-            <a href="status.php" class="active" title="Farm Status">
+            <a
+                href="status.php"
+                class="active"
+                title="Farm Status"
+            >
                 💧
             </a>
 
-            <a href="forum.php" title="Forum">
+            <a
+                href="forum.php"
+                title="Forum"
+            >
                 💬
             </a>
 
-            <a href="reports.php" title="Reports">
+            <a
+                href="reports.php"
+                title="Reports"
+            >
                 📊
             </a>
 
@@ -150,15 +412,24 @@ $historyData = [
 
         <div class="status-nav-bottom">
 
-            <a href="profile.php" title="Profile">
+            <a
+                href="profile.php"
+                title="Profile"
+            >
                 👤
             </a>
 
-            <a href="settings.php" title="Settings">
+            <a
+                href="settings.php"
+                title="Settings"
+            >
                 ⚙️
             </a>
 
-            <a href="../backend/logout.php" title="Logout">
+            <a
+                href="../backend/logout.php"
+                title="Logout"
+            >
                 ↪
             </a>
 
@@ -167,36 +438,29 @@ $historyData = [
     </aside>
 
 
-    <!-- ================================
-         MAIN CONTENT
-    ================================= -->
-
     <main class="status-main">
-
-        <!-- PAGE HEADER -->
 
         <header class="status-header">
 
             <div>
+
                 <h1>Farm Status</h1>
 
                 <p>
                     Monitor your farm's current condition and view historical data.
                 </p>
+
             </div>
 
         </header>
 
-
-        <!-- ================================
-             CURRENT FARM STATUS
-        ================================= -->
 
         <section class="status-section">
 
             <div class="status-section-header">
 
                 <div>
+
                     <h2 class="status-section-title">
                         Current Farm Status
                     </h2>
@@ -204,14 +468,13 @@ $historyData = [
                     <p class="status-section-subtitle">
                         Latest readings from your farm sensors
                     </p>
+
                 </div>
 
             </div>
 
 
             <div class="status-cards">
-
-                <!-- FARM HEALTH -->
 
                 <div class="farm-health-card">
 
@@ -228,21 +491,19 @@ $historyData = [
                     </div>
 
                     <div class="status-card-value">
-                        Healthy
+                        <?= htmlspecialchars($overallHealth); ?>
                     </div>
 
                     <div class="health-status">
 
                         <span class="health-dot"></span>
 
-                        All systems are operating normally
+                        <?= htmlspecialchars($overallHealthMessage); ?>
 
                     </div>
 
                 </div>
 
-
-                <!-- TEMPERATURE -->
 
                 <div class="status-card">
 
@@ -259,17 +520,49 @@ $historyData = [
                     </div>
 
                     <div class="status-card-value">
-                        <?= $currentStatus['temperature']; ?>°C
+
+                        <?php if ($currentTemperature !== null): ?>
+
+                            <?= number_format(
+                                (float) $currentTemperature,
+                                1
+                            ); ?>°C
+
+                        <?php else: ?>
+
+                            No Data
+
+                        <?php endif; ?>
+
                     </div>
 
                     <div class="status-card-status">
-                        Normal range
+
+                        <?php if ($currentTemperature !== null): ?>
+
+                            <?php if (
+                                $currentTemperature >= 18 &&
+                                $currentTemperature <= 32
+                            ): ?>
+
+                                Normal range
+
+                            <?php else: ?>
+
+                                Warning level
+
+                            <?php endif; ?>
+
+                        <?php else: ?>
+
+                            Waiting for reading
+
+                        <?php endif; ?>
+
                     </div>
 
                 </div>
 
-
-                <!-- HUMIDITY -->
 
                 <div class="status-card">
 
@@ -286,17 +579,49 @@ $historyData = [
                     </div>
 
                     <div class="status-card-value">
-                        <?= $currentStatus['humidity']; ?>%
+
+                        <?php if ($currentHumidity !== null): ?>
+
+                            <?= number_format(
+                                (float) $currentHumidity,
+                                1
+                            ); ?>%
+
+                        <?php else: ?>
+
+                            No Data
+
+                        <?php endif; ?>
+
                     </div>
 
                     <div class="status-card-status">
-                        Good level
+
+                        <?php if ($currentHumidity !== null): ?>
+
+                            <?php if (
+                                $currentHumidity >= 50 &&
+                                $currentHumidity <= 80
+                            ): ?>
+
+                                Good level
+
+                            <?php else: ?>
+
+                                Warning level
+
+                            <?php endif; ?>
+
+                        <?php else: ?>
+
+                            Waiting for reading
+
+                        <?php endif; ?>
+
                     </div>
 
                 </div>
 
-
-                <!-- SOIL MOISTURE -->
 
                 <div class="status-card">
 
@@ -313,44 +638,45 @@ $historyData = [
                     </div>
 
                     <div class="status-card-value">
-                        <?= $currentStatus['soil_moisture']; ?>%
+
+                        <?php if ($currentSoilMoisture !== null): ?>
+
+                            <?= number_format(
+                                (float) $currentSoilMoisture,
+                                1
+                            ); ?>%
+
+                        <?php else: ?>
+
+                            No Data
+
+                        <?php endif; ?>
+
                     </div>
 
                     <div class="status-card-status">
-                        Good moisture level
-                    </div>
 
-                </div>
+                        <?php if ($currentSoilMoisture !== null): ?>
 
-            </div>
+                            <?php if (
+                                $currentSoilMoisture >= 40 &&
+                                $currentSoilMoisture <= 80
+                            ): ?>
 
+                                Good moisture level
 
-            <!-- SECOND ROW -->
+                            <?php else: ?>
 
-            <div class="status-cards" style="margin-top: 16px;">
+                                Warning level
 
-                <!-- LIGHT LEVEL -->
+                            <?php endif; ?>
 
-                <div class="status-card">
+                        <?php else: ?>
 
-                    <div class="status-card-top">
+                            Waiting for reading
 
-                        <span class="status-card-label">
-                            Light Level
-                        </span>
+                        <?php endif; ?>
 
-                        <div class="status-card-icon">
-                            ☀️
-                        </div>
-
-                    </div>
-
-                    <div class="status-card-value">
-                        <?= $currentStatus['light_level']; ?>%
-                    </div>
-
-                    <div class="status-card-status">
-                        Good sunlight
                     </div>
 
                 </div>
@@ -359,10 +685,6 @@ $historyData = [
 
         </section>
 
-
-        <!-- ================================
-             ENVIRONMENTAL OVERVIEW
-        ================================= -->
 
         <section class="status-section">
 
@@ -385,9 +707,9 @@ $historyData = [
 
             <div class="status-chart-card">
 
-                <div class="chart-container" id="realtimeChart">
+                <div class="chart-container">
 
-                    Real-time chart will appear here.
+                    <canvas id="realtimeChart"></canvas>
 
                 </div>
 
@@ -395,10 +717,6 @@ $historyData = [
 
         </section>
 
-
-        <!-- ================================
-             FARM STATUS HISTORY
-        ================================= -->
 
         <section class="status-section">
 
@@ -423,19 +741,32 @@ $historyData = [
                         Month:
                     </label>
 
-                    <select id="historyMonth">
+                    <select
+                        id="historyMonth"
+                        onchange="changeHistoryMonth(this.value)"
+                    >
 
-                        <option value="2026-08" selected>
-                            August 2026
-                        </option>
+                        <?php foreach ($availableMonths as $month): ?>
 
-                        <option value="2026-07">
-                            July 2026
-                        </option>
+                            <?php
+                            $monthDate = DateTime::createFromFormat(
+                                'Y-m',
+                                $month
+                            );
 
-                        <option value="2026-06">
-                            June 2026
-                        </option>
+                            $monthText = $monthDate
+                                ? $monthDate->format('F Y')
+                                : $month;
+                            ?>
+
+                            <option
+                                value="<?= htmlspecialchars($month); ?>"
+                                <?= $month === $selectedMonth ? 'selected' : ''; ?>
+                            >
+                                <?= htmlspecialchars($monthText); ?>
+                            </option>
+
+                        <?php endforeach; ?>
 
                     </select>
 
@@ -443,8 +774,6 @@ $historyData = [
 
             </div>
 
-
-            <!-- HISTORY SUMMARY -->
 
             <div class="history-summary">
 
@@ -455,7 +784,11 @@ $historyData = [
                     </div>
 
                     <div class="history-summary-value">
-                        28.9°C
+
+                        <?= $averageTemperature > 0
+                            ? $averageTemperature . '°C'
+                            : 'No Data'; ?>
+
                     </div>
 
                 </div>
@@ -468,7 +801,11 @@ $historyData = [
                     </div>
 
                     <div class="history-summary-value">
-                        71.7%
+
+                        <?= $averageHumidity > 0
+                            ? $averageHumidity . '%'
+                            : 'No Data'; ?>
+
                     </div>
 
                 </div>
@@ -481,7 +818,11 @@ $historyData = [
                     </div>
 
                     <div class="history-summary-value">
-                        63.9%
+
+                        <?= $averageSoilMoisture > 0
+                            ? $averageSoilMoisture . '%'
+                            : 'No Data'; ?>
+
                     </div>
 
                 </div>
@@ -494,7 +835,7 @@ $historyData = [
                     </div>
 
                     <div class="history-summary-value">
-                        Good
+                        <?= htmlspecialchars($overallHistoryStatus); ?>
                     </div>
 
                 </div>
@@ -502,13 +843,11 @@ $historyData = [
             </div>
 
 
-            <!-- HISTORY CHART -->
-
             <div class="status-chart-card">
 
-                <div class="chart-container" id="historyChart">
+                <div class="chart-container">
 
-                    Historical chart will appear here.
+                    <canvas id="historyChart"></canvas>
 
                 </div>
 
@@ -516,10 +855,6 @@ $historyData = [
 
         </section>
 
-
-        <!-- ================================
-             DAILY HISTORY
-        ================================= -->
 
         <section class="status-section">
 
@@ -532,7 +867,7 @@ $historyData = [
                     </h2>
 
                     <p class="status-section-subtitle">
-                        Recorded farm conditions for August 2026
+                        Recorded farm conditions for <?= htmlspecialchars($monthLabel); ?>
                     </p>
 
                 </div>
@@ -556,8 +891,6 @@ $historyData = [
 
                             <th>Soil Moisture</th>
 
-                            <th>Light Level</th>
-
                             <th>Status</th>
 
                         </tr>
@@ -567,51 +900,61 @@ $historyData = [
 
                     <tbody>
 
-                        <?php foreach ($historyData as $record): ?>
+                        <?php if (!empty($historyData)): ?>
+
+                            <?php foreach ($historyData as $record): ?>
+
+                                <tr>
+
+                                    <td>
+                                        <?= htmlspecialchars($record['date']); ?>
+                                    </td>
+
+                                    <td>
+                                        <?= $record['temperature']; ?>°C
+                                    </td>
+
+                                    <td>
+                                        <?= $record['humidity']; ?>%
+                                    </td>
+
+                                    <td>
+                                        <?= $record['soil_moisture']; ?>%
+                                    </td>
+
+                                    <td>
+
+                                        <?php if ($record['status'] === 'Good'): ?>
+
+                                            <span class="status-badge good">
+                                                Good
+                                            </span>
+
+                                        <?php else: ?>
+
+                                            <span class="status-badge warning">
+                                                Warning
+                                            </span>
+
+                                        <?php endif; ?>
+
+                                    </td>
+
+                                </tr>
+
+                            <?php endforeach; ?>
+
+                        <?php else: ?>
 
                             <tr>
 
-                                <td>
-                                    <?= htmlspecialchars($record['date']); ?>
-                                </td>
-
-                                <td>
-                                    <?= $record['temperature']; ?>°C
-                                </td>
-
-                                <td>
-                                    <?= $record['humidity']; ?>%
-                                </td>
-
-                                <td>
-                                    <?= $record['soil_moisture']; ?>%
-                                </td>
-
-                                <td>
-                                    <?= $record['light_level']; ?>%
-                                </td>
-
-                                <td>
-
-                                    <?php if ($record['status'] === 'Good'): ?>
-
-                                        <span class="status-badge good">
-                                            Good
-                                        </span>
-
-                                    <?php else: ?>
-
-                                        <span class="status-badge warning">
-                                            Warning
-                                        </span>
-
-                                    <?php endif; ?>
-
+                                <td colspan="5">
+                                    No sensor readings found for this month.
                                 </td>
 
                             </tr>
 
-                        <?php endforeach; ?>
+                        <?php endif; ?>
 
                     </tbody>
 
@@ -621,10 +964,6 @@ $historyData = [
 
         </section>
 
-
-        <!-- ================================
-             CONNECTED SENSORS
-        ================================= -->
 
         <section class="status-section">
 
@@ -659,14 +998,29 @@ $historyData = [
 
                             <span class="sensor-status-dot"></span>
 
-                            Online
+                            <?= $sensorOnline ? 'Online' : 'Offline'; ?>
 
                         </span>
 
                     </div>
 
                     <div class="sensor-info">
-                        Last reading: <?= $currentStatus['temperature']; ?>°C
+
+                        Last reading:
+
+                        <?php if ($currentTemperature !== null): ?>
+
+                            <?= number_format(
+                                (float) $currentTemperature,
+                                1
+                            ); ?>°C
+
+                        <?php else: ?>
+
+                            No reading
+
+                        <?php endif; ?>
+
                     </div>
 
                 </div>
@@ -684,14 +1038,29 @@ $historyData = [
 
                             <span class="sensor-status-dot"></span>
 
-                            Online
+                            <?= $sensorOnline ? 'Online' : 'Offline'; ?>
 
                         </span>
 
                     </div>
 
                     <div class="sensor-info">
-                        Last reading: <?= $currentStatus['humidity']; ?>%
+
+                        Last reading:
+
+                        <?php if ($currentHumidity !== null): ?>
+
+                            <?= number_format(
+                                (float) $currentHumidity,
+                                1
+                            ); ?>%
+
+                        <?php else: ?>
+
+                            No reading
+
+                        <?php endif; ?>
+
                     </div>
 
                 </div>
@@ -709,14 +1078,29 @@ $historyData = [
 
                             <span class="sensor-status-dot"></span>
 
-                            Online
+                            <?= $sensorOnline ? 'Online' : 'Offline'; ?>
 
                         </span>
 
                     </div>
 
                     <div class="sensor-info">
-                        Last reading: <?= $currentStatus['soil_moisture']; ?>%
+
+                        Last reading:
+
+                        <?php if ($currentSoilMoisture !== null): ?>
+
+                            <?= number_format(
+                                (float) $currentSoilMoisture,
+                                1
+                            ); ?>%
+
+                        <?php else: ?>
+
+                            No reading
+
+                        <?php endif; ?>
+
                     </div>
 
                 </div>
@@ -725,10 +1109,6 @@ $historyData = [
 
         </section>
 
-
-        <!-- ================================
-             RECENT ALERTS
-        ================================= -->
 
         <section class="status-section">
 
@@ -751,46 +1131,57 @@ $historyData = [
 
             <div class="alert-list">
 
-                <div class="alert-item">
+                <?php if (!empty($alerts)): ?>
 
-                    <div class="alert-icon">
-                        ⚠️
+                    <?php foreach ($alerts as $alert): ?>
+
+                        <div class="alert-item">
+
+                            <div class="alert-icon">
+                                ⚠️
+                            </div>
+
+                            <div class="alert-content">
+
+                                <strong>
+                                    Sensor reading needs attention
+                                </strong>
+
+                                <span>
+                                    <?= htmlspecialchars($alert['date']); ?>
+                                    —
+                                    <?= htmlspecialchars($alert['message']); ?>
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    <?php endforeach; ?>
+
+                <?php else: ?>
+
+                    <div class="alert-item">
+
+                        <div class="alert-icon">
+                            ✅
+                        </div>
+
+                        <div class="alert-content">
+
+                            <strong>
+                                No recent alerts
+                            </strong>
+
+                            <span>
+                                All recorded sensor readings are within the normal range.
+                            </span>
+
+                        </div>
+
                     </div>
 
-                    <div class="alert-content">
-
-                        <strong>
-                            Soil moisture was low
-                        </strong>
-
-                        <span>
-                            August 15, 2026 — Soil moisture reached 55%.
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div class="alert-item">
-
-                    <div class="alert-icon">
-                        ☀️
-                    </div>
-
-                    <div class="alert-content">
-
-                        <strong>
-                            High light level detected
-                        </strong>
-
-                        <span>
-                            August 15, 2026 — Light level reached 86%.
-                        </span>
-
-                    </div>
-
-                </div>
+                <?php endif; ?>
 
             </div>
 
@@ -799,7 +1190,114 @@ $historyData = [
     </main>
 
 
-    <!-- STATUS JAVASCRIPT -->
+    <script>
+
+        const historyLabels = <?= json_encode($chartLabels); ?>;
+
+        const historyTemperature = <?= json_encode($chartTemperature); ?>;
+
+        const historyHumidity = <?= json_encode($chartHumidity); ?>;
+
+        const historySoilMoisture = <?= json_encode($chartSoilMoisture); ?>;
+
+        function changeHistoryMonth(month) {
+            window.location.href =
+                "status.php?month=" +
+                encodeURIComponent(month);
+        }
+
+        const realtimeCanvas =
+            document.getElementById("realtimeChart");
+
+        if (realtimeCanvas) {
+
+            new Chart(realtimeCanvas, {
+                type: "line",
+
+                data: {
+                    labels: historyLabels,
+
+                    datasets: [
+                        {
+                            label: "Temperature °C",
+                            data: historyTemperature,
+                            tension: 0.3
+                        },
+                        {
+                            label: "Humidity %",
+                            data: historyHumidity,
+                            tension: 0.3
+                        },
+                        {
+                            label: "Soil Moisture %",
+                            data: historySoilMoisture,
+                            tension: 0.3
+                        }
+                    ]
+                },
+
+                options: {
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    }
+                }
+            });
+
+        }
+
+        const historyCanvas =
+            document.getElementById("historyChart");
+
+        if (historyCanvas) {
+
+            new Chart(historyCanvas, {
+                type: "line",
+
+                data: {
+                    labels: historyLabels,
+
+                    datasets: [
+                        {
+                            label: "Temperature °C",
+                            data: historyTemperature,
+                            tension: 0.3
+                        },
+                        {
+                            label: "Humidity %",
+                            data: historyHumidity,
+                            tension: 0.3
+                        },
+                        {
+                            label: "Soil Moisture %",
+                            data: historySoilMoisture,
+                            tension: 0.3
+                        }
+                    ]
+                },
+
+                options: {
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+                        legend: {
+                            display: true
+                        }
+                    }
+                }
+            });
+
+        }
+
+    </script>
+
     <script src="../js/status.js"></script>
 
 </body>

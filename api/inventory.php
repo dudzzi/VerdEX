@@ -24,9 +24,7 @@ function sendResponse($success, $message = "", $extra = [])
 }
 
 
-/* =========================================================
-   CATALOG
-========================================================= */
+/* CATALOG */
 
 if ($action === "catalog") {
 
@@ -85,9 +83,7 @@ if ($action === "catalog") {
 }
 
 
-/* =========================================================
-   GET INVENTORY
-========================================================= */
+/* GET INVENTORY */
 
 if ($action === "get") {
 
@@ -95,6 +91,7 @@ if ($action === "get") {
         "
         SELECT
             i.inventory_id AS id,
+            i.catalog_id,
 
             CASE
                 WHEN c.category_name = 'Hydroponic Plant'
@@ -103,6 +100,7 @@ if ($action === "get") {
                     THEN 'fertilizer'
                 WHEN c.category_name = 'Tool'
                     THEN 'tool'
+                ELSE ''
             END AS item_type,
 
             i.item_name AS name,
@@ -155,9 +153,7 @@ if ($action === "get") {
 }
 
 
-/* =========================================================
-   ADD INVENTORY ITEM
-========================================================= */
+/* ADD INVENTORY ITEM */
 
 if ($action === "add") {
 
@@ -177,19 +173,16 @@ if ($action === "add") {
         ["plant", "fertilizer", "tool"],
         true
     )) {
-
         sendResponse(false, "Invalid item type.");
     }
 
 
     if ($catalogId <= 0) {
-
         sendResponse(false, "Please select an item.");
     }
 
 
     if ($stock < 0) {
-
         sendResponse(false, "Stock cannot be negative.");
     }
 
@@ -200,8 +193,6 @@ if ($action === "add") {
 
     $unit = substr($unit, 0, 30);
 
-
-    /* Find catalog table */
 
     $catalogTable =
         $type === "plant"
@@ -218,7 +209,6 @@ if ($action === "add") {
     );
 
     if (!$stmt) {
-
         sendResponse(
             false,
             "Catalog query could not be prepared."
@@ -251,7 +241,6 @@ if ($action === "add") {
 
 
     if (!$catalogItem) {
-
         sendResponse(
             false,
             "Selected item was not found."
@@ -261,8 +250,6 @@ if ($action === "add") {
 
     $name = $catalogItem["name"];
 
-
-    /* Find new category_id */
 
     $categoryName =
         $type === "plant"
@@ -282,9 +269,7 @@ if ($action === "add") {
         "
     );
 
-
     if (!$stmt) {
-
         sendResponse(
             false,
             "Category query could not be prepared."
@@ -317,7 +302,6 @@ if ($action === "add") {
 
 
     if (!$category) {
-
         sendResponse(
             false,
             "Inventory category was not found."
@@ -328,9 +312,7 @@ if ($action === "add") {
     $categoryId = intval($category["category_id"]);
 
 
-    /* =====================================================
-       IMAGE UPLOAD
-    ===================================================== */
+    /* IMAGE */
 
     $imagePath = null;
 
@@ -343,7 +325,6 @@ if ($action === "add") {
         if (
             $_FILES["image"]["error"] !== UPLOAD_ERR_OK
         ) {
-
             sendResponse(
                 false,
                 "Image upload failed."
@@ -355,7 +336,6 @@ if ($action === "add") {
             $_FILES["image"]["size"] >
             5 * 1024 * 1024
         ) {
-
             sendResponse(
                 false,
                 "Image must be 5MB or smaller."
@@ -385,7 +365,6 @@ if ($action === "add") {
             $allowed,
             true
         )) {
-
             sendResponse(
                 false,
                 "Only JPG, JPEG, PNG, and WEBP images are allowed."
@@ -400,7 +379,6 @@ if ($action === "add") {
             !is_dir($uploadDir) &&
             !mkdir($uploadDir, 0755, true)
         ) {
-
             sendResponse(
                 false,
                 "Upload folder could not be created."
@@ -424,7 +402,6 @@ if ($action === "add") {
                 $filePath
             )
         ) {
-
             sendResponse(
                 false,
                 "Could not save uploaded image."
@@ -437,14 +414,13 @@ if ($action === "add") {
     }
 
 
-    /* =====================================================
-       INSERT INTO inventory_items
-    ===================================================== */
+    /* INSERT */
 
     $stmt = $conn->prepare(
         "
         INSERT INTO inventory_items
         (
+            catalog_id,
             category_id,
             item_name,
             picture,
@@ -454,6 +430,7 @@ if ($action === "add") {
         )
         VALUES
         (
+            ?,
             ?,
             ?,
             ?,
@@ -480,7 +457,8 @@ if ($action === "add") {
 
 
     $stmt->bind_param(
-        "issdss",
+        "iissdss",
+        $catalogId,
         $categoryId,
         $name,
         $imagePath,
@@ -496,11 +474,9 @@ if ($action === "add") {
 
         $stmt->close();
 
-
         if ($imagePath) {
             @unlink("../" . $imagePath);
         }
-
 
         sendResponse(
             false,
@@ -514,9 +490,7 @@ if ($action === "add") {
     $stmt->close();
 
 
-    /* =====================================================
-       RECORD INITIAL STOCK
-    ===================================================== */
+    /* INITIAL STOCK */
 
     if ($stock > 0) {
 
@@ -565,9 +539,7 @@ if ($action === "add") {
 }
 
 
-/* =========================================================
-   STOCK + / -
-========================================================= */
+/* STOCK */
 
 if ($action === "stock") {
 
@@ -580,15 +552,12 @@ if ($action === "stock") {
         $id <= 0 ||
         $change == 0
     ) {
-
         sendResponse(
             false,
             "Invalid stock update."
         );
     }
 
-
-    /* Get current stock */
 
     $stmt = $conn->prepare(
         "
@@ -601,7 +570,6 @@ if ($action === "stock") {
 
 
     if (!$stmt) {
-
         sendResponse(
             false,
             "Stock query could not be prepared."
@@ -634,7 +602,6 @@ if ($action === "stock") {
 
 
     if (!$item) {
-
         sendResponse(
             false,
             "Inventory item was not found."
@@ -650,18 +617,13 @@ if ($action === "stock") {
         $currentStock + $change;
 
 
-    /* Prevent negative stock */
-
     if ($newStock < 0) {
-
         sendResponse(
             false,
             "Stock cannot go below 0."
         );
     }
 
-
-    /* Update inventory_items */
 
     $stmt = $conn->prepare(
         "
@@ -673,7 +635,6 @@ if ($action === "stock") {
 
 
     if (!$stmt) {
-
         sendResponse(
             false,
             "Stock update could not be prepared."
@@ -704,8 +665,6 @@ if ($action === "stock") {
     $stmt->close();
 
 
-    /* Determine transaction type */
-
     $transactionType =
         $change > 0
             ? "IN"
@@ -716,7 +675,11 @@ if ($action === "stock") {
         abs($change);
 
 
-    /* Record stock movement */
+    $reason =
+        $change > 0
+            ? "Stock increased"
+            : "Stock decreased";
+
 
     $stmt = $conn->prepare(
         "
@@ -739,18 +702,11 @@ if ($action === "stock") {
 
 
     if (!$stmt) {
-
         sendResponse(
             false,
             "Transaction could not be prepared."
         );
     }
-
-
-    $reason =
-        $change > 0
-            ? "Stock increased"
-            : "Stock decreased";
 
 
     $stmt->bind_param(
@@ -788,9 +744,7 @@ if ($action === "stock") {
 }
 
 
-/* =========================================================
-   NOTES
-========================================================= */
+/* NOTES */
 
 if ($action === "notes") {
 
@@ -800,7 +754,6 @@ if ($action === "notes") {
 
 
     if ($id <= 0) {
-
         sendResponse(
             false,
             "Invalid item."
@@ -818,7 +771,6 @@ if ($action === "notes") {
 
 
     if (!$stmt) {
-
         sendResponse(
             false,
             "Notes update could not be prepared."
@@ -855,10 +807,6 @@ if ($action === "notes") {
     );
 }
 
-
-/* =========================================================
-   INVALID ACTION
-========================================================= */
 
 sendResponse(
     false,

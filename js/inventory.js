@@ -9,6 +9,9 @@ let catalog = {
 let currentCategory = "plant";
 let currentNoteId = null;
 
+const API_URL =
+    window.location.origin + "/api/inventory.php";
+
 const pendingStockUpdates = new Set();
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -40,6 +43,8 @@ async function requestJSON(url, options = {}) {
         try {
             data = JSON.parse(text);
         } catch (error) {
+            console.error("Invalid API response:", text);
+
             throw new Error(
                 "The server returned an invalid response."
             );
@@ -81,7 +86,7 @@ async function loadCatalog() {
     try {
 
         const data = await requestJSON(
-            "/VerdEX/api/inventory.php?action=catalog"
+            API_URL + "?action=catalog"
         );
 
         catalog = data.catalog || {
@@ -110,7 +115,7 @@ async function loadInventory() {
     try {
 
         const data = await requestJSON(
-            "/VerdEX/api/inventory.php?action=get"
+            API_URL + "?action=get"
         );
 
         inventory = Array.isArray(data.items)
@@ -157,32 +162,26 @@ function renderInventory() {
 
     empty.style.display = "none";
 
-
     container.innerHTML = items.map(item => {
 
         const image =
             getInventoryImage(item.image_path);
 
-
         const stock =
             Number(item.stock);
 
-
         const isLow =
             stock <= 5;
-
 
         const statusClass =
             isLow
                 ? "low"
                 : "good";
 
-
         const statusText =
             isLow
                 ? "Low Stock"
                 : "In Stock";
-
 
         const typeText =
             item.item_type === "plant"
@@ -190,7 +189,6 @@ function renderInventory() {
                 : item.item_type === "fertilizer"
                     ? "Fertilizer"
                     : "Tool";
-
 
         return `
 
@@ -223,7 +221,6 @@ function renderInventory() {
 
                 </td>
 
-
                 <td>
 
                     <span class="type-badge">
@@ -231,7 +228,6 @@ function renderInventory() {
                     </span>
 
                 </td>
-
 
                 <td>
 
@@ -241,7 +237,6 @@ function renderInventory() {
                         ${escapeHTML(item.unit)}
 
                     </div>
-
 
                     <div class="stock-controls">
 
@@ -253,7 +248,6 @@ function renderInventory() {
                             −
 
                         </button>
-
 
                         <button
                             class="stock-control"
@@ -268,7 +262,6 @@ function renderInventory() {
 
                 </td>
 
-
                 <td>
 
                     <span class="status-badge ${statusClass}">
@@ -281,13 +274,11 @@ function renderInventory() {
 
                 </td>
 
-
                 <td>
 
                     ${formatDate(item.date_added)}
 
                 </td>
-
 
                 <td>
 
@@ -579,14 +570,13 @@ document
 
         try {
 
-            const data =
-                await requestJSON(
-                    "/VerdEX/api/inventory.php",
-                    {
-                        method: "POST",
-                        body: formData
-                    }
-                );
+            await requestJSON(
+                API_URL,
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
 
             this.reset();
 
@@ -646,7 +636,7 @@ async function changeStock(id, change) {
     try {
 
         await requestJSON(
-            "/VerdEX/api/inventory.php",
+            API_URL,
             {
                 method: "POST",
                 body: formData
@@ -693,21 +683,13 @@ function showInfo(id) {
         return;
     }
 
-
     const type =
         item.item_type;
-
 
     const items =
         Array.isArray(catalog[type])
             ? catalog[type]
             : [];
-
-
-    /*
-     * Match the inventory item with
-     * the catalog using its name.
-     */
 
     const catalogItem =
         items.find(
@@ -716,14 +698,11 @@ function showInfo(id) {
                 String(item.name).toLowerCase()
         );
 
-
     document.getElementById("infoTitle").textContent =
         item.name;
 
-
     const image =
         getInventoryImage(item.image_path);
-
 
     let content = `
 
@@ -735,7 +714,6 @@ function showInfo(id) {
                 alt="${escapeHTML(item.name)}"
                 onerror="this.src='../images/verdexlogo.png'"
             >
-
 
             <div class="details-summary">
 
@@ -749,11 +727,9 @@ function showInfo(id) {
                     }
                 </span>
 
-
                 <h3>
                     ${escapeHTML(item.name)}
                 </h3>
-
 
                 <p>
                     Current stock:
@@ -767,7 +743,6 @@ function showInfo(id) {
 
         </div>
 
-
         <div class="details-section">
 
             <div class="details-section-title">
@@ -776,12 +751,10 @@ function showInfo(id) {
 
     `;
 
-
     content += infoRow(
         "Current Stock",
         `${Number(item.stock)} ${item.unit}`
     );
-
 
     content += infoRow(
         "Status",
@@ -790,12 +763,10 @@ function showInfo(id) {
             : "In Stock"
     );
 
-
     content += infoRow(
         "Date Added",
         formatDate(item.date_added)
     );
-
 
     content += infoRow(
         "Last Added",
@@ -804,7 +775,6 @@ function showInfo(id) {
             : "—"
     );
 
-
     content += infoRow(
         "Last Edited",
         item.updated_at
@@ -812,17 +782,14 @@ function showInfo(id) {
             : "—"
     );
 
-
     content += infoRow(
         "Notes",
         item.notes || "No notes."
     );
 
-
     content += `
         </div>
     `;
-
 
     if (catalogItem) {
 
@@ -835,7 +802,6 @@ function showInfo(id) {
                 </div>
 
         `;
-
 
         if (type === "plant") {
 
@@ -880,7 +846,6 @@ function showInfo(id) {
             );
         }
 
-
         if (type === "fertilizer") {
 
             content += infoRow(
@@ -908,7 +873,6 @@ function showInfo(id) {
                 catalogItem.notes
             );
         }
-
 
         if (type === "tool") {
 
@@ -938,25 +902,18 @@ function showInfo(id) {
             );
         }
 
-
         content += `
-
             </div>
-
         `;
-
 
         content += recommendation(
             item,
             catalogItem
         );
-
     }
-
 
     document.getElementById("infoContent").innerHTML =
         content;
-
 
     document
         .getElementById("infoModal")
@@ -1098,7 +1055,7 @@ async function saveNotes() {
     try {
 
         await requestJSON(
-            "/VerdEX/api/inventory.php",
+            API_URL,
             {
                 method: "POST",
                 body: formData
@@ -1202,7 +1159,7 @@ function renderSortedItems(items) {
 
         const image = item.image_path
             ? item.image_path
-            : "verdexlogo.png";
+            : "../images/verdexlogo.png";
 
         const status =
             Number(item.stock) <= 5
@@ -1221,7 +1178,7 @@ function renderSortedItems(items) {
                     class="item-image"
                     src="${escapeHTML(image)}"
                     alt="${escapeHTML(item.name)}"
-                    onerror="this.src='verdexlogo.png'"
+                    onerror="this.src='../images/verdexlogo.png'"
                 >
 
                 <div class="item-body">

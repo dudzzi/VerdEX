@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
@@ -6,49 +7,199 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit;
 }
 
-/*
-|--------------------------------------------------------------------------
-| SAMPLE FORUM POSTS
-|--------------------------------------------------------------------------
-| Temporary data for the UI.
-| Later, this will come from the MySQL database.
-|--------------------------------------------------------------------------
-*/
+require_once "../config.php";
 
-$posts = [
-    [
-        'author' => 'Juan Dela Cruz',
-        'role' => 'Farm Owner',
-        'date' => 'Today, 9:30 AM',
-        'category' => 'Crop Care',
-        'title' => 'What is the best way to handle yellowing leaves?',
-        'content' => 'Some of my tomato plants have started developing yellow leaves. Has anyone experienced this before?',
-        'likes' => 12,
-        'comments' => 4
-    ],
 
-    [
-        'author' => 'Maria Santos',
-        'role' => 'Farm Helper',
-        'date' => 'Yesterday, 4:15 PM',
-        'category' => 'Farming Tips',
-        'title' => 'Tips for keeping soil moisture stable',
-        'content' => 'I noticed that keeping the soil moisture within a consistent range helped our crops grow better. Sharing some tips that worked for our farm.',
-        'likes' => 8,
-        'comments' => 3
-    ],
+$categories = [];
 
-    [
-        'author' => 'Pedro Reyes',
-        'role' => 'Farm Owner',
-        'date' => 'September 21, 2026',
-        'category' => 'Pest Control',
-        'title' => 'How do you deal with common garden pests?',
-        'content' => 'Looking for safe and practical ways to prevent pests from damaging vegetables without affecting the crops.',
-        'likes' => 15,
-        'comments' => 6
-    ]
-];
+$categoryQuery = $conn->query("
+    SELECT category_id, category_name
+    FROM forum_categories
+    ORDER BY category_id ASC
+");
+
+if ($categoryQuery) {
+
+    while ($categoryRow = $categoryQuery->fetch_assoc()) {
+
+        $categories[] = [
+            'id' => (int) $categoryRow['category_id'],
+            'name' => $categoryRow['category_name']
+        ];
+
+    }
+
+}
+
+
+$posts = [];
+
+$postQuery = $conn->query("
+    SELECT
+        fp.post_id,
+        fp.author_name,
+        fp.author_role,
+        fp.title,
+        fp.content,
+        fp.likes,
+        fp.created_at,
+        fc.category_name
+    FROM forum_posts fp
+    INNER JOIN forum_categories fc
+        ON fp.category_id = fc.category_id
+    ORDER BY fp.created_at DESC
+");
+
+
+if ($postQuery) {
+
+    while ($row = $postQuery->fetch_assoc()) {
+
+        $createdTime = strtotime($row['created_at']);
+
+
+        if (date('Y-m-d', $createdTime) === date('Y-m-d')) {
+
+            $postDate = 'Today, ' . date('g:i A', $createdTime);
+
+        } elseif (
+            date('Y-m-d', $createdTime)
+            === date('Y-m-d', strtotime('-1 day'))
+        ) {
+
+            $postDate = 'Yesterday, ' . date('g:i A', $createdTime);
+
+        } else {
+
+            $postDate = date('F j, Y', $createdTime);
+
+        }
+
+
+        $commentCount = 0;
+
+
+        $commentStatement = $conn->prepare("
+            SELECT COUNT(*) AS total
+            FROM forum_comments
+            WHERE post_id = ?
+        ");
+
+
+        if ($commentStatement) {
+
+            $commentStatement->bind_param(
+                "i",
+                $row['post_id']
+            );
+
+            $commentStatement->execute();
+
+            $commentResult = $commentStatement->get_result();
+
+
+            if ($commentResult) {
+
+                $commentData = $commentResult->fetch_assoc();
+
+                if ($commentData) {
+
+                    $commentCount = (int) $commentData['total'];
+
+                }
+
+            }
+
+
+            $commentStatement->close();
+
+        }
+
+
+        $posts[] = [
+            'author' => $row['author_name'],
+            'role' => $row['author_role'],
+            'date' => $postDate,
+            'category' => $row['category_name'],
+            'title' => $row['title'],
+            'content' => $row['content'],
+            'likes' => (int) $row['likes'],
+            'comments' => $commentCount
+        ];
+
+    }
+
+}
+
+
+$memberCount = 0;
+
+$memberQuery = $conn->query("
+    SELECT COUNT(DISTINCT author_name) AS total
+    FROM forum_posts
+");
+
+
+if ($memberQuery) {
+
+    $memberData = $memberQuery->fetch_assoc();
+
+    if ($memberData) {
+
+        $memberCount = (int) $memberData['total'];
+
+    }
+
+}
+
+
+$postCount = 0;
+
+$postCountQuery = $conn->query("
+    SELECT COUNT(*) AS total
+    FROM forum_posts
+");
+
+
+if ($postCountQuery) {
+
+    $postCountData = $postCountQuery->fetch_assoc();
+
+    if ($postCountData) {
+
+        $postCount = (int) $postCountData['total'];
+
+    }
+
+}
+
+
+$categoryCounts = [];
+
+$categoryCountQuery = $conn->query("
+    SELECT
+        fc.category_name,
+        COUNT(fp.post_id) AS total
+    FROM forum_categories fc
+    LEFT JOIN forum_posts fp
+        ON fc.category_id = fp.category_id
+    GROUP BY
+        fc.category_id,
+        fc.category_name
+    ORDER BY fc.category_id ASC
+");
+
+
+if ($categoryCountQuery) {
+
+    while ($categoryRow = $categoryCountQuery->fetch_assoc()) {
+
+        $categoryCounts[$categoryRow['category_name']] =
+            (int) $categoryRow['total'];
+
+    }
+
+}
 
 ?>
 
@@ -59,69 +210,121 @@ $posts = [
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Forum | VerdEX</title>
 
-    <link rel="stylesheet" href="../css/forum.css">
+    <link
+        rel="stylesheet"
+        href="../css/forum.css"
+    >
 
 </head>
 
 <body>
 
-    <!-- ================================
-         SIDEBAR
-    ================================= -->
 
     <aside class="forum-sidebar">
 
-        <a href="home.php" class="forum-logo">
-            <img src="../images/verdexlogo.png" alt="VerdEX">
+        <a
+            href="home.php"
+            class="forum-logo"
+        >
+
+            <img
+                src="../images/verdexlogo.png"
+                alt="VerdEX"
+            >
+
         </a>
+
 
         <nav class="forum-nav">
 
-            <a href="home.php" title="Dashboard">
+            <a
+                href="home.php"
+                title="Dashboard"
+            >
                 🏠
             </a>
 
-            <a href="inventory.php" title="Inventory">
+
+            <a
+                href="inventory.php"
+                title="Inventory"
+            >
                 📦
             </a>
 
-            <a href="calendar.php" title="Calendar">
+
+            <a
+                href="calendar.php"
+                title="Calendar"
+            >
                 📅
             </a>
 
-            <a href="sales.php" title="Sales">
+
+            <a
+                href="sales.php"
+                title="Sales"
+            >
                 💰
             </a>
 
-            <a href="status.php" title="Farm Status">
+
+            <a
+                href="status.php"
+                title="Farm Status"
+            >
                 💧
             </a>
 
-            <a href="forum.php" class="active" title="Forum">
+
+            <a
+                href="forum.php"
+                class="active"
+                title="Forum"
+            >
                 💬
             </a>
 
-            <a href="reports.php" title="Reports">
+
+            <a
+                href="reports.php"
+                title="Reports"
+            >
                 📊
             </a>
 
         </nav>
 
+
         <div class="forum-nav-bottom">
 
-            <a href="profile.php" title="Profile">
+            <a
+                href="profile.php"
+                title="Profile"
+            >
                 👤
             </a>
 
-            <a href="settings.php" title="Settings">
+
+            <a
+                href="settings.php"
+                title="Settings"
+            >
                 ⚙️
             </a>
 
-            <a href="../backend/logout.php" title="Logout">
+
+            <a
+                href="../backend/logout.php"
+                title="Logout"
+            >
                 ↪
             </a>
 
@@ -130,19 +333,17 @@ $posts = [
     </aside>
 
 
-    <!-- ================================
-         MAIN CONTENT
-    ================================= -->
 
     <main class="forum-main">
 
-        <!-- HEADER -->
 
         <header class="forum-header">
 
             <div>
 
-                <h1>Community Forum</h1>
+                <h1>
+                    Community Forum
+                </h1>
 
                 <p>
                     Share ideas, ask questions, and learn from other farmers.
@@ -150,22 +351,27 @@ $posts = [
 
             </div>
 
-            <button class="create-post-btn" id="openPostModal">
+
+            <button
+                class="create-post-btn"
+                id="openPostModal"
+            >
                 + Create Post
             </button>
 
         </header>
 
 
-        <!-- ================================
-             SEARCH & FILTER
-        ================================= -->
 
         <section class="forum-tools">
 
+
             <div class="forum-search">
 
-                <span>🔍</span>
+                <span>
+                    🔍
+                </span>
+
 
                 <input
                     type="text"
@@ -184,21 +390,16 @@ $posts = [
                         All Categories
                     </option>
 
-                    <option value="Crop Care">
-                        Crop Care
-                    </option>
 
-                    <option value="Farming Tips">
-                        Farming Tips
-                    </option>
+                    <?php foreach ($categories as $category): ?>
 
-                    <option value="Pest Control">
-                        Pest Control
-                    </option>
+                        <option
+                            value="<?= htmlspecialchars($category['name']); ?>"
+                        >
+                            <?= htmlspecialchars($category['name']); ?>
+                        </option>
 
-                    <option value="General">
-                        General
-                    </option>
+                    <?php endforeach; ?>
 
                 </select>
 
@@ -207,166 +408,227 @@ $posts = [
         </section>
 
 
-        <!-- ================================
-             FORUM CONTENT
-        ================================= -->
 
         <section class="forum-layout">
 
 
-            <!-- POSTS -->
-
             <div class="forum-posts">
 
-                <?php foreach ($posts as $post): ?>
 
-                    <article
-                        class="forum-post"
-                        data-category="<?= htmlspecialchars($post['category']); ?>"
-                    >
+                <?php if (empty($posts)): ?>
 
-                        <!-- POST HEADER -->
+                    <div class="forum-empty">
 
-                        <div class="post-header">
+                        <h2>
+                            No posts yet
+                        </h2>
 
-                            <div class="post-user">
+                        <p>
+                            Be the first to create a post in the VerdEX community.
+                        </p>
 
-                                <div class="post-avatar">
-                                    <?= strtoupper(substr($post['author'], 0, 1)); ?>
+                    </div>
+
+                <?php else: ?>
+
+
+                    <?php foreach ($posts as $post): ?>
+
+                        <article
+                            class="forum-post"
+                            data-category="<?= htmlspecialchars($post['category']); ?>"
+                        >
+
+
+                            <div class="post-header">
+
+
+                                <div class="post-user">
+
+
+                                    <div class="post-avatar">
+
+                                        <?= strtoupper(
+                                            substr(
+                                                $post['author'],
+                                                0,
+                                                1
+                                            )
+                                        ); ?>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <strong>
+
+                                            <?= htmlspecialchars(
+                                                $post['author']
+                                            ); ?>
+
+                                        </strong>
+
+
+                                        <span>
+
+                                            <?= htmlspecialchars(
+                                                $post['role']
+                                            ); ?>
+
+                                            ·
+
+                                            <?= htmlspecialchars(
+                                                $post['date']
+                                            ); ?>
+
+                                        </span>
+
+                                    </div>
+
                                 </div>
 
-                                <div>
 
-                                    <strong>
-                                        <?= htmlspecialchars($post['author']); ?>
-                                    </strong>
-
-                                    <span>
-                                        <?= htmlspecialchars($post['role']); ?>
-                                        ·
-                                        <?= htmlspecialchars($post['date']); ?>
-                                    </span>
-
-                                </div>
+                                <button class="post-menu">
+                                    ⋮
+                                </button>
 
                             </div>
 
-                            <button class="post-menu">
-                                ⋮
-                            </button>
-
-                        </div>
 
 
-                        <!-- CATEGORY -->
+                            <span class="post-category">
 
-                        <span class="post-category">
-                            <?= htmlspecialchars($post['category']); ?>
-                        </span>
+                                <?= htmlspecialchars(
+                                    $post['category']
+                                ); ?>
 
-
-                        <!-- POST CONTENT -->
-
-                        <h2>
-                            <?= htmlspecialchars($post['title']); ?>
-                        </h2>
-
-                        <p class="post-content">
-                            <?= htmlspecialchars($post['content']); ?>
-                        </p>
+                            </span>
 
 
-                        <!-- POST ACTIONS -->
 
-                        <div class="post-actions">
+                            <h2>
 
-                            <button class="post-action like-btn">
+                                <?= htmlspecialchars(
+                                    $post['title']
+                                ); ?>
 
-                                ♡
-
-                                <span>
-                                    <?= $post['likes']; ?>
-                                </span>
-
-                            </button>
+                            </h2>
 
 
-                            <button class="post-action comment-btn">
+                            <p class="post-content">
 
-                                💬
+                                <?= htmlspecialchars(
+                                    $post['content']
+                                ); ?>
 
-                                <span>
-                                    <?= $post['comments']; ?>
-                                </span>
-
-                            </button>
+                            </p>
 
 
-                            <button class="post-action share-btn">
 
-                                ↗
-
-                                <span>
-                                    Share
-                                </span>
-
-                            </button>
-
-                        </div>
+                            <div class="post-actions">
 
 
-                        <!-- COMMENTS -->
+                                <button
+                                    class="post-action like-btn"
+                                >
 
-                        <div class="post-comment-box">
+                                    ♡
 
-                            <input
-                                type="text"
-                                placeholder="Write a comment..."
-                            >
+                                    <span>
 
-                            <button>
-                                Send
-                            </button>
+                                        <?= $post['likes']; ?>
 
-                        </div>
+                                    </span>
 
-                    </article>
+                                </button>
 
-                <?php endforeach; ?>
+
+                                <button
+                                    class="post-action comment-btn"
+                                >
+
+                                    💬
+
+                                    <span>
+
+                                        <?= $post['comments']; ?>
+
+                                    </span>
+
+                                </button>
+
+
+                                <button
+                                    class="post-action share-btn"
+                                >
+
+                                    ↗
+
+                                    <span>
+                                        Share
+                                    </span>
+
+                                </button>
+
+                            </div>
+
+
+
+                            <div class="post-comment-box">
+
+                                <input
+                                    type="text"
+                                    placeholder="Write a comment..."
+                                >
+
+
+                                <button>
+                                    Send
+                                </button>
+
+                            </div>
+
+                        </article>
+
+                    <?php endforeach; ?>
+
+                <?php endif; ?>
+
 
             </div>
 
 
-            <!-- ================================
-                 RIGHT SIDEBAR
-            ================================= -->
 
             <aside class="forum-right">
 
 
-                <!-- COMMUNITY CARD -->
-
                 <div class="forum-info-card">
+
 
                     <div class="forum-info-icon">
                         🌱
                     </div>
 
+
                     <h3>
                         VerdEX Community
                     </h3>
+
 
                     <p>
                         Connect with other farmers and share
                         knowledge about farming.
                     </p>
 
+
                     <div class="community-stats">
+
 
                         <div>
 
                             <strong>
-                                128
+                                <?= $memberCount; ?>
                             </strong>
 
                             <span>
@@ -375,10 +637,11 @@ $posts = [
 
                         </div>
 
+
                         <div>
 
                             <strong>
-                                56
+                                <?= $postCount; ?>
                             </strong>
 
                             <span>
@@ -392,52 +655,91 @@ $posts = [
                 </div>
 
 
-                <!-- CATEGORIES -->
 
                 <div class="forum-side-card">
+
 
                     <h3>
                         Categories
                     </h3>
 
-                    <a href="#" data-category="Crop Care">
+
+                    <a
+                        href="#"
+                        data-category="Crop Care"
+                    >
+
                         🌱 Crop Care
-                        <span>18</span>
+
+                        <span>
+                            <?= $categoryCounts['Crop Care'] ?? 0; ?>
+                        </span>
+
                     </a>
 
-                    <a href="#" data-category="Farming Tips">
+
+                    <a
+                        href="#"
+                        data-category="Farming Tips"
+                    >
+
                         💡 Farming Tips
-                        <span>14</span>
+
+                        <span>
+                            <?= $categoryCounts['Farming Tips'] ?? 0; ?>
+                        </span>
+
                     </a>
 
-                    <a href="#" data-category="Pest Control">
+
+                    <a
+                        href="#"
+                        data-category="Pest Control"
+                    >
+
                         🐛 Pest Control
-                        <span>9</span>
+
+                        <span>
+                            <?= $categoryCounts['Pest Control'] ?? 0; ?>
+                        </span>
+
                     </a>
 
-                    <a href="#" data-category="General">
+
+                    <a
+                        href="#"
+                        data-category="General"
+                    >
+
                         💬 General
-                        <span>15</span>
+
+                        <span>
+                            <?= $categoryCounts['General'] ?? 0; ?>
+                        </span>
+
                     </a>
 
                 </div>
 
 
-                <!-- COMMUNITY GUIDELINES -->
 
                 <div class="forum-side-card">
+
 
                     <h3>
                         Community Guidelines
                     </h3>
 
+
                     <p>
                         Keep discussions respectful and helpful.
                     </p>
 
+
                     <p>
                         Share useful farming knowledge and experiences.
                     </p>
+
 
                     <p>
                         Avoid spam and unrelated content.
@@ -452,15 +754,17 @@ $posts = [
     </main>
 
 
-    <!-- ================================
-         CREATE POST MODAL
-    ================================= -->
 
-    <div class="post-modal" id="postModal">
+    <div
+        class="post-modal"
+        id="postModal"
+    >
 
         <div class="post-modal-content">
 
+
             <div class="modal-header">
+
 
                 <div>
 
@@ -468,11 +772,13 @@ $posts = [
                         Create a Post
                     </h2>
 
+
                     <p>
                         Share something with the VerdEX community.
                     </p>
 
                 </div>
+
 
                 <button id="closePostModal">
                     ×
@@ -481,11 +787,14 @@ $posts = [
             </div>
 
 
+
             <form id="createPostForm">
+
 
                 <label for="postTitle">
                     Title
                 </label>
+
 
                 <input
                     type="text"
@@ -499,27 +808,26 @@ $posts = [
                     Category
                 </label>
 
-                <select id="postCategory" required>
+
+                <select
+                    id="postCategory"
+                    required
+                >
 
                     <option value="">
                         Select a category
                     </option>
 
-                    <option value="Crop Care">
-                        Crop Care
-                    </option>
 
-                    <option value="Farming Tips">
-                        Farming Tips
-                    </option>
+                    <?php foreach ($categories as $category): ?>
 
-                    <option value="Pest Control">
-                        Pest Control
-                    </option>
+                        <option
+                            value="<?= $category['id']; ?>"
+                        >
+                            <?= htmlspecialchars($category['name']); ?>
+                        </option>
 
-                    <option value="General">
-                        General
-                    </option>
+                    <?php endforeach; ?>
 
                 </select>
 
@@ -527,6 +835,7 @@ $posts = [
                 <label for="postContent">
                     Description
                 </label>
+
 
                 <textarea
                     id="postContent"
@@ -538,6 +847,7 @@ $posts = [
 
                 <div class="modal-actions">
 
+
                     <button
                         type="button"
                         class="cancel-btn"
@@ -545,6 +855,7 @@ $posts = [
                     >
                         Cancel
                     </button>
+
 
                     <button
                         type="submit"
@@ -560,6 +871,7 @@ $posts = [
         </div>
 
     </div>
+
 
 
     <script src="../js/forum.js"></script>

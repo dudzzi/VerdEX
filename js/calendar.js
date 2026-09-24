@@ -2,56 +2,9 @@
    VERDEX CALENDAR
    ========================================================= */
 
-
 let currentDate = new Date();
 
-let events = [
-
-    {
-        id: 1,
-        title: "Soil Aeration",
-        date: "2026-09-23",
-        start: "13:00",
-        end: "14:00",
-        type: "plant",
-        description:
-            "Loosen soil around the plants carefully without damaging the roots."
-    },
-
-    {
-        id: 2,
-        title: "Drip Line Inspection",
-        date: "2026-09-24",
-        start: "14:00",
-        end: "15:00",
-        type: "irrigation",
-        description:
-            "Check drip irrigation lines for leaks and blockages."
-    },
-
-    {
-        id: 3,
-        title: "Nutrient Mixing",
-        date: "2026-09-25",
-        start: "17:00",
-        end: "18:00",
-        type: "fertilizer",
-        description:
-            "Review and prepare the fertilizer nutrient mixture."
-    },
-
-    {
-        id: 4,
-        title: "Climate Sensor Calibration",
-        date: "2026-09-26",
-        start: "15:00",
-        end: "15:30",
-        type: "inspection",
-        description:
-            "Validate temperature and humidity sensor accuracy."
-    }
-
-];
+let events = [];
 
 
 /* =========================================================
@@ -60,7 +13,9 @@ let events = [
 
 document.addEventListener(
     "DOMContentLoaded",
-    function () {
+    async function () {
+
+        await loadEvents();
 
         renderCalendar();
 
@@ -70,6 +25,51 @@ document.addEventListener(
 
     }
 );
+
+
+/* =========================================================
+   LOAD EVENTS
+   ========================================================= */
+
+async function loadEvents() {
+
+    try {
+
+        const response =
+            await fetch("../api/calendar.php");
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+
+            console.error(
+                data.message ||
+                "Failed to load calendar tasks."
+            );
+
+            return;
+
+        }
+
+
+        events =
+            Array.isArray(data.tasks)
+                ? data.tasks
+                : [];
+
+
+    } catch (error) {
+
+        console.error(
+            "Calendar loading error:",
+            error
+        );
+
+    }
+
+}
 
 
 /* =========================================================
@@ -109,10 +109,6 @@ function renderCalendar() {
     calendarDays.innerHTML = "";
 
 
-    /*
-     * First day of month
-     */
-
     const firstDay =
         new Date(
             year,
@@ -120,10 +116,6 @@ function renderCalendar() {
             1
         ).getDay();
 
-
-    /*
-     * Number of days in month
-     */
 
     const daysInMonth =
         new Date(
@@ -133,10 +125,6 @@ function renderCalendar() {
         ).getDate();
 
 
-    /*
-     * Previous month's days
-     */
-
     const previousMonthDays =
         new Date(
             year,
@@ -144,10 +132,6 @@ function renderCalendar() {
             0
         ).getDate();
 
-
-    /*
-     * Total calendar cells
-     */
 
     const totalCells =
         Math.ceil(
@@ -178,10 +162,6 @@ function renderCalendar() {
         let dateObject;
 
 
-        /*
-         * Previous month
-         */
-
         if (i < firstDay) {
 
             dayNumber =
@@ -205,11 +185,6 @@ function renderCalendar() {
 
         }
 
-
-        /*
-         * Current month
-         */
-
         else if (
             i <
             firstDay +
@@ -230,11 +205,6 @@ function renderCalendar() {
                 );
 
         }
-
-
-        /*
-         * Next month
-         */
 
         else {
 
@@ -264,10 +234,6 @@ function renderCalendar() {
             formatDateKey(dateObject);
 
 
-        /*
-         * Check today
-         */
-
         if (
             dateObject.getFullYear() ===
                 today.getFullYear() &&
@@ -296,10 +262,6 @@ function renderCalendar() {
 
         `;
 
-
-        /*
-         * Events for this day
-         */
 
         const dayEvents =
             events.filter(
@@ -343,10 +305,6 @@ function renderCalendar() {
         );
 
 
-        /*
-         * Clicking empty day
-         */
-
         dayElement.onclick =
             function () {
 
@@ -355,7 +313,9 @@ function renderCalendar() {
                         "other-month"
                     )
                 ) {
+
                     return;
+
                 }
 
 
@@ -596,15 +556,12 @@ function setupEventForm() {
 
     form.addEventListener(
         "submit",
-        function (event) {
+        async function (event) {
 
             event.preventDefault();
 
 
             const newEvent = {
-
-                id:
-                    Date.now(),
 
                 title:
                     document.getElementById(
@@ -639,18 +596,74 @@ function setupEventForm() {
             };
 
 
-            events.push(
-                newEvent
-            );
+            if (
+                !newEvent.title ||
+                !newEvent.date ||
+                !newEvent.start
+            ) {
+
+                return;
+
+            }
 
 
-            renderCalendar();
+            try {
 
-            renderUpcomingTasks();
+                const response =
+                    await fetch(
+                        "../api/calendar.php",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+                            body:
+                                JSON.stringify(
+                                    newEvent
+                                )
+                        }
+                    );
 
-            closeEventModal();
 
-            form.reset();
+                const data =
+                    await response.json();
+
+
+                if (!data.success) {
+
+                    console.error(
+                        data.message ||
+                        "Failed to save task."
+                    );
+
+                    return;
+
+                }
+
+
+                events.push(
+                    data.task
+                );
+
+
+                renderCalendar();
+
+                renderUpcomingTasks();
+
+                closeEventModal();
+
+                form.reset();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Calendar save error:",
+                    error
+                );
+
+            }
 
         }
     );
@@ -668,11 +681,6 @@ function openEventModal() {
         .getElementById("eventModal")
         .classList.add("show");
 
-
-    /*
-     * Automatically set today's date
-     * if no date was selected.
-     */
 
     const dateInput =
         document.getElementById(
@@ -716,7 +724,9 @@ function showTaskDetails(id) {
 
 
     if (!event) {
+
         return;
+
     }
 
 
@@ -826,7 +836,9 @@ function closeTaskDetails() {
 function formatTime(time) {
 
     if (!time) {
+
         return "";
+
     }
 
 
@@ -891,8 +903,10 @@ function formatType(type) {
 
 function escapeHTML(value) {
 
-    if (value === null ||
-        value === undefined) {
+    if (
+        value === null ||
+        value === undefined
+    ) {
 
         return "";
 
