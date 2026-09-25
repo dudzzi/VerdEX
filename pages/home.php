@@ -88,12 +88,12 @@ $role = $_SESSION['role'] ?? 'Team Member';
 
         <div class="dashboard-nav-bottom">
 
-            <a href="profile.html"
+            <a href="profile.php"
                title="Profile">
                 👤
             </a>
 
-            <a href="settings.html"
+            <a href="settings.php"
                title="Settings">
                 ⚙️
             </a>
@@ -135,10 +135,7 @@ $role = $_SESSION['role'] ?? 'Team Member';
 
             <div class="dashboard-top-actions">
 
-                <div class="dashboard-search">
-                    🔍
-                    <span>Search</span>
-                </div>
+
 
                 <div class="dashboard-time">
                     🕐

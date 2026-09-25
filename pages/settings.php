@@ -1,0 +1,254 @@
+<!DOCTYPE html><?php
+session_start();
+
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    header('Location: login.php');
+    exit;
+}
+?>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VerdEX - Settings</title>
+    <link rel="stylesheet" href="../css/settings.css">
+    <!-- FontAwesome CDN for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="app-body">
+
+    <!-- Main Layout Container -->
+    <div class="app-container">
+
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <img src="../images/verdexlogo.png" alt="VerdEX Logo" class="sidebar-logo">
+            </div>
+
+            <nav class="nav-menu">
+                <a href="home.php" class="nav-item">🏠</a>
+                <a href="inventory.php" class="nav-item">📦</a>
+                <a href="calendar.php" class="nav-item">📅</a>
+                <a href="sales.php" class="nav-item">💰</a>
+                <a href="status.php" class="nav-item">💧</a>
+                <a href="trends.php" class="nav-item">💬</a>
+                <a href="reports.php" class="nav-item">📊</a>
+
+                <div class="nav-section-title">ABOUT PROFILE</div>
+                <a href="profile.php" class="nav-item">👤</a>
+                <!-- SETTINGS BUTTON -->
+                <a href="settings.php" class="nav-item">⚙️</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- Top Header Bar para sa Settings Icon (Upper Right) -->
+            <header class="top-navbar">
+                <div class="top-navbar-right">
+                    <a href="settings.php" class="top-settings-icon" title="Settings">
+                        <i class="fa-solid fa-gear"></i>
+                    </a>
+                </div>
+            </header>
+
+            <!-- Header Section -->
+            <header class="content-header">
+                <div class="badge-pill">
+                    <i class="fa-solid fa-angle-left"></i>
+                    SETTINGS
+                </div>
+                <h1 class="page-title">System Settings</h1>
+                <p class="page-subtitle">Manage your account credentials, preferences, and data controls.</p>
+            </header>
+
+            <!-- Settings Content Grid -->
+            <div class="settings-grid">
+
+                <!-- SECTION 1: ACCOUNT MANAGEMENT -->
+                <section class="settings-section">
+                    <h2 class="section-title"><i class="fa-solid fa-user-shield"></i> Account Management</h2>
+                    <div class="cards-wrapper">
+                        
+                        <!-- Card: Password Reset -->
+                        <div class="glass-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-key"></i> Password & Security</h3>
+                                <p>Update your password directly or request a reset link to your registered Gmail address.</p>
+                            </div>
+                            <div class="card-body">
+                                <form id="passwordForm" onsubmit="event.preventDefault(); alert('Password updated successfully!');">
+                                    <div class="form-group">
+                                        <label>Registered Gmail / Email</label>
+                                        <input type="email" class="glass-input" value="user@gmail.com" placeholder="your-email@gmail.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Current Password</label>
+                                        <input type="password" class="glass-input" placeholder="Enter current password" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>New Password</label>
+                                        <input type="password" class="glass-input" placeholder="Enter new password" required>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">Update Password</button>
+                                        <button type="button" class="btn btn-secondary" onclick="alert('Password reset link sent to your Gmail!')">Send Reset Link to Gmail</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Card: Logged-in Devices -->
+                        <div class="glass-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-laptop-code"></i> Logged-in Devices</h3>
+                                <p>Devices currently active or logged in to your account.</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="device-list">
+                                    <div class="device-item">
+                                        <div class="device-icon"><i class="fa-solid fa-desktop"></i></div>
+                                        <div class="device-info">
+                                            <strong>Windows PC • Chrome</strong>
+                                            <span>Samal, Bataan, PH • <span class="status-online">Current Session</span></span>
+                                        </div>
+                                        <button class="btn btn-small btn-danger-outline" onclick="alert('Session revoked.')">Revoke</button>
+                                    </div>
+
+                                    <div class="device-item">
+                                        <div class="device-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                                        <div class="device-info">
+                                            <strong>Android Phone • Mobile App</strong>
+                                            <span>Active 2 hours ago</span>
+                                        </div>
+                                        <button class="btn btn-small btn-danger-outline" onclick="alert('Session revoked.')">Revoke</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- SECTION 2: LANGUAGE & LOCALIZATION -->
+                <section class="settings-section">
+                    <h2 class="section-title"><i class="fa-solid fa-globe"></i> Language & Localization</h2>
+                    <div class="cards-wrapper grid-2-col">
+                        
+                        <!-- Card: Language Selector -->
+                        <div class="glass-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-language"></i> Display Language</h3>
+                                <p>Select your preferred system language.</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Select Language</label>
+                                    <select class="glass-input glass-select" id="languageSelect">
+                                        <option value="en" selected>English</option>
+                                        <option value="tl">Tagalog</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card: Date, Time & Timezone -->
+                        <div class="glass-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-clock"></i> Date & Time Settings</h3>
+                                <p>Configure your timezone and system clock display.</p>
+                            </div>
+                            <div class="card-body">
+                                <!-- Real-time Clock Display -->
+                                <div class="live-clock-card">
+                                    <span class="clock-label">Current Real-Time Clock</span>
+                                    <div id="realtimeClock" class="clock-display">00:00:00 AM</div>
+                                    <div id="realtimeDate" class="date-display">Loading date...</div>
+                                </div>
+
+                                <div class="form-group" style="margin-top: 15px;">
+                                    <label>Timezone</label>
+                                    <select class="glass-input glass-select">
+                                        <option value="Asia/Manila" selected>(GMT+08:00) Asia/Manila (PST)</option>
+                                        <option value="UTC">(GMT+00:00) UTC</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- SECTION 3: DATA CONTROL -->
+                <section class="settings-section">
+                    <h2 class="section-title"><i class="fa-solid fa-database"></i> Data Control & Account Actions</h2>
+                    <div class="glass-card">
+                        <div class="card-body">
+                            <div class="actions-grid">
+                                
+                                <!-- Data Restore -->
+                                <div class="action-item">
+                                    <div>
+                                        <h4>Restore System Data</h4>
+                                        <p>Restore settings and system inventory from the last auto-backup point.</p>
+                                    </div>
+                                    <button class="btn btn-secondary" onclick="alert('Data restore initiated.')"><i class="fa-solid fa-rotate-left"></i> Restore Data</button>
+                                </div>
+
+                                <!-- Clear Cache -->
+                                <div class="action-item">
+                                    <div>
+                                        <h4>Clear Application Cache</h4>
+                                        <p>Free up local storage and force refresh system assets.</p>
+                                    </div>
+                                    <button class="btn btn-secondary" onclick="alert('Cache cleared successfully!')"><i class="fa-solid fa-broom"></i> Clear Cache</button>
+                                </div>
+
+                                <!-- Log Out -->
+                                <div class="action-item">
+                                    <div>
+                                        <h4>Sign Out</h4>
+                                        <p>Log out of your current session safely.</p>
+                                    </div>
+                                    <a href="logout.php" class="btn btn-warning"><i class="fa-solid fa-right-from-bracket"></i> Log Out</a>
+                                </div>
+
+                                <!-- Delete Account -->
+                                <div class="action-item danger-zone">
+                                    <div>
+                                        <h4 class="text-danger">Delete Account</h4>
+                                        <p>Permanently remove your account and all associated farm data. This action is irreversible.</p>
+                                    </div>
+                                    <button class="btn btn-danger" onclick="if(confirm('Are you sure you want to delete your account? This action cannot be undone.')) { alert('Account deleted.'); window.location.href='login.php'; }">
+                                        <i class="fa-solid fa-trash-can"></i> Delete Account
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Script para sa Real-Time Clock -->
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour12: true });
+            const dateString = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            
+            document.getElementById('realtimeClock').textContent = timeString;
+            document.getElementById('realtimeDate').textContent = dateString;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>

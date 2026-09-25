@@ -85,12 +85,12 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
     <div class="inventory-nav-bottom">
 
-        <a href="profile.html"
+        <a href="profile.php"
            title="Profile">
             👤
         </a>
 
-        <a href="settings.html"
+        <a href="settings.php"
            title="Settings">
             ⚙️
         </a>
@@ -131,11 +131,6 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 
         <div class="inventory-top-actions">
-
-            <div class="inventory-search">
-                🔍
-                <span>Search</span>
-            </div>
 
             <div class="inventory-time">
                 🕐

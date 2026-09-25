@@ -123,11 +123,6 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
         <div class="sales-top-actions">
 
-            <div class="sales-search">
-                🔍
-                <span>Search</span>
-            </div>
-
             <div class="sales-time">
                 🕐
                 <?php echo date('h:i A'); ?>
