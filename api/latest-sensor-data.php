@@ -17,10 +17,14 @@ $conn = new mysqli(
 );
 
 if ($conn->connect_error) {
+
+    http_response_code(500);
+
     echo json_encode([
         "success" => false,
         "message" => "Database connection failed."
     ]);
+
     exit;
 }
 
@@ -31,9 +35,9 @@ $currentQuery = "
         temperature,
         humidity,
         soil_moisture,
-        recorded_at
-    FROM sensor_readings
-    ORDER BY recorded_at DESC
+        updated_at
+    FROM current_sensor_status
+    WHERE id = 1
     LIMIT 1
 ";
 
@@ -43,12 +47,14 @@ if (
     !$currentResult ||
     $currentResult->num_rows === 0
 ) {
+
     echo json_encode([
         "success" => false,
-        "message" => "Waiting for sensor data"
+        "message" => "Waiting for sensor data."
     ]);
 
     $conn->close();
+
     exit;
 }
 
@@ -87,20 +93,15 @@ $readings = array_reverse($readings);
 echo json_encode([
     "success" => true,
 
-    "temperature" =>
-        (float) $current["temperature"],
+    "temperature" => (float) $current["temperature"],
 
-    "humidity" =>
-        (float) $current["humidity"],
+    "humidity" => (float) $current["humidity"],
 
-    "soil_moisture" =>
-        (float) $current["soil_moisture"],
+    "soil_moisture" => (float) $current["soil_moisture"],
 
-    "updated_at" =>
-        $current["recorded_at"],
+    "updated_at" => $current["updated_at"],
 
-    "readings" =>
-        $readings
+    "readings" => $readings
 ]);
 
 $conn->close();
