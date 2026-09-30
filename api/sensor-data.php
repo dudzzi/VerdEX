@@ -2,12 +2,33 @@
 
 header("Content-Type: application/json");
 
-require_once "../backend/db.php";
+$host = getenv("MYSQLHOST");
+$port = getenv("MYSQLPORT");
+$username = getenv("MYSQLUSER");
+$password = getenv("MYSQLPASSWORD");
+$dbname = getenv("MYSQLDATABASE");
 
+$conn = new mysqli(
+    $host,
+    $username,
+    $password,
+    $dbname,
+    $port
+);
 
-// =====================================================
-// ONLY ALLOW POST
-// =====================================================
+if ($conn->connect_error) {
+
+    http_response_code(500);
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Database connection failed."
+    ]);
+
+    exit;
+}
+
+$conn->set_charset("utf8mb4");
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
@@ -15,30 +36,25 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 
     echo json_encode([
         "success" => false,
-        "message" => "POST request required"
+        "message" => "POST request required."
     ]);
+
+    $conn->close();
 
     exit;
 }
 
+$temperature = isset($_POST["temperature"])
+    ? (float) $_POST["temperature"]
+    : null;
 
-// =====================================================
-// GET SENSOR DATA
-// =====================================================
+$humidity = isset($_POST["humidity"])
+    ? (float) $_POST["humidity"]
+    : null;
 
-$temperature =
-    $_POST["temperature"] ?? null;
-
-$humidity =
-    $_POST["humidity"] ?? null;
-
-$soilMoisture =
-    $_POST["soil_moisture"] ?? null;
-
-
-// =====================================================
-// VALIDATE DATA
-// =====================================================
+$soilMoisture = isset($_POST["soil_moisture"])
+    ? (float) $_POST["soil_moisture"]
+    : null;
 
 if (
     $temperature === null ||
@@ -50,38 +66,13 @@ if (
 
     echo json_encode([
         "success" => false,
-        "message" => "Missing sensor data"
+        "message" => "Missing sensor values."
     ]);
+
+    $conn->close();
 
     exit;
 }
-
-
-if (
-    !is_numeric($temperature) ||
-    !is_numeric($humidity) ||
-    !is_numeric($soilMoisture)
-) {
-
-    http_response_code(400);
-
-    echo json_encode([
-        "success" => false,
-        "message" => "Invalid sensor data"
-    ]);
-
-    exit;
-}
-
-
-$temperature = (float) $temperature;
-$humidity = (float) $humidity;
-$soilMoisture = (float) $soilMoisture;
-
-
-// =====================================================
-// 1. UPDATE CURRENT/LIVE READING
-// =====================================================
 
 $currentStmt = $conn->prepare("
     UPDATE current_sensor_status
@@ -93,6 +84,20 @@ $currentStmt = $conn->prepare("
     WHERE id = 1
 ");
 
+if (!$currentStmt) {
+
+    http_response_code(500);
+
+    echo json_encode([
+        "success" => false,
+        "message" => "Failed to prepare current status update."
+    ]);
+
+    $conn->close();
+
+    exit;
+}
+
 $currentStmt->bind_param(
     "ddd",
     $temperature,
@@ -100,15 +105,13 @@ $currentStmt->bind_param(
     $soilMoisture
 );
 
-
 if (!$currentStmt->execute()) {
 
     http_response_code(500);
 
     echo json_encode([
         "success" => false,
-        "message" =>
-            "Failed to update current sensor status"
+        "message" => "Failed to update current sensor status."
     ]);
 
     $currentStmt->close();
@@ -118,11 +121,6 @@ if (!$currentStmt->execute()) {
 }
 
 $currentStmt->close();
-
-
-// =====================================================
-// 2. CHECK LAST HISTORICAL READING
-// =====================================================
 
 $shouldSaveHistory = false;
 
@@ -135,39 +133,38 @@ $lastQuery = "
 
 $lastResult = $conn->query($lastQuery);
 
+if (!$lastResult) {
 
-if (
-    !$lastResult ||
-    $lastResult->num_rows === 0
-) {
+    http_response_code(500);
 
-    // No history yet
+    echo json_encode([
+        "success" => false,
+        "message" => "Failed to check sensor history."
+    ]);
+
+    $conn->close();
+
+    exit;
+}
+
+if ($lastResult->num_rows === 0) {
+
     $shouldSaveHistory = true;
 
 } else {
 
-    $lastRow =
-        $lastResult->fetch_assoc();
+    $lastRow = $lastResult->fetch_assoc();
 
-    $lastSaved =
-        strtotime($lastRow["recorded_at"]);
-
-    $fiveMinutesAgo =
-        time() - 300;
-
+    $lastSaved = strtotime($lastRow["recorded_at"]);
+    $fiveMinutesAgo = time() - 300;
 
     if ($lastSaved <= $fiveMinutesAgo) {
         $shouldSaveHistory = true;
     }
 }
 
-
-// =====================================================
-// 3. SAVE HISTORY ONLY EVERY 5 MINUTES
-// =====================================================
-
 $historySaved = false;
-
+$readingId = null;
 
 if ($shouldSaveHistory) {
 
@@ -181,6 +178,20 @@ if ($shouldSaveHistory) {
         VALUES (?, ?, ?)
     ");
 
+    if (!$historyStmt) {
+
+        http_response_code(500);
+
+        echo json_encode([
+            "success" => false,
+            "message" => "Failed to prepare history insert."
+        ]);
+
+        $conn->close();
+
+        exit;
+    }
+
     $historyStmt->bind_param(
         "ddd",
         $temperature,
@@ -188,29 +199,25 @@ if ($shouldSaveHistory) {
         $soilMoisture
     );
 
-
     if ($historyStmt->execute()) {
+
         $historySaved = true;
+        $readingId = $historyStmt->insert_id;
+
     }
 
     $historyStmt->close();
 }
 
-
-// =====================================================
-// RESPONSE
-// =====================================================
-
 echo json_encode([
     "success" => true,
-
-    "message" =>
-        "Current sensor status updated",
-
-    "history_saved" =>
-        $historySaved
+    "message" => "Sensor data received successfully.",
+    "temperature" => $temperature,
+    "humidity" => $humidity,
+    "soil_moisture" => $soilMoisture,
+    "history_saved" => $historySaved,
+    "reading_id" => $readingId
 ]);
-
 
 $conn->close();
 
