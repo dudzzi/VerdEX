@@ -307,7 +307,7 @@ if ($categoryCountQuery) {
         </nav>
 
 
-        <div class="dashboard-nav-bottom">
+        <div class="sidebar-bottom">
 
             <a
                 href="#"

@@ -307,49 +307,6 @@ body {
 
 
 /* =========================================================
-   DEMO ACCOUNT
-   ========================================================= */
-
-.demo-account {
-    margin-top: 28px;
-
-    padding-top: 20px;
-
-    border-top: 1px solid #edf0ed;
-
-    text-align: center;
-}
-
-.demo-title {
-    font-size: 11px;
-
-    font-weight: 700;
-
-    text-transform: uppercase;
-
-    letter-spacing: 0.6px;
-
-    color: var(--login-green-dark);
-
-    margin-bottom: 8px;
-}
-
-.demo-account p:last-child {
-    font-size: 11px;
-
-    color: var(--login-muted);
-
-    line-height: 1.6;
-}
-
-.demo-account span {
-    margin: 0 4px;
-
-    color: #b3bbb5;
-}
-
-
-/* =========================================================
    RIGHT IMAGE
    ========================================================= */
 
@@ -522,4 +479,535 @@ body {
     .form-options {
         gap: 10px;
     }
+}
+
+/* =========================================================
+   CREATE ACCOUNT LINK
+   ========================================================= */
+
+.create-account-link {
+    margin-top: 28px;
+
+    padding-top: 20px;
+
+    border-top:
+        1px solid #edf0ed;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    font-size: 12px;
+
+    color: var(--login-muted);
+}
+
+
+.create-account-link a {
+    color: var(--login-green-dark);
+
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+
+.create-account-link a:hover {
+    text-decoration: underline;
+}
+
+.login-success {
+    background: #edf8e9;
+
+    color: #2f7d1f;
+
+    border: 1px solid #cfe8c6;
+
+    border-radius: 10px;
+
+    padding: 12px 14px;
+
+    font-size: 13px;
+
+    margin-bottom: 20px;
+}
+/* =========================================
+   LOGIN ROLE TOGGLE
+   ========================================= */
+
+.login-role-toggle {
+    display: flex;
+
+    background: #f1f4f1;
+
+    border-radius: 12px;
+
+    padding: 4px;
+
+    margin-bottom: 24px;
+}
+
+
+.login-role-button {
+    flex: 1;
+
+    border: none;
+
+    background: transparent;
+
+    padding: 10px 16px;
+
+    border-radius: 9px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    color: #6f766f;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.login-role-button.active {
+    background: #ffffff;
+
+    color: #2f7d1f;
+
+    box-shadow:
+        0 2px 8px
+        rgba(0, 0, 0, 0.08);
+}
+/* =========================================
+   LOGIN MODE SECTIONS
+   ========================================= */
+
+.login-mode-section.hidden {
+    display: none;
+}
+
+
+/* =========================================
+   HELPER LOGIN
+   ========================================= */
+
+.helper-login-heading {
+    margin-bottom: 20px;
+}
+
+.helper-login-heading h3 {
+    margin: 0 0 6px;
+
+    font-size: 18px;
+
+    color: #252925;
+}
+
+.helper-login-heading p {
+    margin: 0;
+
+    font-size: 13px;
+
+    color: #777f79;
+
+    line-height: 1.5;
+}
+
+
+.helper-search-form {
+    display: flex;
+    flex-direction: column;
+
+    gap: 16px;
+}
+
+
+.helper-profile-results {
+    margin-top: 24px;
+
+    min-height: 90px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px dashed #d9ded9;
+
+    border-radius: 12px;
+
+    background: #fafcfa;
+}
+
+
+.helper-empty-message {
+    margin: 0;
+
+    padding: 20px;
+
+    text-align: center;
+
+    font-size: 12px;
+
+    color: #929992;
+}
+
+/* =========================================
+   HELPER PROFILE RESULTS
+   ========================================= */
+
+.helper-profile-results {
+    margin-top: 24px;
+
+    min-height: 100px;
+
+    border: 1px dashed #d9ded9;
+
+    border-radius: 14px;
+
+    background: #fafcfa;
+
+    padding: 20px;
+}
+
+
+.helper-profile-wrapper {
+    width: 100%;
+}
+
+
+.helper-profile-owner {
+    display: flex;
+    flex-direction: column;
+
+    text-align: center;
+
+    margin-bottom: 20px;
+}
+
+
+.helper-profile-owner strong {
+    color: #252925;
+
+    font-size: 14px;
+}
+
+
+.helper-profile-owner span {
+    color: #858c85;
+
+    font-size: 12px;
+
+    margin-top: 4px;
+}
+
+
+/* PROFILE GRID */
+
+.helper-profile-grid {
+    display: flex;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 20px;
+}
+
+
+/* PROFILE */
+
+.helper-profile-card {
+    width: 82px;
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 5px;
+}
+
+
+.helper-profile-avatar {
+    width: 62px;
+    height: 62px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4ea72e,
+            #286d31
+        );
+
+    color: #ffffff;
+
+    font-size: 23px;
+
+    font-weight: 700;
+
+    border: 3px solid transparent;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.helper-profile-card:hover
+.helper-profile-avatar {
+    transform: scale(1.06);
+
+    border-color: #8ed174;
+
+    box-shadow:
+        0 4px 12px
+        rgba(47, 125, 31, 0.18);
+}
+
+
+.helper-profile-name {
+    width: 100%;
+
+    color: #3a3f3a;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    text-align: center;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* SEARCH MESSAGE */
+
+.helper-search-message {
+    margin: 0;
+
+    min-height: 60px;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+
+    color: #818881;
+
+    font-size: 12px;
+}
+
+
+.helper-search-message.error {
+    color: #b54747;
+}
+
+/* =========================================
+   HELPER PIN MODAL
+   ========================================= */
+
+.helper-pin-overlay {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(15, 20, 15, 0.50);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 5000;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 0.2s ease,
+        visibility 0.2s ease;
+}
+
+
+.helper-pin-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+.helper-pin-modal {
+    position: relative;
+
+    width: 100%;
+    max-width: 340px;
+
+    background: #ffffff;
+
+    border-radius: 18px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0, 0, 0, 0.25);
+}
+
+
+.helper-pin-close {
+    position: absolute;
+
+    top: 14px;
+    right: 14px;
+
+    width: 32px;
+    height: 32px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #f1f4f1;
+
+    color: #626962;
+
+    font-size: 21px;
+
+    cursor: pointer;
+}
+
+
+.helper-pin-avatar {
+    width: 72px;
+    height: 72px;
+
+    margin:
+        8px auto
+        14px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4ea72e,
+            #286d31
+        );
+
+    color: #ffffff;
+
+    font-size: 27px;
+
+    font-weight: 700;
+}
+
+
+.helper-pin-modal h2 {
+    margin: 0;
+
+    color: #252925;
+
+    font-size: 20px;
+}
+
+
+.helper-pin-modal p {
+    margin:
+        7px 0
+        20px;
+
+    color: #7c847d;
+
+    font-size: 12px;
+}
+
+
+.helper-pin-input {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 13px;
+
+    margin-bottom: 14px;
+
+    border:
+        1px solid #dce2dc;
+
+    border-radius: 10px;
+
+    outline: none;
+
+    text-align: center;
+
+    font-size: 22px;
+
+    letter-spacing: 10px;
+}
+
+
+.helper-pin-input:focus {
+    border-color: #5da849;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(78, 167, 46, 0.10);
+}
+
+
+.helper-pin-message {
+    display: none;
+
+    margin-bottom: 14px;
+
+    padding: 9px 10px;
+
+    border-radius: 8px;
+
+    font-size: 11px;
+}
+
+
+.helper-pin-message.error {
+    display: block;
+
+    background: #fff0f0;
+
+    border:
+        1px solid #efcccc;
+
+    color: #b33a3a;
 }

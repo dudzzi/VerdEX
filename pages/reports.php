@@ -1,10 +1,9 @@
 <?php
-session_start();
 
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header('Location: login.php');
-    exit;
-}
+require_once "../backend/access-control.php";
+
+requireOwner();
+
 ?>
 
 <!DOCTYPE html>
@@ -56,7 +55,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
         </nav>
 
-        <div class="dashboard-nav-bottom">
+        <div class="sidebar-bottom">
 
             <a
                 href="#"

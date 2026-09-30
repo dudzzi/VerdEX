@@ -52,60 +52,56 @@ $role = $_SESSION['role'] ?? 'Team Member';
 
         <nav class="dashboard-nav">
 
-            <a href="home.php"
-               class="active"
-               title="Dashboard">
-                🏠
-            </a>
+            <a href="home.php" title="Home">
+                    🏠
+                </a>
 
-            <a href="inventory.php"
-               title="Inventory">
-                📦
-            </a>
+                <a href="inventory.php" title="Inventory">
+                    📦
+                </a>
 
-            <a href="calendar.php"
-               title="Calendar">
-                📅
-            </a>
+                <a href="calendar.php" title="Calendar">
+                    📅
+                </a>
 
-            <a href="sales.php"
-               title="Sales">
-                💰
-            </a>
 
-            <a href="status.php"
-               title="Farm Status">
-                💧
-            </a>
+                <?php if (($_SESSION["role"] ?? "") === "owner"): ?>
 
-            <a href="forum.php"
-               title="Trends">
-                💬
-            </a>
+                    <a href="sales.php" title="Sales">
+                        💰
+                    </a>
 
-            <a href="reports.php"
-               title="Reports">
-                📊
-            </a>
+                <?php endif; ?>
+
+
+                <a href="status.php" title="Farm Status">
+                    🌱
+                </a>
+
+                <a href="forum.php" title="Forum">
+                    💬
+                </a>
+
+
+                <?php if (($_SESSION["role"] ?? "") === "owner"): ?>
+
+                    <a href="reports.php" title="Reports">
+                        📊
+                    </a>
+
+                <?php endif; ?>
 
         </nav>
 
 
-        <div class="dashboard-nav-bottom">
+        <div class="sidebar-bottom">
 
             <a
-                href="profile.php"
+                href="#"
                 class="profile-menu-toggle"
                 title="Profile"
             >
                 👤
-            </a>
-
-            <a
-                href="settings.php"
-                title="Settings"
-            >
-                ⚙️
             </a>
 
             <a

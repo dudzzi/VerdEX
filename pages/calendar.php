@@ -81,7 +81,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     </nav>
 
 
-    <div class="dashboard-nav-bottom">
+    <div class="sidebar-bottom">
 
         <a
             href="#"

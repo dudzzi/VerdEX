@@ -2,7 +2,47 @@
    VERDEX PROFILE POPUP
    ========================================================= */
 
-.profile-popup {
+/* =========================================================
+   SHARED SIDEBAR BOTTOM
+   ========================================================= */
+
+.sidebar-bottom {
+    margin-top: auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 9px;
+}
+
+.sidebar-bottom a {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    color: #89918b;
+
+    text-decoration: none;
+
+    font-size: 18px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.sidebar-bottom a:hover {
+    background: #edf5ee;
+    color: #3c8b4c;
+}
+
+   .profile-popup {
     position: fixed;
 
     left: 94px;
@@ -192,4 +232,282 @@
         width: 260px;
     }
 
+}
+/* =========================================================
+   CREATE HELPER PROFILE MODAL
+   ========================================================= */
+
+.helper-modal-overlay {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(15, 20, 15, 0.48);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 5000;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 0.2s ease,
+        visibility 0.2s ease;
+}
+
+
+.helper-modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+.helper-modal {
+    width: 100%;
+    max-width: 430px;
+
+    background: #ffffff;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.25);
+
+    padding: 24px;
+
+    transform:
+        translateY(10px)
+        scale(0.98);
+
+    transition:
+        transform 0.2s ease;
+}
+
+
+.helper-modal-overlay.show
+.helper-modal {
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+/* HEADER */
+
+.helper-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 24px;
+}
+
+
+.helper-modal-header h2 {
+    margin: 0;
+
+    font-size: 20px;
+
+    color: #252925;
+}
+
+
+.helper-modal-header p {
+    margin: 5px 0 0;
+
+    color: #7b837c;
+
+    font-size: 12px;
+}
+
+
+.helper-modal-close {
+    width: 34px;
+    height: 34px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #f1f4f1;
+
+    color: #626962;
+
+    font-size: 22px;
+
+    cursor: pointer;
+}
+
+
+.helper-modal-close:hover {
+    background: #e8eee8;
+}
+
+
+/* FORM */
+
+.helper-modal-form {
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+
+.helper-form-group {
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+.helper-form-group label {
+    color: #343934;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+.helper-form-group input {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 12px 13px;
+
+    border: 1px solid #dce2dc;
+
+    border-radius: 10px;
+
+    outline: none;
+
+    font-size: 13px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.helper-form-group input:focus {
+    border-color: #5da849;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(78, 167, 46, 0.10);
+}
+
+
+.helper-form-group small {
+    color: #8a918b;
+
+    font-size: 10px;
+
+    line-height: 1.5;
+}
+
+
+/* MESSAGE */
+
+.helper-modal-message {
+    display: none;
+
+    padding: 10px 12px;
+
+    border-radius: 9px;
+
+    font-size: 12px;
+}
+
+
+/* ACTIONS */
+
+.helper-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 4px;
+}
+
+
+.helper-cancel-button,
+.helper-create-button {
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 10px 17px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+.helper-cancel-button {
+    background: #eef1ee;
+
+    color: #596159;
+}
+
+
+.helper-cancel-button:hover {
+    background: #e4e9e4;
+}
+
+
+.helper-create-button {
+    background: #3e8f32;
+
+    color: #ffffff;
+}
+
+
+.helper-create-button:hover {
+    background: #347a2a;
+}
+
+/* =========================================================
+   HELPER MODAL MESSAGES
+   ========================================================= */
+
+.helper-modal-message.error {
+    display: block;
+
+    background: #fff0f0;
+
+    border: 1px solid #efcccc;
+
+    color: #b33a3a;
+}
+
+
+.helper-modal-message.success {
+    display: block;
+
+    background: #eef8ea;
+
+    border: 1px solid #cce7c4;
+
+    color: #347a2a;
+}
+
+
+.helper-create-button:disabled {
+    opacity: 0.65;
+
+    cursor: not-allowed;
 }

@@ -87,21 +87,14 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     </nav>
 
 
-    <div class="dashboard-nav-bottom">
+    <div class="sidebar-bottom">
 
         <a
-            href="profile.php"
+            href="#"
             class="profile-menu-toggle"
             title="Profile"
         >
             👤
-        </a>
-
-        <a
-            href="settings.php"
-            title="Settings"
-        >
-            ⚙️
         </a>
 
         <a

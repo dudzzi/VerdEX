@@ -1,50 +1,113 @@
 <?php
+
 session_start();
 
-$users = [
-    'zandro' => [
-        'password' => '$2y$12$cNIV722tdG71S5rmQjwic.6Jdh32eQ0Q/WU6z.lNVbVSrPDbk54wa',
-        'name' => 'Zandro Sean D. Animos',
-        'role' => 'Project Manager / Data Analyst'
-    ],
-    'sam' => [
-        'password' => '$2y$12$6Wgq0k8lQLKXz5OC97KHRu5N6QdUQ9MLOvQCDiDZi3ehSYtXRBwda',
-        'name' => 'Sam Aisele A. Austria',
-        'role' => 'Frontend Developer / Lead Documenter'
-    ],
-    'jaypee' => [
-        'password' => '$2y$12$7qRY5Oqx8fRVi3xTcehxTuZSO2xwqp/ocKEjLQo4fxuBFaeJZZrlm',
-        'name' => 'Jaypee D. Cervantes',
-        'role' => 'UI/UX Designer / Database Manager'
-    ],
-    'lorenzo' => [
-        'password' => '$2y$12$qHzhsJIbpNJDYBHzi9YjDOvAX88vTGQUS5MNMRyEBiCEaZI3ZGoYa',
-        'name' => 'Lorenzo M. Chavez',
-        'role' => 'Backend Developer / IoT Developer'
-    ]
-];
+require_once "db.php";
 
-$username = trim($_POST['username'] ?? '');
-$password = $_POST['password'] ?? '';
+$username =
+    trim($_POST["username"] ?? "");
 
-if ($username === '' || $password === '') {
-    header('Location: ../pages/login.php?error=empty');
+$password =
+    $_POST["password"] ?? "";
+
+
+/* =========================
+   VALIDATION
+   ========================= */
+
+if (
+    $username === "" ||
+    $password === ""
+) {
+
+    header(
+        "Location: ../pages/login.php?error=empty"
+    );
+
     exit;
 }
 
-$key = strtolower($username);
 
-if (!isset($users[$key]) || !password_verify($password, $users[$key]['password'])) {
-    header('Location: ../pages/login.php?error=invalid');
+/* =========================
+   FIND USER
+   ========================= */
+
+$stmt = $conn->prepare("
+    SELECT
+        id,
+        username,
+        password,
+        full_name,
+        role
+    FROM users
+    WHERE username = ?
+    LIMIT 1
+");
+
+$stmt->bind_param(
+    "s",
+    $username
+);
+
+$stmt->execute();
+
+$result =
+    $stmt->get_result();
+
+$user =
+    $result->fetch_assoc();
+
+
+/* =========================
+   VERIFY ACCOUNT
+   ========================= */
+
+if (
+    !$user ||
+    !password_verify(
+        $password,
+        $user["password"]
+    )
+) {
+
+    $stmt->close();
+    $conn->close();
+
+    header(
+        "Location: ../pages/login.php?error=invalid"
+    );
+
     exit;
 }
+
+
+/* =========================
+   LOGIN SUCCESS
+   ========================= */
 
 session_regenerate_id(true);
-$_SESSION['loggedin'] = true;
-$_SESSION['user_id'] = $key;
-$_SESSION['username'] = $key;
-$_SESSION['full_name'] = $users[$key]['name'];
-$_SESSION['role'] = $users[$key]['role'];
 
-header('Location: ../pages/home.php');
+$_SESSION["loggedin"] = true;
+
+$_SESSION["user_id"] =
+    (int) $user["id"];
+
+$_SESSION["username"] =
+    $user["username"];
+
+$_SESSION["full_name"] =
+    $user["full_name"];
+
+$_SESSION["role"] =
+    $user["role"];
+
+
+$stmt->close();
+$conn->close();
+
+header(
+    "Location: ../pages/home.php"
+);
+
 exit;
+?>
