@@ -2,13 +2,36 @@
 
 header("Content-Type: application/json");
 
-require_once "../config.php";
+$host = getenv("MYSQLHOST");
+$port = getenv("MYSQLPORT");
+$username = getenv("MYSQLUSER");
+$password = getenv("MYSQLPASSWORD");
+$dbname = getenv("MYSQLDATABASE");
+
+$conn = new mysqli(
+    $host,
+    $username,
+    $password,
+    $dbname,
+    $port
+);
+
+if ($conn->connect_error) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Database connection failed."
+    ]);
+    exit;
+}
+
+$conn->set_charset("utf8mb4");
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     echo json_encode([
         "success" => false,
         "message" => "Invalid request method."
     ]);
+    $conn->close();
     exit;
 }
 
@@ -33,6 +56,7 @@ if (
         "success" => false,
         "message" => "Missing sensor values."
     ]);
+    $conn->close();
     exit;
 }
 
@@ -54,6 +78,7 @@ if (!$stmt) {
         "message" => "Database prepare failed.",
         "error" => $conn->error
     ]);
+    $conn->close();
     exit;
 }
 
@@ -85,4 +110,5 @@ if ($stmt->execute()) {
 $stmt->close();
 $conn->close();
 
+?>
 ?>
