@@ -221,6 +221,10 @@ if ($categoryCountQuery) {
         rel="stylesheet"
         href="../css/forum.css"
     >
+    <link
+    rel="stylesheet"
+    href="../css/profile-menu.css"
+    >
 
 </head>
 
@@ -303,23 +307,15 @@ if ($categoryCountQuery) {
         </nav>
 
 
-        <div class="forum-nav-bottom">
+        <div class="dashboard-nav-bottom">
 
             <a
-                href="profile.php"
+                href="#"
+                class="profile-menu-toggle"
                 title="Profile"
             >
                 👤
             </a>
-
-
-            <a
-                href="settings.php"
-                title="Settings"
-            >
-                ⚙️
-            </a>
-
 
             <a
                 href="../backend/logout.php"
@@ -332,7 +328,9 @@ if ($categoryCountQuery) {
 
     </aside>
 
-
+<?php
+require "../includes/profile-menu.php";
+?>
 
     <main class="forum-main">
 
@@ -875,7 +873,7 @@ if ($categoryCountQuery) {
 
 
     <script src="../js/forum.js"></script>
-
+    <script src="../js/profile-menu.js"></script>                    
 </body>
 
 </html>

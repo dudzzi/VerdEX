@@ -21,6 +21,10 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
     <link rel="stylesheet"
           href="../css/calendar.css">
+    <link
+    rel="stylesheet"
+    href="../css/profile-menu.css"
+    >
 
 </head>
 
@@ -77,17 +81,20 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     </nav>
 
 
-    <div class="calendar-nav-bottom">
+    <div class="dashboard-nav-bottom">
 
-        <a href="profile.php" title="Profile">
+        <a
+            href="#"
+            class="profile-menu-toggle"
+            title="Profile"
+        >
             👤
         </a>
 
-        <a href="settings.php" title="Settings">
-            ⚙️
-        </a>
-
-        <a href="../backend/logout.php" title="Logout">
+        <a
+            href="../backend/logout.php"
+            title="Logout"
+        >
             ↪
         </a>
 
@@ -95,7 +102,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 </aside>
 
-
+<?php
+require "../includes/profile-menu.php";
+?>
 
 <!-- =====================================================
      MAIN
@@ -122,11 +131,6 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 
         <div class="calendar-top-actions">
-
-            <div class="calendar-search">
-                🔍
-                <span>Search</span>
-            </div>
 
             <div class="calendar-time">
                 🕐
@@ -533,7 +537,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 
 <script src="../js/calendar.js"></script>
-
+<script src="../js/profile-menu.js"></script>
 </body>
 
 </html>

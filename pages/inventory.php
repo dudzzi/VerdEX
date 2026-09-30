@@ -21,6 +21,10 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
     <link rel="stylesheet"
           href="../css/inventory.css">
+    <link
+    rel="stylesheet"
+    href="../css/profile-menu.css"
+    >
 
 </head>
 
@@ -83,20 +87,20 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     </nav>
 
 
-    <div class="inventory-nav-bottom">
+    <div class="dashboard-nav-bottom">
 
-        <a href="profile.html"
-           title="Profile">
+        <a
+            href="#"
+            class="profile-menu-toggle"
+            title="Profile"
+        >
             👤
         </a>
 
-        <a href="settings.html"
-           title="Settings">
-            ⚙️
-        </a>
-
-        <a href="../backend/logout.php"
-           title="Logout">
+        <a
+            href="../backend/logout.php"
+            title="Logout"
+        >
             ↪
         </a>
 
@@ -104,7 +108,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 </aside>
 
-
+<?php
+require "../includes/profile-menu.php";
+?>
 
 <!-- =====================================================
      MAIN CONTENT
@@ -131,11 +137,6 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 
         <div class="inventory-top-actions">
-
-            <div class="inventory-search">
-                🔍
-                <span>Search</span>
-            </div>
 
             <div class="inventory-time">
                 🕐
@@ -608,7 +609,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 
 <script src="../js/inventory.js"></script>
-
+<script src="../js/profile-menu.js"></script>
 </body>
 
 </html>

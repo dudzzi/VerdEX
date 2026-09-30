@@ -25,6 +25,11 @@ $role = $_SESSION['role'] ?? 'Team Member';
     <link rel="stylesheet"
           href="../css/home.css">
 
+    <link
+    rel="stylesheet"
+    href="../css/profile-menu.css"
+    >
+
 </head>
 
 <body class="dashboard-page">
@@ -88,18 +93,18 @@ $role = $_SESSION['role'] ?? 'Team Member';
 
         <div class="dashboard-nav-bottom">
 
-            <a href="profile.html"
-               title="Profile">
+            <a
+                href="#"
+                class="profile-menu-toggle"
+                title="Profile"
+            >
                 👤
             </a>
 
-            <a href="settings.html"
-               title="Settings">
-                ⚙️
-            </a>
-
-            <a href="../backend/logout.php"
-               title="Logout">
+            <a
+                href="../backend/logout.php"
+                title="Logout"
+            >
                 ↪
             </a>
 
@@ -107,7 +112,9 @@ $role = $_SESSION['role'] ?? 'Team Member';
 
     </aside>
 
-
+    <?php
+    require "../includes/profile-menu.php";
+    ?>
 
     <!-- =====================================================
          MAIN CONTENT
@@ -135,22 +142,15 @@ $role = $_SESSION['role'] ?? 'Team Member';
 
             <div class="dashboard-top-actions">
 
-                <div class="dashboard-search">
-                    🔍
-                    <span>Search</span>
-                </div>
-
                 <div class="dashboard-time">
                     🕐
                     <?php echo date('h:i A'); ?>
                 </div>
 
                 <div class="dashboard-notification">
-
                     🔔
 
                     <span class="notification-dot"></span>
-
                 </div>
 
             </div>
@@ -576,6 +576,7 @@ $role = $_SESSION['role'] ?? 'Team Member';
 
     </main>
 
+<script src="../js/profile-menu.js"></script>
 
 </body>
 

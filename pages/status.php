@@ -490,6 +490,10 @@ foreach ($historyData as $record) {
         rel="stylesheet"
         href="../css/status.css"
     >
+    <link
+    rel="stylesheet"
+    href="../css/profile-menu.css"
+    >
 
     <script src="../js/vendor/chart.umd.min.js"></script>
 
@@ -554,14 +558,14 @@ SIDEBAR
     </nav>
 
 
-    <div class="status-nav-bottom">
+    <div class="dashboard-nav-bottom">
 
-        <a href="profile.php" title="Profile">
+        <a
+            href="#"
+            class="profile-menu-toggle"
+            title="Profile"
+        >
             👤
-        </a>
-
-        <a href="settings.php" title="Settings">
-            ⚙️
         </a>
 
         <a
@@ -575,7 +579,9 @@ SIDEBAR
 
 </aside>
 
-
+<?php
+require "../includes/profile-menu.php";
+?>
 <!-- ==================================================
 MAIN
 ================================================== -->
@@ -1641,7 +1647,7 @@ if (historyCanvas) {
 
 
 <script src="../js/status.js"></script>
-
+<script src="../js/profile-menu.js"></script>
 </body>
 
 </html>

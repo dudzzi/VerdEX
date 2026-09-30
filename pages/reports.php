@@ -19,6 +19,10 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     <title>Reports | VerdEX</title>
 
     <link rel="stylesheet" href="../css/reports.css">
+    <link
+    rel="stylesheet"
+    href="../css/profile-menu.css"
+    >
 
 </head>
 
@@ -52,19 +56,30 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
         </nav>
 
-        <div class="reports-nav-bottom">
+        <div class="dashboard-nav-bottom">
 
-            <a href="profile.php" title="Profile">👤</a>
+            <a
+                href="#"
+                class="profile-menu-toggle"
+                title="Profile"
+            >
+                👤
+            </a>
 
-            <a href="settings.php" title="Settings">⚙️</a>
-
-            <a href="../backend/logout.php" title="Logout">↪</a>
+            <a
+                href="../backend/logout.php"
+                title="Logout"
+            >
+                ↪
+            </a>
 
         </div>
 
     </aside>
 
-
+    <?php
+    require "../includes/profile-menu.php";
+    ?>
     <!-- ================================
          MAIN CONTENT
     ================================= -->
@@ -609,7 +624,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script src="../js/reports.js"></script>
-
+    <script src="../js/profile-menu.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,195 @@
+/* =========================================================
+   VERDEX PROFILE POPUP
+   ========================================================= */
+
+.profile-popup {
+    position: fixed;
+
+    left: 94px;
+    bottom: 20px;
+
+    width: 290px;
+
+    background: #1f211f;
+    color: #ffffff;
+
+    border: 1px solid #3a3d3a;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 14px 40px rgba(0, 0, 0, 0.25);
+
+    z-index: 3000;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transform:
+        translateX(-8px)
+        translateY(8px);
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease,
+        visibility 0.2s ease;
+
+    overflow: hidden;
+}
+
+
+.profile-popup.show {
+    opacity: 1;
+    visibility: visible;
+
+    transform:
+        translateX(0)
+        translateY(0);
+}
+
+
+/* HEADER */
+
+.profile-popup-header {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 16px;
+}
+
+
+.profile-popup-avatar {
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #4ea72e;
+
+    color: #ffffff;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+
+.profile-popup-user {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+.profile-popup-user strong {
+    font-size: 14px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.profile-popup-user span {
+    margin-top: 2px;
+
+    color: #aeb4af;
+
+    font-size: 11px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.profile-popup-user a {
+    margin-top: 5px;
+
+    width: fit-content;
+
+    color: #91d878;
+
+    font-size: 11px;
+}
+
+
+.profile-popup-user a:hover {
+    text-decoration: underline;
+}
+
+
+/* SECTIONS */
+
+.profile-popup-section {
+    padding: 7px;
+
+    border-top:
+        1px solid #393c39;
+}
+
+
+.profile-popup-section > a {
+    min-height: 43px;
+
+    padding: 0 11px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    border-radius: 9px;
+
+    color: #f0f2f0;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    text-decoration: none;
+
+    transition:
+        background 0.15s ease;
+}
+
+
+.profile-popup-section > a:hover {
+    background: #323532;
+}
+
+
+.profile-popup-icon {
+    width: 23px;
+
+    display: flex;
+    justify-content: center;
+
+    font-size: 16px;
+}
+
+
+.profile-popup-logout:hover {
+    color: #ffb8b8 !important;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    .profile-popup {
+        left: 88px;
+        bottom: 12px;
+
+        width: 260px;
+    }
+
+}
