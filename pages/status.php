@@ -1,11 +1,8 @@
 <?php
 
-session_start();
+require_once "../backend/access-control.php";
 
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header('Location: login.php');
-    exit;
-}
+requireLogin();
 
 require_once "../backend/db.php";
 
@@ -523,7 +520,7 @@ SIDEBAR
 
     <nav class="status-nav">
 
-        <a href="home.php" title="Dashboard">
+        <a href="home.php" title="Home">
             🏠
         </a>
 
@@ -535,25 +532,32 @@ SIDEBAR
             📅
         </a>
 
-        <a href="sales.php" title="Sales">
-            💰
-        </a>
 
-        <a
-            href="status.php"
-            class="active"
-            title="Farm Status"
-        >
-            💧
+        <?php if (($_SESSION["role"] ?? "") === "owner"): ?>
+
+            <a href="sales.php" title="Sales">
+                💰
+            </a>
+
+        <?php endif; ?>
+
+
+        <a href="status.php" title="Farm Status">
+            🌱
         </a>
 
         <a href="forum.php" title="Forum">
             💬
         </a>
 
-        <a href="reports.php" title="Reports">
-            📊
-        </a>
+
+        <?php if (($_SESSION["role"] ?? "") === "owner"): ?>
+
+            <a href="reports.php" title="Reports">
+                📊
+            </a>
+
+        <?php endif; ?>
 
     </nav>
 

@@ -1,13 +1,9 @@
 <?php
-session_start();
 
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header('Location: login.php');
-    exit;
-}
+require_once "../backend/access-control.php";
 
-$fullName = $_SESSION['full_name'] ?? $_SESSION['username'] ?? 'User';
-$role = $_SESSION['role'] ?? 'Team Member';
+requireLogin();
+
 ?>
 
 <!DOCTYPE html>

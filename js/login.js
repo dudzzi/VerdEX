@@ -578,23 +578,28 @@ document.addEventListener(
         }
 
 
+        
+
         /* =========================================
-           CONTINUE BUTTON
-           ========================================= */
+        HELPER LOGIN
+        ========================================= */
 
         if (helperPinContinue) {
 
             helperPinContinue.addEventListener(
                 "click",
-                function () {
+                async function () {
+
+                    const profileId =
+                        selectedHelperId.value;
 
                     const pin =
                         helperLoginPin.value.trim();
 
 
-                    if (
-                        !/^\d{4}$/.test(pin)
-                    ) {
+                    /* VALIDATE PIN */
+
+                    if (!/^\d{4}$/.test(pin)) {
 
                         showPinMessage(
                             "Please enter your 4-digit PIN."
@@ -604,20 +609,85 @@ document.addEventListener(
                     }
 
 
-                    /*
-                    PIN verification will be
-                    connected in the next step.
-                    */
+                    helperPinContinue.disabled = true;
 
-                    console.log(
-                        "Selected helper:",
-                        selectedHelperId.value
-                    );
+                    helperPinContinue.textContent =
+                        "Checking...";
 
-                    console.log(
-                        "PIN entered:",
-                        pin
-                    );
+
+                    try {
+
+                        const formData =
+                            new FormData();
+
+                        formData.append(
+                            "profile_id",
+                            profileId
+                        );
+
+                        formData.append(
+                            "pin",
+                            pin
+                        );
+
+
+                        const response =
+                            await fetch(
+                                "../api/helper-login.php",
+                                {
+                                    method: "POST",
+                                    body: formData
+                                }
+                            );
+
+
+                        const data =
+                            await response.json();
+
+
+                        /* WRONG PIN / ERROR */
+
+                        if (!data.success) {
+
+                            showPinMessage(
+                                data.message
+                            );
+
+                            helperLoginPin.value = "";
+
+                            helperLoginPin.focus();
+
+                            return;
+                        }
+
+
+                        /* LOGIN SUCCESS */
+
+                        window.location.href =
+                            data.redirect;
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "Helper login error:",
+                            error
+                        );
+
+
+                        showPinMessage(
+                            "Unable to log in. Please try again."
+                        );
+
+                    } finally {
+
+                        helperPinContinue.disabled =
+                            false;
+
+                        helperPinContinue.textContent =
+                            "Continue";
+
+                    }
 
                 }
             );

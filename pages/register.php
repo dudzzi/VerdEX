@@ -108,13 +108,12 @@ if ($error === "empty") {
             <div class="login-heading">
 
                 <h1>
-                    Create account
+                    Create Owner Account
                 </h1>
 
                 <p>
-                    Create your VerdEX account
-                    to access the farm management
-                    system.
+                    Create your VerdEX owner account
+                    to manage your farm and helper profiles.
                 </p>
 
             </div>
@@ -218,7 +217,7 @@ if ($error === "empty") {
                     type="submit"
                     class="login-button"
                 >
-                    Create Account
+                    Create Owner Account
                 </button>
 
             </form>

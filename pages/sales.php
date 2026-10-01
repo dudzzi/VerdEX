@@ -66,7 +66,7 @@ requireOwner();
         </a>
 
         <a href="status.php" title="Farm Status">
-            💧
+            🌱
         </a>
 
         <a href="forum.php" title="Forum">

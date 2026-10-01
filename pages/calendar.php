@@ -1,10 +1,9 @@
 <?php
-session_start();
 
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header('Location: login.php');
-    exit;
-}
+require_once "../backend/access-control.php";
+
+requireLogin();
+
 ?>
 
 <!DOCTYPE html>
@@ -48,7 +47,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
     <nav class="calendar-nav">
 
-        <a href="home.php" title="Dashboard">
+        <a href="home.php" title="Home">
             🏠
         </a>
 
@@ -56,27 +55,36 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             📦
         </a>
 
-        <a href="calendar.php"
-           class="active"
-           title="Calendar">
+        <a href="calendar.php" title="Calendar">
             📅
         </a>
 
-        <a href="sales.php" title="Sales">
-            💰
-        </a>
+
+        <?php if (($_SESSION["role"] ?? "") === "owner"): ?>
+
+            <a href="sales.php" title="Sales">
+                💰
+            </a>
+
+        <?php endif; ?>
+
 
         <a href="status.php" title="Farm Status">
-            💧
+            🌱
         </a>
 
         <a href="forum.php" title="Forum">
             💬
         </a>
 
-        <a href="reports.php" title="Weekly Reports">
-            📊
-        </a>
+
+        <?php if (($_SESSION["role"] ?? "") === "owner"): ?>
+
+            <a href="reports.php" title="Reports">
+                📊
+            </a>
+
+        <?php endif; ?>
 
     </nav>
 

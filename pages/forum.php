@@ -1,13 +1,10 @@
 <?php
 
-session_start();
+require_once "../backend/access-control.php";
 
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header('Location: login.php');
-    exit;
-}
+requireLogin();
 
-require_once "../config.php";
+require_once "../backend/db.php";
 
 
 $categories = [];
@@ -248,61 +245,44 @@ if ($categoryCountQuery) {
 
         <nav class="forum-nav">
 
-            <a
-                href="home.php"
-                title="Dashboard"
-            >
-                🏠
-            </a>
+        <a href="home.php" title="Home">
+            🏠
+        </a>
+
+        <a href="inventory.php" title="Inventory">
+            📦
+        </a>
+
+        <a href="calendar.php" title="Calendar">
+            📅
+        </a>
 
 
-            <a
-                href="inventory.php"
-                title="Inventory"
-            >
-                📦
-            </a>
+        <?php if (($_SESSION["role"] ?? "") === "owner"): ?>
 
-
-            <a
-                href="calendar.php"
-                title="Calendar"
-            >
-                📅
-            </a>
-
-
-            <a
-                href="sales.php"
-                title="Sales"
-            >
+            <a href="sales.php" title="Sales">
                 💰
             </a>
 
-
-            <a
-                href="status.php"
-                title="Farm Status"
-            >
-                💧
-            </a>
+        <?php endif; ?>
 
 
-            <a
-                href="forum.php"
-                class="active"
-                title="Forum"
-            >
-                💬
-            </a>
+        <a href="status.php" title="Farm Status">
+            🌱
+        </a>
+
+        <a href="forum.php" title="Forum">
+            💬
+        </a>
 
 
-            <a
-                href="reports.php"
-                title="Reports"
-            >
+        <?php if (($_SESSION["role"] ?? "") === "owner"): ?>
+
+            <a href="reports.php" title="Reports">
                 📊
             </a>
+
+        <?php endif; ?>   
 
         </nav>
 

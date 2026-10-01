@@ -41,6 +41,7 @@ $stmt = $conn->prepare("
         role
     FROM users
     WHERE username = ?
+    AND role = 'owner'
     LIMIT 1
 ");
 

@@ -90,7 +90,7 @@ $profileInitial =
 
             <a
                 href="#"
-                id="createHelperProfileButton"
+                id="manageHelperProfilesButton"
             >
 
                 <span class="profile-popup-icon">
@@ -98,7 +98,7 @@ $profileInitial =
                 </span>
 
                 <span>
-                    Create Helper Profile
+                    Manage Helper Profiles
                 </span>
 
             </a>
@@ -293,6 +293,279 @@ $profileInitial =
                     class="helper-create-button"
                 >
                     Create Profile
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<?php endif; ?>
+
+<?php if ($profileRole === "owner"): ?>
+
+<div
+    class="manage-helper-overlay"
+    id="manageHelperOverlay"
+>
+
+    <div class="manage-helper-modal">
+
+        <div class="manage-helper-header">
+
+            <div>
+                <h2>
+                    Manage Helper Profiles
+                </h2>
+
+                <p>
+                    View and manage the helper profiles
+                    connected to your VerdEX account.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="manage-helper-close"
+                id="closeManageHelper"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="manage-helper-toolbar">
+
+            <button
+                type="button"
+                class="add-helper-button"
+                id="addHelperFromManage"
+            >
+                + Add Helper
+            </button>
+
+        </div>
+
+
+        <div
+            class="manage-helper-list"
+            id="manageHelperList"
+        >
+
+            <p class="manage-helper-empty">
+                Loading helper profiles...
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<?php endif; ?>
+
+<?php if ($profileRole === "owner"): ?>
+
+<div
+    class="edit-helper-overlay"
+    id="editHelperOverlay"
+>
+
+    <div class="edit-helper-modal">
+
+        <div class="edit-helper-header">
+
+            <div>
+                <h2>
+                    Rename Helper
+                </h2>
+
+                <p>
+                    Change the helper profile name.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="edit-helper-close"
+                id="closeEditHelper"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="editHelperForm"
+            class="edit-helper-form"
+        >
+
+            <input
+                type="hidden"
+                id="editHelperId"
+                name="helper_id"
+            >
+
+
+            <div class="helper-form-group">
+
+                <label for="editHelperName">
+                    Helper Name
+                </label>
+
+                <input
+                    type="text"
+                    id="editHelperName"
+                    name="profile_name"
+                    placeholder="Enter helper name"
+                    required
+                >
+
+            </div>
+
+
+            <div
+                class="helper-modal-message"
+                id="editHelperMessage"
+            ></div>
+
+
+            <div class="helper-modal-actions">
+
+                <button
+                    type="button"
+                    class="helper-cancel-button"
+                    id="cancelEditHelper"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="helper-create-button"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<?php endif; ?>
+
+<?php if ($profileRole === "owner"): ?>
+
+<div
+    class="change-pin-overlay"
+    id="changePinOverlay"
+>
+
+    <div class="change-pin-modal">
+
+        <div class="change-pin-header">
+
+            <div>
+                <h2>
+                    Change Helper PIN
+                </h2>
+
+                <p>
+                    Set a new 4-digit PIN
+                    for this helper profile.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="change-pin-close"
+                id="closeChangePin"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="changePinForm"
+            class="change-pin-form"
+        >
+
+            <input
+                type="hidden"
+                id="changePinHelperId"
+                name="helper_id"
+            >
+
+
+            <div class="helper-form-group">
+
+                <label for="newHelperPin">
+                    New 4-Digit PIN
+                </label>
+
+                <input
+                    type="password"
+                    id="newHelperPin"
+                    name="new_pin"
+                    maxlength="4"
+                    inputmode="numeric"
+                    placeholder="Enter new PIN"
+                    required
+                >
+
+            </div>
+
+
+            <div class="helper-form-group">
+
+                <label for="confirmNewHelperPin">
+                    Confirm New PIN
+                </label>
+
+                <input
+                    type="password"
+                    id="confirmNewHelperPin"
+                    name="confirm_pin"
+                    maxlength="4"
+                    inputmode="numeric"
+                    placeholder="Enter PIN again"
+                    required
+                >
+
+            </div>
+
+
+            <div
+                class="helper-modal-message"
+                id="changePinMessage"
+            ></div>
+
+
+            <div class="helper-modal-actions">
+
+                <button
+                    type="button"
+                    class="helper-cancel-button"
+                    id="cancelChangePin"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="helper-create-button"
+                >
+                    Change PIN
                 </button>
 
             </div>
