@@ -487,9 +487,15 @@ foreach ($historyData as $record) {
         rel="stylesheet"
         href="../css/status.css"
     >
+
     <link
-    rel="stylesheet"
-    href="../css/profile-menu.css"
+        rel="stylesheet"
+        href="../css/profile-menu.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/ai-assistant.css"
     >
 
     <script src="../js/vendor/chart.umd.min.js"></script>
@@ -1476,7 +1482,9 @@ ALERTS
 
 </main>
 
-
+<?php
+require "../includes/ai-assistant.php";
+?>
 <!-- ==================================================
 JAVASCRIPT
 ================================================== -->
@@ -1520,7 +1528,7 @@ if (realtimeCanvas) {
     window.realtimeChart = new Chart(
         realtimeCanvas,
         {
-            type: "line",
+            type: "bar",
 
             data: {
                 labels: [],
@@ -1528,20 +1536,17 @@ if (realtimeCanvas) {
                 datasets: [
                     {
                         label: "Temperature °C",
-                        data: [],
-                        tension: 0.3
+                        data: []
                     },
 
                     {
                         label: "Humidity %",
-                        data: [],
-                        tension: 0.3
+                        data: []
                     },
 
                     {
                         label: "Soil Moisture %",
-                        data: [],
-                        tension: 0.3
+                        data: []
                     }
                 ]
             },
@@ -1583,7 +1588,7 @@ if (historyCanvas) {
         historyCanvas,
         {
 
-            type: "line",
+            type: "bar",
 
             data: {
 
@@ -1597,9 +1602,7 @@ if (historyCanvas) {
                             "Temperature °C",
 
                         data:
-                            historyTemperature,
-
-                        tension: 0.3
+                            historyTemperature
                     },
 
                     {
@@ -1607,9 +1610,7 @@ if (historyCanvas) {
                             "Humidity %",
 
                         data:
-                            historyHumidity,
-
-                        tension: 0.3
+                            historyHumidity
                     },
 
                     {
@@ -1617,9 +1618,7 @@ if (historyCanvas) {
                             "Soil Moisture %",
 
                         data:
-                            historySoilMoisture,
-
-                        tension: 0.3
+                            historySoilMoisture
                     }
 
                 ]
@@ -1652,6 +1651,7 @@ if (historyCanvas) {
 
 <script src="../js/status.js"></script>
 <script src="../js/profile-menu.js"></script>
+<script src="../js/ai-assistant.js"></script>
 </body>
 
 </html>

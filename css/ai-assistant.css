@@ -1,0 +1,455 @@
+/* =========================================
+   VerdEX AI Assistant
+   ========================================= */
+
+.verdex-ai-assistant {
+    position: fixed;
+    right: 24px;
+    bottom: 20px;
+    z-index: 9999;
+    font-family: Arial, sans-serif;
+}
+
+
+/* =========================================
+   MASCOT BUTTON
+   ========================================= */
+
+.verdex-ai-mascot {
+    width: 92px;
+    height: 110px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+}
+
+
+/* =========================================
+   MASCOT CHARACTER
+   ========================================= */
+
+.mascot-character {
+    position: relative;
+    width: 80px;
+    height: 100px;
+    margin: 0 auto;
+    animation: mascotIdle 2.8s ease-in-out infinite;
+}
+
+
+/* Leaf */
+
+.mascot-leaf {
+    position: absolute;
+    top: -8px;
+    left: 27px;
+    font-size: 28px;
+    transform: rotate(-10deg);
+}
+
+
+/* Head */
+
+.mascot-head {
+    position: absolute;
+    top: 18px;
+    left: 13px;
+    width: 54px;
+    height: 54px;
+    background: #8b5e3c;
+    border-radius: 45% 45% 42% 42%;
+    box-shadow:
+        inset 0 -4px 0 rgba(0, 0, 0, 0.08),
+        0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+
+/* Eyes */
+
+.mascot-eye {
+    position: absolute;
+    top: 21px;
+    width: 7px;
+    height: 9px;
+    background: #222;
+    border-radius: 50%;
+}
+
+.mascot-eye.left {
+    left: 14px;
+}
+
+.mascot-eye.right {
+    right: 14px;
+}
+
+
+/* Mouth */
+
+.mascot-mouth {
+    position: absolute;
+    left: 20px;
+    bottom: 11px;
+    width: 14px;
+    height: 7px;
+    border-bottom: 2px solid #2d2d2d;
+    border-radius: 50%;
+}
+
+
+/* Body */
+
+.mascot-body {
+    position: absolute;
+    bottom: 3px;
+    left: 23px;
+    width: 34px;
+    height: 36px;
+    background: #7b5033;
+    border-radius: 10px 10px 14px 14px;
+}
+
+
+/* Arms */
+
+.mascot-arm {
+    position: absolute;
+    top: 7px;
+    width: 9px;
+    height: 30px;
+    background: #7b5033;
+    border-radius: 8px;
+    transform-origin: top center;
+}
+
+.mascot-arm-left {
+    left: -8px;
+    transform: rotate(16deg);
+}
+
+.mascot-arm-right {
+    right: -8px;
+    transform: rotate(-16deg);
+}
+
+
+/* =========================================
+   WAVE ANIMATION
+   ========================================= */
+
+.verdex-ai-mascot.waving .mascot-arm-right {
+    animation: mascotWave 0.65s ease-in-out 3;
+}
+
+
+/* =========================================
+   CHAT WINDOW
+   ========================================= */
+
+.verdex-ai-chat {
+    position: absolute;
+    right: 0;
+    bottom: 118px;
+
+    width: 360px;
+    max-height: 520px;
+
+    background: #ffffff;
+    border: 1px solid #e6ebe7;
+    border-radius: 20px;
+
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.16);
+
+    overflow: hidden;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(15px) scale(0.97);
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease,
+        visibility 0.2s ease;
+}
+
+
+/* Open state */
+
+.verdex-ai-chat.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+
+/* =========================================
+   HEADER
+   ========================================= */
+
+.verdex-ai-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 16px 18px;
+
+    background: #f4f9f5;
+    border-bottom: 1px solid #e6ebe7;
+}
+
+
+.verdex-ai-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.verdex-ai-avatar {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #e6f3e8;
+    border-radius: 50%;
+
+    font-size: 20px;
+}
+
+
+.verdex-ai-title strong {
+    display: block;
+    font-size: 14px;
+    color: #223026;
+}
+
+
+.verdex-ai-title span {
+    display: block;
+    margin-top: 2px;
+
+    font-size: 11px;
+    color: #7c897f;
+}
+
+
+/* Close */
+
+.verdex-ai-close {
+    border: none;
+    background: transparent;
+
+    font-size: 25px;
+    color: #7b857d;
+
+    cursor: pointer;
+}
+
+
+/* =========================================
+   MESSAGES
+   ========================================= */
+
+.verdex-ai-messages {
+    height: 250px;
+    overflow-y: auto;
+
+    padding: 16px;
+
+    background: #ffffff;
+}
+
+
+.ai-message {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+
+    margin-bottom: 12px;
+}
+
+
+.ai-message-avatar {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    background: #e9f5eb;
+    border-radius: 50%;
+}
+
+
+.ai-message-bubble {
+    max-width: 235px;
+
+    padding: 11px 13px;
+
+    background: #f1f6f2;
+    color: #344137;
+
+    border-radius:
+        14px 14px 14px 4px;
+
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+
+/* =========================================
+   SUGGESTIONS
+   ========================================= */
+
+.verdex-ai-suggestions {
+    display: flex;
+    gap: 7px;
+
+    padding:
+        0 14px 12px;
+
+    overflow-x: auto;
+}
+
+
+.verdex-ai-suggestions button {
+    border: 1px solid #dce9df;
+
+    background: #ffffff;
+    color: #41724b;
+
+    border-radius: 18px;
+
+    padding: 7px 10px;
+
+    white-space: nowrap;
+
+    font-size: 11px;
+
+    cursor: pointer;
+}
+
+
+.verdex-ai-suggestions button:hover {
+    background: #edf7ef;
+}
+
+
+/* =========================================
+   INPUT
+   ========================================= */
+
+.verdex-ai-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 12px 14px;
+
+    border-top: 1px solid #e7ece8;
+}
+
+
+.verdex-ai-input input {
+    flex: 1;
+
+    border: 1px solid #dfe7e1;
+
+    border-radius: 16px;
+
+    padding: 10px 12px;
+
+    outline: none;
+
+    font-size: 13px;
+}
+
+
+.verdex-ai-input input:focus {
+    border-color: #6aaa76;
+}
+
+
+.verdex-ai-input button {
+    width: 38px;
+    height: 38px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #4f9d5d;
+    color: #ffffff;
+
+    cursor: pointer;
+
+    font-size: 15px;
+}
+
+
+/* =========================================
+   ANIMATIONS
+   ========================================= */
+
+@keyframes mascotIdle {
+
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            rotate(0deg);
+    }
+
+    50% {
+        transform:
+            translateY(-5px)
+            rotate(1deg);
+    }
+}
+
+
+@keyframes mascotWave {
+
+    0% {
+        transform:
+            rotate(-16deg);
+    }
+
+    50% {
+        transform:
+            rotate(-75deg);
+    }
+
+    100% {
+        transform:
+            rotate(-16deg);
+    }
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 600px) {
+
+    .verdex-ai-assistant {
+        right: 12px;
+        bottom: 12px;
+    }
+
+    .verdex-ai-chat {
+        width:
+            calc(100vw - 24px);
+
+        max-width: 360px;
+    }
+}

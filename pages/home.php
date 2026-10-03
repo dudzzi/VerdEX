@@ -20,12 +20,12 @@ requireLogin();
 
     <link rel="stylesheet"
           href="../css/home.css">
-
     <link
-    rel="stylesheet"
-    href="../css/profile-menu.css"
-    >
-
+        rel="stylesheet"
+        href="../css/profile-menu.css">
+    <link
+        rel="stylesheet"
+        href="../css/ai-assistant.css">
 </head>
 
 <body class="dashboard-page">
@@ -111,6 +111,9 @@ requireLogin();
 
     </aside>
 
+    <?php
+    require "../includes/ai-assistant.php";
+    ?>                    
     <?php
     require "../includes/profile-menu.php";
     ?>
@@ -576,6 +579,7 @@ requireLogin();
     </main>
 
 <script src="../js/profile-menu.js"></script>
+<script src="../js/ai-assistant.js"></script>
 
 </body>
 
