@@ -10,7 +10,7 @@ let currentCategory = "plant";
 let currentNoteId = null;
 
 const API_URL =
-    window.location.origin + "/api/inventory.php";
+    "../api/inventory.php";
 
 const pendingStockUpdates = new Set();
 

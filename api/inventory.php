@@ -4,7 +4,7 @@ ini_set('display_errors', 1);
 
 header("Content-Type: application/json; charset=UTF-8");
 
-require_once "../config.php";
+require_once "../backend/db.php";
 
 $action = $_POST["action"] ?? $_GET["action"] ?? "";
 

@@ -4,7 +4,7 @@ session_start();
 
 header("Content-Type: application/json");
 
-require_once "../config.php";
+require_once "../backend/db.php";
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     echo json_encode([
